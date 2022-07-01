@@ -7,3 +7,7 @@ html {
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+body {
+  @apply bg-gray-200/50;
+}

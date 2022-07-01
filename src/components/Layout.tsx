@@ -1,23 +1,25 @@
 import Head from "next/head";
 import * as React from "react";
-import { ReactQueryDevtools } from "react-query/devtools";
-import { Navbar } from "./Navbar";
+// import { ReactQueryDevtools } from "react-query/devtools";
+import { Sidebar } from "./sidebar/Sidebar";
 
 interface LayoutProps {
   children: React.ReactNode;
 }
 
-export function DefaultLayout({ children }: LayoutProps) {
+export function Layout({ children }: LayoutProps) {
   return (
     <>
       <Head>
         <title>Earnings Tracker</title>
       </Head>
 
-      <Navbar />
-      <main>{children}</main>
+      <div className="flex">
+        <Sidebar />
+        <main>{children}</main>
+      </div>
 
-      {process.env.NODE_ENV !== "production" && <ReactQueryDevtools initialIsOpen={false} />}
+      {/* {process.env.NODE_ENV !== "production" && <ReactQueryDevtools initialIsOpen={false} />} */}
     </>
   );
 }

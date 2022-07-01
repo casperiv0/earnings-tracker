@@ -8,7 +8,7 @@ import type { AppProps } from "next/app";
 import type { AppType } from "next/dist/shared/lib/utils";
 import type { ReactElement, ReactNode } from "react";
 import superjson from "superjson";
-import { DefaultLayout } from "components/Layout";
+import { Layout } from "components/Layout";
 import type { AppRouter } from "server/routers/_app";
 
 import { SessionProvider } from "next-auth/react";
@@ -26,13 +26,14 @@ type AppPropsWithLayout = AppProps & {
 };
 
 const MyApp = (({ Component, pageProps }: AppPropsWithLayout) => {
-  const getLayout = Component.getLayout ?? ((page) => <DefaultLayout>{page}</DefaultLayout>);
   const sessionQuery = trpc.useQuery(["user.getSession"], { ssr: false });
 
-  return getLayout(
+  return (
     <SessionProvider session={sessionQuery.data?.session}>
-      <Component {...pageProps} />
-    </SessionProvider>,
+      <Layout>
+        <Component {...pageProps} />
+      </Layout>
+    </SessionProvider>
   );
 }) as AppType;
 
