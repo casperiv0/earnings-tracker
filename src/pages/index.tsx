@@ -3,9 +3,7 @@ import styles from "styles/home.module.scss";
 import { trpc } from "utils/trpc";
 
 export default function Index() {
-  const healthQuery = trpc.useQuery(["health"]);
-
-  console.log({ healthQuery });
+  const sessionQuery = trpc.useQuery(["user.getSession"], { ssr: false });
 
   return (
     <>
@@ -13,7 +11,7 @@ export default function Index() {
         <title>Hello world!</title>
       </Head>
 
-      <h1 className={styles.title}>Hello world!</h1>
+      <h1 className={styles.title}>Welcome back {sessionQuery.data?.user?.email}</h1>
     </>
   );
 }

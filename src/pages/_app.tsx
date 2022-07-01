@@ -1,3 +1,4 @@
+import * as React from "react";
 import { httpBatchLink } from "@trpc/client/links/httpBatchLink";
 import { loggerLink } from "@trpc/client/links/loggerLink";
 import { withTRPC } from "@trpc/next";
@@ -8,12 +9,16 @@ import type { ReactElement, ReactNode } from "react";
 import superjson from "superjson";
 import { DefaultLayout } from "components/Layout";
 import type { AppRouter } from "server/routers/_app";
+
+import { SessionProvider } from "next-auth/react";
+
 // import type { SSRContext } from "utils/trpc";
 
 import "styles/globals.scss";
+import { trpc } from "utils/trpc";
 
 export type NextPageWithLayout = NextPage & {
-  getLayout?: (page: ReactElement) => ReactNode;
+  getLayout?(page: ReactElement): ReactNode;
 };
 
 type AppPropsWithLayout = AppProps & {
@@ -22,8 +27,13 @@ type AppPropsWithLayout = AppProps & {
 
 const MyApp = (({ Component, pageProps }: AppPropsWithLayout) => {
   const getLayout = Component.getLayout ?? ((page) => <DefaultLayout>{page}</DefaultLayout>);
+  const sessionQuery = trpc.useQuery(["user.getSession"], { ssr: false });
 
-  return getLayout(<Component {...pageProps} />);
+  return getLayout(
+    <SessionProvider session={sessionQuery.data?.session}>
+      <Component {...pageProps} />
+    </SessionProvider>,
+  );
 }) as AppType;
 
 function getBaseUrl() {
@@ -55,28 +65,17 @@ export default withTRPC<AppRouter>({
       ],
 
       transformer: superjson,
-      // queryClientConfig: { defaultOptions: { queries: { staleTime: 60 } } },
+      queryClientConfig: {
+        defaultOptions: {
+          queries: {
+            retryOnMount: false,
+            refetchOnWindowFocus: false,
+            retry: false,
+            staleTime: 60,
+          },
+        },
+      },
     };
   },
   ssr: true,
-  responseMeta(opts) {
-    const ctx = opts.ctx;
-
-    if (ctx.status) {
-      // If HTTP status set, propagate that
-      return {
-        status: ctx.status,
-      };
-    }
-
-    const error = opts.clientErrors[0];
-    if (error) {
-      // Propagate http first error from API calls
-      return {
-        status: error.data?.httpStatus ?? 500,
-      };
-    }
-    // For app caching with SSR see https://trpc.io/docs/caching
-    return {};
-  },
 })(MyApp);
