@@ -16,7 +16,8 @@ export function Layout({ children }: LayoutProps) {
 
       <div className="flex">
         <Sidebar />
-        <main>{children}</main>
+        <div className="w-[370px]" />
+        <main className="w-full">{children}</main>
       </div>
 
       {/* {process.env.NODE_ENV !== "production" && <ReactQueryDevtools initialIsOpen={false} />} */}

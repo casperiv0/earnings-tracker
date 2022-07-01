@@ -1,15 +1,17 @@
 import Link from "next/link";
-import { CogIcon, HomeIcon } from "@heroicons/react/outline";
+import { CogIcon, HomeIcon, FolderRemoveIcon, ReceiptTaxIcon } from "@heroicons/react/outline";
 import { trpc } from "utils/trpc";
 import { useRouter } from "next/router";
 import { UserArea } from "./UserArea";
 
 const sidebarNavigation = [
   { name: "Dashboard", href: "/", icon: HomeIcon },
+  { name: "Expenses", href: "/expenses", icon: FolderRemoveIcon },
+  { name: "Income", href: "/income", icon: ReceiptTaxIcon },
   { name: "Settings", href: "/settings", icon: CogIcon },
 ];
 
-function classNames(...classes: unknown[]) {
+export function classNames(...classes: unknown[]) {
   return classes.filter(Boolean).join(" ");
 }
 
@@ -24,7 +26,7 @@ export function Sidebar() {
   }
 
   return (
-    <aside className="z-50 w-72 flex-shrink-0 min-h-full h-screen flex flex-col justify-between py-4 bg-white border-r-[1.5px]">
+    <aside className="fixed z-50 w-72 flex-shrink-0 min-h-full h-screen flex flex-col justify-between py-4 bg-white border-r-[1.5px]">
       <div>
         <header className="px-4">
           <h1 className="text-black">LOGO</h1>
@@ -40,9 +42,9 @@ export function Sidebar() {
                   <a
                     aria-current={isCurrent ? "page" : undefined}
                     className={classNames(
-                      "transition-colors my-0.5 flex items-center gap-2 border-l-4 py-2 px-4 hover:border-sky-500 hover:bg-sky-300/20 hover:text-sky-500",
+                      "transition-colors my-0.5 flex items-center gap-2 border-l-4 py-2 px-4 hover:border-indigo-600 hover:bg-indigo-300/20 hover:text-indigo-800",
                       isCurrent
-                        ? "border-sky-500 bg-sky-300/20 text-sky-500 font-semibold"
+                        ? "border-indigo-600 bg-indigo-300/20 text-indigo-800 font-semibold"
                         : "border-transparent text-black",
                     )}
                   >
