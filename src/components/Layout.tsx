@@ -1,6 +1,7 @@
 import Head from "next/head";
 import * as React from "react";
 import { ReactQueryDevtools } from "react-query/devtools";
+import { Navbar } from "./Navbar";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -13,6 +14,7 @@ export function DefaultLayout({ children }: LayoutProps) {
         <title>Earnings Tracker</title>
       </Head>
 
+      <Navbar />
       <main>{children}</main>
 
       {process.env.NODE_ENV !== "production" && <ReactQueryDevtools initialIsOpen={false} />}

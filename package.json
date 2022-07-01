@@ -11,6 +11,8 @@
     "lint": "eslint . --ext .ts,.js,.tsx,.jsx,"
   },
   "dependencies": {
+    "@headlessui/react": "^1.6.5",
+    "@heroicons/react": "^1.0.6",
     "@prisma/client": "^4.0.0",
     "@trpc/client": "^9.25.3",
     "@trpc/next": "^9.25.3",
@@ -31,11 +33,14 @@
     "@types/node": "^18.0.0",
     "@types/react": "^18.0.14",
     "@types/react-dom": "^18.0.5",
+    "autoprefixer": "^10.4.7",
     "eslint": "^8.18.0",
+    "postcss": "^8.4.14",
     "preact": "^10.8.2",
     "prettier": "^2.7.1",
     "prisma": "^4.0.0",
     "sass": "^1.53.0",
+    "tailwindcss": "^3.1.4",
     "typescript": "^4.7.4"
   }
 }

@@ -6,6 +6,8 @@ import { prisma } from "server/prisma";
 const defaultUserSelect = Prisma.validator<Prisma.UserSelect>()({
   id: true,
   email: true,
+  imageUrl: true,
+  name: true,
 });
 
 export const userRouter = createRouter().query("getSession", {

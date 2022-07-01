@@ -2,6 +2,7 @@ import * as React from "react";
 import { httpBatchLink } from "@trpc/client/links/httpBatchLink";
 import { loggerLink } from "@trpc/client/links/loggerLink";
 import { withTRPC } from "@trpc/next";
+import { trpc } from "utils/trpc";
 import type { NextPage } from "next";
 import type { AppProps } from "next/app";
 import type { AppType } from "next/dist/shared/lib/utils";
@@ -14,8 +15,7 @@ import { SessionProvider } from "next-auth/react";
 
 // import type { SSRContext } from "utils/trpc";
 
-import "styles/globals.scss";
-import { trpc } from "utils/trpc";
+import "styles/globals.css";
 
 export type NextPageWithLayout = NextPage & {
   getLayout?(page: ReactElement): ReactNode;
@@ -63,7 +63,6 @@ export default withTRPC<AppRouter>({
           url: `${getBaseUrl()}/api/trpc`,
         }),
       ],
-
       transformer: superjson,
       queryClientConfig: {
         defaultOptions: {

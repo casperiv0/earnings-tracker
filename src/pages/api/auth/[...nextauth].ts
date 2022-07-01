@@ -8,17 +8,18 @@ export const authOptions: NextAuthOptions = {
     GithubProvider({ clientId: process.env.GITHUB_ID, clientSecret: process.env.GITHUB_SECRET }),
   ],
   callbacks: {
-    async signIn({ profile }) {
-      const email = profile.email;
+    async signIn({ user, profile }) {
+      const { email, name, image, avatar_url } = profile;
+      const imageUrl = String(image || avatar_url || user.image) || null;
 
-      if (!email) {
+      if (!email || !name) {
         return false;
       }
 
       await prisma.user.upsert({
         where: { email },
-        create: { email },
-        update: { email },
+        create: { email, name, imageUrl },
+        update: { email, name, imageUrl },
       });
 
       return true;
