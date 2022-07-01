@@ -8,13 +8,13 @@ interface Props<TData extends RowData> {
 export function TableRow<RowType extends object>({ row }: Props<RowType>) {
   return (
     <tr
-      className={classNames(row.index % 2 && "bg-[#ebecef]")}
+      className={classNames(row.index % 2 && "bg-indigo-100/40")}
       data-row-index={row.index}
       key={row.id}
     >
       {row.getVisibleCells().map((cell) => {
         return (
-          <td className="m-0 text-left p-3 px-3" key={cell.id}>
+          <td className={classNames("first:px-5 m-0 text-left p-3 px-3")} key={cell.id}>
             {flexRender(cell.getValue(), cell.getContext())}
           </td>
         );

@@ -11,8 +11,8 @@ export function TableHeader<TData extends RowData>({ header }: Props<TData>) {
   return (
     <th
       className={classNames(
-        "top-0 sticky p-3 px-3 bg-[#ebecef] border-t-[2px] border-b-[3px] border-slate-300 text-neutral-600 font-semibold text-xs text-left select-none",
-        "uppercase",
+        "p-3 px-3 bg-[#ebecef] border-t-[1.5px] border-b-[1.5px] border-slate-300 text-neutral-600 font-semibold text-xs text-left select-none",
+        "first:px-5 uppercase",
         canSort && "cursor-pointer select-none",
       )}
       key={header.id}

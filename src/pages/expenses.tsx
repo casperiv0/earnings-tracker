@@ -2,8 +2,6 @@ import { Table } from "components/table/Table";
 import { trpc } from "utils/trpc";
 import format from "date-fns/format";
 
-const NUMBER_FORMATTER = Intl.NumberFormat(undefined, {});
-
 export default function ExpensesPage() {
   const expensesQuery = trpc.useQuery(["expenses.all-infinite"]);
   const context = trpc.useContext();
@@ -23,8 +21,8 @@ export default function ExpensesPage() {
   }
 
   return (
-    <div className="m-5 h-full bg-white rounded-md">
-      <header className="flex items-center justify-between w-full pb-3 p-5">
+    <div className="m-5 h-full bg-white rounded-md shadow-md">
+      <header className="flex items-center justify-between w-full pb-0 p-5">
         <h1 className="text-2xl font-semibold">Expenses</h1>
 
         <div>
@@ -44,7 +42,7 @@ export default function ExpensesPage() {
           <Table
             data={(expensesQuery.data ?? []).map((expense, idx) => ({
               id: ++idx,
-              amount: NUMBER_FORMATTER.format(expense.amount),
+              amount: expense.amount,
               createdAt: format(expense.createdAt, "yyyy-MM-dd"),
               actions: <div>TODO</div>,
             }))}
