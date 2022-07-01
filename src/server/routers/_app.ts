@@ -1,6 +1,3 @@
-/**
- * This file contains the root router of your tRPC-backend
- */
 import { createRouter } from "../createRouter";
 import { earningsRouter } from "./earnings";
 import superjson from "superjson";

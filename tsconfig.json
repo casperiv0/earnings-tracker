@@ -18,7 +18,8 @@
       "styles/*": ["./src/styles/*"],
       "components/*": ["./src/components/*"],
       "types/*": ["./src/types/*"],
-      "server/*": ["./src/server/*"]
+      "server/*": ["./src/server/*"],
+      "utils/*": ["./src/utils/*"]
     },
     "incremental": true,
 
