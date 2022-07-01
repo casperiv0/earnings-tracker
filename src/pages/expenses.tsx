@@ -1,9 +1,15 @@
+import * as React from "react";
 import { Table } from "components/table/Table";
 import { trpc } from "utils/trpc";
-import format from "date-fns/format";
+import { useTablePagination } from "src/hooks/useTablePagination";
 
 export default function ExpensesPage() {
-  const expensesQuery = trpc.useQuery(["expenses.all-infinite"]);
+  const [page, setPage] = React.useState<number>(0);
+  const expensesQuery = trpc.useQuery(["expenses.all-infinite", page], {
+    keepPreviousData: true,
+  });
+
+  const pagination = useTablePagination({ query: expensesQuery, page, setPage });
   const context = trpc.useContext();
 
   const addExpense = trpc.useMutation("expenses.add-expense", {
@@ -36,20 +42,23 @@ export default function ExpensesPage() {
       </header>
 
       <div className="mt-5">
-        {(expensesQuery.data?.length ?? 0) <= 0 ? (
+        {(expensesQuery.data?.items.length ?? 0) <= 0 ? (
           <p className="px-5 text-gray-600">There are no expenses yet.</p>
         ) : (
           <Table
-            data={(expensesQuery.data ?? []).map((expense, idx) => ({
+            pagination={pagination}
+            data={(expensesQuery.data?.items ?? []).map((expense, idx) => ({
               id: ++idx,
               amount: expense.amount,
-              createdAt: format(expense.createdAt, "yyyy-MM-dd"),
+              month: expense.date.month,
+              year: expense.date.year,
               actions: <div>TODO</div>,
             }))}
             columns={[
               { header: "#", accessorKey: "id" },
               { header: "Amount", accessorKey: "amount" },
-              { header: "created At", accessorKey: "createdAt" },
+              { header: "Month", accessorKey: "month" },
+              { header: "Year", accessorKey: "year" },
               { header: "actions", accessorKey: "actions" },
             ]}
           />

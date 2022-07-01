@@ -8,21 +8,30 @@ const defaultEarningsSelect = Prisma.validator<Prisma.ExpensesSelect>()({
   id: true,
   user: true,
   userId: true,
-  date: true,
+  date: { select: { month: true, year: true } },
   dateId: true,
   amount: true,
 });
 
 export const expensesRouter = createRouter()
   .query("all-infinite", {
-    async resolve() {
-      const items = await prisma.expenses.findMany({
-        orderBy: {
-          date: { month: "desc" },
-        },
-      });
+    input: z.number(),
+    async resolve({ input }) {
+      const skip = input * 35;
 
-      return items;
+      const [totalCount, items] = await Promise.all([
+        prisma.expenses.count(),
+        prisma.expenses.findMany({
+          take: 35,
+          skip,
+          select: defaultEarningsSelect,
+          orderBy: {
+            date: { year: "desc" },
+          },
+        }),
+      ]);
+
+      return { maxPages: Math.floor(totalCount / 35), items };
     },
   })
   .mutation("add-expense", {
@@ -33,11 +42,13 @@ export const expensesRouter = createRouter()
       month: z.nativeEnum(Month),
     }),
     async resolve({ ctx, input }) {
-      const userId = ctx.dbUser?.id;
+      const userId = ctx.dbUser?.id ?? "62bee0cd017b854271152f8b";
 
       if (!userId) {
         throw new TRPCError({ code: "UNAUTHORIZED" });
       }
+
+      console.log("here");
 
       const post = await prisma.expenses.create({
         data: {
@@ -55,15 +66,15 @@ export const expensesRouter = createRouter()
   })
   .mutation("edit", {
     input: z.object({
-      id: z.string().uuid(),
-      data: z.object({
-        title: z.string().min(1).max(32).optional(),
-        text: z.string().min(1).optional(),
-      }),
+      id: z.string(),
+      amount: z.number().min(1),
+      year: z.number(),
+      description: z.string().nullable().optional(),
+      month: z.nativeEnum(Month),
     }),
     async resolve({ input }) {
-      const { id, data } = input;
-      const post = await prisma.earningEntry.update({
+      const { id, ...data } = input;
+      const post = await prisma.expenses.update({
         where: { id },
         data,
         select: defaultEarningsSelect,
@@ -77,7 +88,7 @@ export const expensesRouter = createRouter()
     }),
     async resolve({ input }) {
       const { id } = input;
-      await prisma.earningEntry.delete({ where: { id } });
+      await prisma.expenses.delete({ where: { id } });
       return {
         id,
       };
