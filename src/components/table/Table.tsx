@@ -59,14 +59,14 @@ export function Table<TData extends RowData>({ data, columns, pagination }: Prop
       {pagination ? (
         <div className="flex items-center justify-center mt-3 gap-2">
           <button
-            className="px-3 py-1.5 rounded-md bg-indigo-600 enabled:hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-80 transition-colors text-white"
+            className="px-4 py-1 bg-primary enabled:hover:bg-black transition-colors shadow-sm disabled:opacity-80 disabled:cursor-not-allowed text-white rounded-md"
             onClick={pagination.onPreviousPage}
             disabled={pagination.isPreviousDisabled}
           >
             Previous
           </button>
           <button
-            className="px-3 py-1.5 rounded-md bg-indigo-600 enabled:hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-80 transition-colors text-white"
+            className="px-4 py-1 bg-primary enabled:hover:bg-black transition-colors shadow-sm disabled:opacity-80 disabled:cursor-not-allowed text-white rounded-md"
             onClick={pagination.onNextPage}
             disabled={pagination.isNextDisabled}
           >
