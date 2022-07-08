@@ -25,8 +25,8 @@ export function Dropdown({ trigger, children, extra, ...rest }: Props) {
         align="start"
         {...rest}
         className={classNames(
-          rest.className ?? "dropdown-left",
           "z-50 p-1.5 rounded-sm shadow-lg dropdown-fade w-36 bg-tertiary",
+          rest.className,
         )}
       >
         {children}

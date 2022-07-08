@@ -1,7 +1,7 @@
 import { Prisma } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { createRouter } from "server/createRouter";
-import { prisma } from "server/prisma";
+import { prisma } from "utils/prisma";
 
 const defaultUserSelect = Prisma.validator<Prisma.UserSelect>()({
   id: true,

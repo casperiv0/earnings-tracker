@@ -2,7 +2,7 @@ import { Prisma } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { createRouter } from "server/createRouter";
-import { prisma } from "server/prisma";
+import { prisma } from "utils/prisma";
 
 const defaultEarningsSelect = Prisma.validator<Prisma.EarningEntrySelect>()({
   id: true,

@@ -1,6 +1,6 @@
 import NextAuth, { NextAuthOptions } from "next-auth";
 import GithubProvider from "next-auth/providers/github";
-import { prisma } from "server/prisma";
+import { prisma } from "utils/prisma";
 
 export const authOptions: NextAuthOptions = {
   secret: process.env.SECRET,

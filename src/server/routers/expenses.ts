@@ -1,7 +1,7 @@
 import { Month, Prisma } from "@prisma/client";
 import { z } from "zod";
 import { createRouter } from "server/createRouter";
-import { prisma } from "server/prisma";
+import { prisma } from "utils/prisma";
 import { TRPCError } from "@trpc/server";
 
 const defaultEarningsSelect = Prisma.validator<Prisma.ExpensesSelect>()({

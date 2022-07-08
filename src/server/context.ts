@@ -1,7 +1,7 @@
 import type * as trpc from "@trpc/server";
 import type * as trpcNext from "@trpc/server/adapters/next";
 import { getServerSession } from "utils/nextauth";
-import { prisma } from "./prisma";
+import { prisma } from "../utils/prisma";
 
 export type Context = trpc.inferAsyncReturnType<typeof createContext>;
 
