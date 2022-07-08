@@ -5,7 +5,7 @@ import {
   ChevronRightIcon,
 } from "@heroicons/react/outline";
 import { Button } from "components/Button";
-import type { TablePaginationOptions } from "./Table";
+import type { TablePaginationOptions } from "src/hooks/useTablePagination";
 
 interface Props {
   pagination: TablePaginationOptions;

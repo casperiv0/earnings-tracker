@@ -8,7 +8,10 @@ interface Props<TData extends RowData> {
 export function TableRow<RowType extends object>({ row }: Props<RowType>) {
   return (
     <tr
-      className={classNames("border-b transition-colors bg-transparent hover:bg-gray-100/60")}
+      className={classNames(
+        "transition-colors bg-transparent",
+        row.index % 2 !== 0 && "bg-quaternary/60",
+      )}
       data-row-index={row.index}
       key={row.id}
     >

@@ -6,9 +6,12 @@ import { DotsVerticalIcon } from "@heroicons/react/outline";
 import { Menu, Transition } from "@headlessui/react";
 import type { Expenses } from "@prisma/client";
 import { Button } from "components/Button";
+import type { SortingState } from "@tanstack/react-table";
 
 export default function ExpensesPage() {
   const [page, setPage] = React.useState<number>(0);
+  const [sorting, setSorting] = React.useState<SortingState>([]);
+
   const expensesQuery = trpc.useQuery(["expenses.all-infinite", page], {
     keepPreviousData: true,
   });
@@ -57,19 +60,14 @@ export default function ExpensesPage() {
 
   return (
     <div className="m-8 mx-10 h-full">
-      <header className="flex items-center justify-between w-full mb-5">
+      <header className="flex flex-col lg:flex-row lg:items-center justify-between w-full mb-5 gap-y-3">
         <div>
           <h1 className="text-2xl md:text-3xl lg:text-4xl font-semibold font-serif">Expenses</h1>
           <p className="mt-4 font-medium">A list of all expenses from any year starting in 2018.</p>
         </div>
 
         <div>
-          <Button
-            onClick={addNewExpense}
-            // className="bg-tertiary hover:brightness-110 transition shadow-sm text-white rounded-md"
-          >
-            Add new expense
-          </Button>
+          <Button onClick={addNewExpense}>Add new expense</Button>
         </div>
       </header>
 
@@ -78,6 +76,7 @@ export default function ExpensesPage() {
           <p className="px-5 text-gray-600">There are no expenses yet.</p>
         ) : (
           <Table
+            options={{ sorting, setSorting }}
             pagination={pagination}
             data={(expensesQuery.data?.items ?? []).map((expense, idx) => ({
               id: 35 * page + idx + 1,

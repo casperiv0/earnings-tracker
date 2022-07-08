@@ -20,7 +20,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ variant = "default", size = "sm", className = "", ...rest }, ref) => (
     <button
       className={classNames(
-        "rounded-md transition-all disabled:opacity-60 disabled:cursor-not-allowed",
+        "rounded-sm transition-all disabled:opacity-60 disabled:cursor-not-allowed",
         buttonSizes[size],
         variant && buttonVariants[variant],
         className,

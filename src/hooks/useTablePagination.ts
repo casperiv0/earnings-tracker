@@ -7,7 +7,19 @@ interface Options<T extends { maxPages: number }> {
   setPage: React.Dispatch<React.SetStateAction<number>>;
 }
 
-export function useTablePagination<T extends { maxPages: number }>(options: Options<T>) {
+export interface TablePaginationOptions {
+  isNextDisabled: boolean;
+  isPreviousDisabled: boolean;
+  currentPage: number;
+  totalPageCount: number;
+  onNextPage(): void;
+  onPreviousPage(): void;
+  gotoPage(page: number): void;
+}
+
+export function useTablePagination<T extends { maxPages: number }>(
+  options: Options<T>,
+): TablePaginationOptions {
   const isNextDisabled = options.query.isLoading || options.page === options.query.data?.maxPages;
   const isPreviousDisabled = options.query.isLoading || options.page <= 0;
 

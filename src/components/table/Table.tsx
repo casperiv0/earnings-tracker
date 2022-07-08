@@ -2,24 +2,15 @@ import * as React from "react";
 import {
   ColumnDef,
   getCoreRowModel,
-  OnChangeFn,
+  getSortedRowModel,
   RowData,
-  RowSelectionState,
+  SortingState,
   useReactTable,
 } from "@tanstack/react-table";
 import { TableRow } from "./TableRow";
 import { TableHeader } from "./TableHeader";
 import { TablePagination } from "./TablePagination";
-
-export interface TablePaginationOptions {
-  isNextDisabled: boolean;
-  isPreviousDisabled: boolean;
-  currentPage: number;
-  totalPageCount: number;
-  onNextPage(): void;
-  onPreviousPage(): void;
-  gotoPage(page: number): void;
-}
+import type { TablePaginationOptions } from "src/hooks/useTablePagination";
 
 interface Props<TData extends RowData> {
   data: TData[];
@@ -27,17 +18,24 @@ interface Props<TData extends RowData> {
 
   pagination?: TablePaginationOptions;
   options?: {
-    rowSelection: RowSelectionState;
-    setRowSelection: OnChangeFn<RowSelectionState>;
+    sorting?: SortingState;
+    setSorting?(state: SortingState): void;
   };
 }
 
-export function Table<TData extends RowData>({ data, columns, pagination }: Props<TData>) {
+export function Table<TData extends RowData>({
+  data,
+  columns,
+  pagination,
+  options = {},
+}: Props<TData>) {
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
     enableSorting: true,
+    ...options,
   });
 
   return (
