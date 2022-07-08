@@ -5,12 +5,13 @@ import { useTablePagination } from "src/hooks/useTablePagination";
 import { ThreeDotsVertical } from "react-bootstrap-icons";
 import type { Expenses } from "@prisma/client";
 import { Button } from "components/Button";
-import type { SortingState } from "@tanstack/react-table";
+import type { RowSelectionState, SortingState } from "@tanstack/react-table";
 import { Dropdown } from "components/dropdown/Dropdown";
 
 export default function ExpensesPage() {
   const [page, setPage] = React.useState<number>(0);
   const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [selectedRows, setSelectedRows] = React.useState<RowSelectionState>({});
 
   const expensesQuery = trpc.useQuery(["expenses.all-infinite", page], {
     keepPreviousData: true,
@@ -57,6 +58,7 @@ export default function ExpensesPage() {
       year: 2022,
     });
   }
+  console.log({ selectedRows });
 
   return (
     <div className="m-8 mx-10 h-full">
@@ -75,35 +77,52 @@ export default function ExpensesPage() {
         {(expensesQuery.data?.items.length ?? 0) <= 0 ? (
           <p className="px-5 text-gray-600">There are no expenses yet.</p>
         ) : (
-          <Table
-            options={{ sorting, setSorting }}
-            pagination={pagination}
-            data={(expensesQuery.data?.items ?? []).map((expense, idx) => ({
-              id: 35 * page + idx + 1,
-              amount: expense.amount,
-              month: expense.date.month,
-              year: expense.date.year,
-              actions: (
-                <Dropdown
-                  trigger={
-                    <Button>
-                      <ThreeDotsVertical />
-                    </Button>
-                  }
-                >
-                  <Dropdown.Item onClick={() => handleEditExpense(expense, {})}>Edit</Dropdown.Item>
-                  <Dropdown.Item onClick={() => handleDeleteExpense(expense)}>Delete</Dropdown.Item>
-                </Dropdown>
-              ),
-            }))}
-            columns={[
-              { header: "#", accessorKey: "id" },
-              { header: "Amount", accessorKey: "amount" },
-              { header: "Month", accessorKey: "month" },
-              { header: "Year", accessorKey: "year" },
-              { header: "actions", accessorKey: "actions" },
-            ]}
-          />
+          <div>
+            <div className="mb-2">
+              <Button disabled={Object.keys(selectedRows).length <= 0}>
+                Delete selected expenses
+              </Button>
+            </div>
+
+            <Table
+              options={{
+                sorting,
+                setSorting,
+                rowSelection: selectedRows,
+                setRowSelection: setSelectedRows,
+              }}
+              pagination={pagination}
+              data={(expensesQuery.data?.items ?? []).map((expense, idx) => ({
+                id: 35 * page + idx + 1,
+                amount: expense.amount,
+                month: expense.date.month,
+                year: expense.date.year,
+                actions: (
+                  <Dropdown
+                    trigger={
+                      <Button>
+                        <ThreeDotsVertical />
+                      </Button>
+                    }
+                  >
+                    <Dropdown.Item onClick={() => handleEditExpense(expense, {})}>
+                      Edit
+                    </Dropdown.Item>
+                    <Dropdown.Item onClick={() => handleDeleteExpense(expense)}>
+                      Delete
+                    </Dropdown.Item>
+                  </Dropdown>
+                ),
+              }))}
+              columns={[
+                { header: "#", accessorKey: "id" },
+                { header: "Amount", accessorKey: "amount" },
+                { header: "Month", accessorKey: "month" },
+                { header: "Year", accessorKey: "year" },
+                { header: "actions", accessorKey: "actions" },
+              ]}
+            />
+          </div>
         )}
       </div>
     </div>

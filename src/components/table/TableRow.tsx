@@ -16,6 +16,9 @@ export function TableRow<RowType extends object>({ row }: Props<RowType>) {
       key={row.id}
     >
       {row.getVisibleCells().map((cell) => {
+        const cellValue =
+          cell.column.id === "select" ? cell.column.columnDef.cell : cell.getValue();
+
         return (
           <td
             className={classNames(
@@ -24,7 +27,7 @@ export function TableRow<RowType extends object>({ row }: Props<RowType>) {
             )}
             key={cell.id}
           >
-            {flexRender(cell.getValue(), cell.getContext())}
+            {flexRender(cellValue, cell.getContext())}
           </td>
         );
       })}

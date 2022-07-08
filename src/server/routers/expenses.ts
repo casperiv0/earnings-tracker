@@ -92,6 +92,7 @@ export const expensesRouter = createRouter()
     async resolve({ input }) {
       const { id } = input;
       await prisma.expenses.delete({ where: { id } });
+
       return {
         id,
       };
