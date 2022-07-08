@@ -9,5 +9,5 @@ html {
 @tailwind utilities;
 
 body {
-  @apply bg-gray-200/50;
+  @apply bg-primary text-white
 }

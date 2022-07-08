@@ -9,20 +9,23 @@ import {
 } from "@tanstack/react-table";
 import { TableRow } from "./TableRow";
 import { TableHeader } from "./TableHeader";
+import { TablePagination } from "./TablePagination";
 
-interface TablePagination {
+export interface TablePaginationOptions {
   isNextDisabled: boolean;
   isPreviousDisabled: boolean;
+  currentPage: number;
+  totalPageCount: number;
   onNextPage(): void;
   onPreviousPage(): void;
+  gotoPage(page: number): void;
 }
 
 interface Props<TData extends RowData> {
   data: TData[];
   columns: ColumnDef<TData>[];
 
-  pagination?: TablePagination;
-
+  pagination?: TablePaginationOptions;
   options?: {
     rowSelection: RowSelectionState;
     setRowSelection: OnChangeFn<RowSelectionState>;
@@ -56,24 +59,7 @@ export function Table<TData extends RowData>({ data, columns, pagination }: Prop
         </tbody>
       </table>
 
-      {pagination ? (
-        <div className="flex items-center justify-center mt-3 gap-2">
-          <button
-            className="px-4 py-1 bg-primary enabled:hover:bg-black transition-colors shadow-sm disabled:opacity-80 disabled:cursor-not-allowed text-white rounded-md"
-            onClick={pagination.onPreviousPage}
-            disabled={pagination.isPreviousDisabled}
-          >
-            Previous
-          </button>
-          <button
-            className="px-4 py-1 bg-primary enabled:hover:bg-black transition-colors shadow-sm disabled:opacity-80 disabled:cursor-not-allowed text-white rounded-md"
-            onClick={pagination.onNextPage}
-            disabled={pagination.isNextDisabled}
-          >
-            Next
-          </button>
-        </div>
-      ) : null}
+      {pagination ? <TablePagination pagination={pagination} /> : null}
     </div>
   );
 }

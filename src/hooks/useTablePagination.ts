@@ -21,14 +21,21 @@ export function useTablePagination<T extends { maxPages: number }>(options: Opti
     options.setPage((prevPage) => (prevPage <= 0 ? 0 : prevPage - 1));
   }
 
+  function gotoPage(page: number) {
+    options.setPage(page);
+  }
+
   React.useEffect(() => {
     window.scrollTo({ behavior: "smooth", top: 0 });
   }, [options.page]);
 
   return {
+    totalPageCount: options.query.data?.maxPages ?? 0,
+    currentPage: options.page,
     isNextDisabled,
     isPreviousDisabled,
     onNextPage,
     onPreviousPage,
+    gotoPage,
   };
 }

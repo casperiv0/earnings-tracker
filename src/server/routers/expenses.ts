@@ -11,6 +11,9 @@ const defaultEarningsSelect = Prisma.validator<Prisma.ExpensesSelect>()({
   date: { select: { month: true, year: true } },
   dateId: true,
   amount: true,
+  description: true,
+  createdAt: true,
+  updatedAt: true,
 });
 
 export const expensesRouter = createRouter()
@@ -64,7 +67,7 @@ export const expensesRouter = createRouter()
       return post;
     },
   })
-  .mutation("edit", {
+  .mutation("edit-expense", {
     input: z.object({
       id: z.string(),
       amount: z.number().min(1),
@@ -82,7 +85,7 @@ export const expensesRouter = createRouter()
       return post;
     },
   })
-  .mutation("delete", {
+  .mutation("delete-expense", {
     input: z.object({
       id: z.string(),
     }),

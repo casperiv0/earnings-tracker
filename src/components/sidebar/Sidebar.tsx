@@ -1,14 +1,13 @@
 import Link from "next/link";
-import { CogIcon, HomeIcon, FolderRemoveIcon, ReceiptTaxIcon } from "@heroicons/react/outline";
 import { trpc } from "utils/trpc";
 import { useRouter } from "next/router";
 import { UserArea } from "./UserArea";
 
 const sidebarNavigation = [
-  { name: "Dashboard", href: "/", icon: HomeIcon },
-  { name: "Expenses", href: "/expenses", icon: FolderRemoveIcon },
-  { name: "Income", href: "/income", icon: ReceiptTaxIcon },
-  { name: "Settings", href: "/settings", icon: CogIcon },
+  { name: "Dashboard", href: "/" },
+  { name: "Expenses", href: "/expenses" },
+  { name: "Income", href: "/income" },
+  { name: "Settings", href: "/settings" },
 ];
 
 export function classNames(...classes: unknown[]) {
@@ -26,10 +25,10 @@ export function Sidebar() {
   }
 
   return (
-    <aside className="fixed z-50 w-72 flex-shrink-0 min-h-full h-screen flex flex-col justify-between py-4 bg-white border-r-[1.5px]">
+    <aside className="fixed z-50 w-72 flex-shrink-0 min-h-full h-screen flex flex-col justify-between p-4 bg-secondary">
       <div>
-        <header className="px-4">
-          <h1 className="text-black">LOGO</h1>
+        <header>
+          <h1 className="text-white">LOGO</h1>
         </header>
 
         <ul className="mt-5">
@@ -42,13 +41,12 @@ export function Sidebar() {
                   <a
                     aria-current={isCurrent ? "page" : undefined}
                     className={classNames(
-                      "transition-colors my-0.5 flex items-center gap-2 border-l-4 py-2 px-4 hover:border-indigo-600 hover:bg-indigo-300/20 hover:text-indigo-800",
+                      "text-base transition-colors my-0.5 flex items-center gap-2 py-1.5 px-4 rounded-sm hover:bg-tertiary hover:text-white",
                       isCurrent
-                        ? "border-indigo-600 bg-indigo-300/20 text-indigo-800 font-semibold"
-                        : "border-transparent text-black",
+                        ? "bg-tertiary font-semibold text-white"
+                        : "border-transparent text-gray-200",
                     )}
                   >
-                    <item.icon className="block h-5 w-5" aria-hidden="true" />
                     <span className="capitalize">{item.name}</span>
                   </a>
                 </Link>

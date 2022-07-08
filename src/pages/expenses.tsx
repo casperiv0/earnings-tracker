@@ -4,6 +4,8 @@ import { trpc } from "utils/trpc";
 import { useTablePagination } from "src/hooks/useTablePagination";
 import { DotsVerticalIcon } from "@heroicons/react/outline";
 import { Menu, Transition } from "@headlessui/react";
+import type { Expenses } from "@prisma/client";
+import { Button } from "components/Button";
 
 export default function ExpensesPage() {
   const [page, setPage] = React.useState<number>(0);
@@ -20,6 +22,31 @@ export default function ExpensesPage() {
     },
   });
 
+  const deleteExpense = trpc.useMutation("expenses.delete-expense", {
+    onSuccess: () => {
+      context.invalidateQueries(["expenses.all-infinite"]);
+    },
+  });
+
+  const editExpense = trpc.useMutation("expenses.edit-expense", {
+    onSuccess: () => {
+      context.invalidateQueries(["expenses.all-infinite"]);
+    },
+  });
+
+  function handleDeleteExpense(expense: Expenses) {
+    deleteExpense.mutate({
+      id: expense.id,
+    });
+  }
+
+  function handleEditExpense(expense: Expenses, data: any) {
+    editExpense.mutate({
+      id: expense.id,
+      ...data,
+    });
+  }
+
   async function addNewExpense() {
     addExpense.mutate({
       amount: 100,
@@ -29,17 +56,20 @@ export default function ExpensesPage() {
   }
 
   return (
-    <div className="m-5 h-full bg-white rounded-md shadow-md">
-      <header className="flex items-center justify-between w-full pb-0 p-5">
-        <h1 className="text-2xl font-semibold">Expenses</h1>
+    <div className="m-8 mx-10 h-full">
+      <header className="flex items-center justify-between w-full mb-5">
+        <div>
+          <h1 className="text-2xl md:text-3xl lg:text-4xl font-semibold font-serif">Expenses</h1>
+          <p className="mt-4 font-medium">A list of all expenses from any year starting in 2018.</p>
+        </div>
 
         <div>
-          <button
+          <Button
             onClick={addNewExpense}
-            className="px-4 py-1 bg-primary hover:bg-black transition-colors shadow-sm text-white rounded-md"
+            // className="bg-tertiary hover:brightness-110 transition shadow-sm text-white rounded-md"
           >
             Add new expense
-          </button>
+          </Button>
         </div>
       </header>
 
@@ -77,12 +107,14 @@ export default function ExpensesPage() {
                           className="w-32 flex flex-col bg-white p-2 rounded-md shadow-md"
                         >
                           <Menu.Item
+                            onClick={() => handleDeleteExpense(expense)}
                             className="px-3 py-1 text-left rounded-md hover:bg-gray-100"
                             as="button"
                           >
                             Delete
                           </Menu.Item>
                           <Menu.Item
+                            onClick={() => handleEditExpense(expense, {})}
                             className="px-3 py-1 text-left rounded-md hover:bg-gray-100"
                             as="button"
                           >

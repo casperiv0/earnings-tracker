@@ -21,8 +21,8 @@ export function UserArea({ user }: Props) {
               />
             </div>
             <div className="ml-3">
-              <div className="text-base font-medium text-neutral-900">{user.name}</div>
-              <div className="text-sm font-medium leading-none text-neutral-700">{user.email}</div>
+              <div className="text-base font-medium text-neutral-200">{user.name}</div>
+              <div className="text-sm font-medium leading-none text-neutral-400">{user.email}</div>
             </div>
           </Menu.Button>
 
@@ -35,11 +35,11 @@ export function UserArea({ user }: Props) {
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <Menu.Items className="absolute -top-full h-full bg-gray-200 p-2 rounded-md overflow-hidden shadow-md w-[87%]">
+            <Menu.Items className="absolute -top-full h-full bg-tertiary p-2 rounded-md overflow-hidden shadow-md w-[87%]">
               <Menu.Item
                 as="button"
                 onClick={() => signOut({ redirect: true })}
-                className="w-full text-left cursor-pointer px-3 p-1.5 rounded-sm transition-colors hover:bg-gray-300"
+                className="w-full text-left cursor-pointer px-3 p-1.5 rounded-sm transition-colors hover:bg-secondary"
               >
                 Sign out
               </Menu.Item>
