@@ -25,7 +25,7 @@ export function Sidebar() {
   }
 
   return (
-    <aside className="fixed z-50 w-72 flex-shrink-0 min-h-full h-screen flex flex-col justify-between p-4 bg-secondary">
+    <aside className="fixed z-30 w-72 flex-shrink-0 min-h-full h-screen flex flex-col justify-between p-4 bg-secondary">
       <div>
         <header>
           <h1 className="text-white">LOGO</h1>

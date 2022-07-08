@@ -7,11 +7,13 @@ import type { Expenses } from "@prisma/client";
 import { Button } from "components/Button";
 import type { RowSelectionState, SortingState } from "@tanstack/react-table";
 import { Dropdown } from "components/dropdown/Dropdown";
+import { Modal } from "components/modal/Modal";
 
 export default function ExpensesPage() {
   const [page, setPage] = React.useState<number>(0);
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [selectedRows, setSelectedRows] = React.useState<RowSelectionState>({});
+  const [isOpen, setIsOpen] = React.useState(false);
 
   const expensesQuery = trpc.useQuery(["expenses.all-infinite", page], {
     keepPreviousData: true,
@@ -19,12 +21,6 @@ export default function ExpensesPage() {
 
   const pagination = useTablePagination({ query: expensesQuery, page, setPage });
   const context = trpc.useContext();
-
-  const addExpense = trpc.useMutation("expenses.add-expense", {
-    onSuccess: () => {
-      context.invalidateQueries(["expenses.all-infinite"]);
-    },
-  });
 
   const deleteExpense = trpc.useMutation("expenses.delete-expense", {
     onSuccess: () => {
@@ -52,13 +48,8 @@ export default function ExpensesPage() {
   }
 
   async function addNewExpense() {
-    addExpense.mutate({
-      amount: 100,
-      month: "July",
-      year: 2022,
-    });
+    setIsOpen(true);
   }
-  console.log({ selectedRows });
 
   return (
     <div className="m-8 mx-10 h-full">
@@ -75,7 +66,7 @@ export default function ExpensesPage() {
 
       <div className="mt-5">
         {(expensesQuery.data?.items.length ?? 0) <= 0 ? (
-          <p className="px-5 text-gray-600">There are no expenses yet.</p>
+          <p className="text-neutral-300">There are no expenses yet.</p>
         ) : (
           <div>
             <div className="mb-2">
@@ -125,6 +116,12 @@ export default function ExpensesPage() {
           </div>
         )}
       </div>
+
+      <Modal isOpen={isOpen} onOpenChange={setIsOpen}>
+        <Modal.Title>hello world</Modal.Title>
+
+        <div>hello world this isa test</div>
+      </Modal>
     </div>
   );
 }
