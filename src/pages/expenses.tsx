@@ -2,11 +2,11 @@ import * as React from "react";
 import { Table } from "components/table/Table";
 import { trpc } from "utils/trpc";
 import { useTablePagination } from "src/hooks/useTablePagination";
-import { DotsVerticalIcon } from "@heroicons/react/outline";
-import { Menu, Transition } from "@headlessui/react";
+import { ThreeDotsVertical } from "react-bootstrap-icons";
 import type { Expenses } from "@prisma/client";
 import { Button } from "components/Button";
 import type { SortingState } from "@tanstack/react-table";
+import { Dropdown } from "components/dropdown/Dropdown";
 
 export default function ExpensesPage() {
   const [page, setPage] = React.useState<number>(0);
@@ -84,46 +84,16 @@ export default function ExpensesPage() {
               month: expense.date.month,
               year: expense.date.year,
               actions: (
-                <Menu as="div" className="relative">
-                  {({ open }) => (
-                    <>
-                      <Menu.Button className="-z-10">
-                        <DotsVerticalIcon className="h-5 w-5" />
-                      </Menu.Button>
-
-                      <Transition
-                        show={open}
-                        enter="transition duration-100 ease-out"
-                        enterFrom="transform scale-95 opacity-0"
-                        enterTo="transform scale-100 opacity-100"
-                        leave="transition duration-75 ease-out"
-                        leaveFrom="transform scale-100 opacity-100"
-                        leaveTo="transform scale-95 opacity-0"
-                        className="!z-50 absolute top-3 right-3"
-                      >
-                        <Menu.Items
-                          static
-                          className="w-32 flex flex-col bg-white p-2 rounded-md shadow-md"
-                        >
-                          <Menu.Item
-                            onClick={() => handleDeleteExpense(expense)}
-                            className="px-3 py-1 text-left rounded-md hover:bg-gray-100"
-                            as="button"
-                          >
-                            Delete
-                          </Menu.Item>
-                          <Menu.Item
-                            onClick={() => handleEditExpense(expense, {})}
-                            className="px-3 py-1 text-left rounded-md hover:bg-gray-100"
-                            as="button"
-                          >
-                            Edit
-                          </Menu.Item>
-                        </Menu.Items>
-                      </Transition>
-                    </>
-                  )}
-                </Menu>
+                <Dropdown
+                  trigger={
+                    <Button>
+                      <ThreeDotsVertical />
+                    </Button>
+                  }
+                >
+                  <Dropdown.Item onClick={() => handleEditExpense(expense, {})}>Edit</Dropdown.Item>
+                  <Dropdown.Item onClick={() => handleDeleteExpense(expense)}>Delete</Dropdown.Item>
+                </Dropdown>
               ),
             }))}
             columns={[
