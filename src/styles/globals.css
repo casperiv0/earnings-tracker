@@ -4,10 +4,24 @@ html {
     Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
 }
 
+@font-face {
+  font-family: "Raleway";
+  src: url("../../public/fonts/Raleway-VF.ttf");
+  font-weight: 100 1000;
+  font-stretch: 25% 151%;
+}
+
+@font-face {
+  font-family: "RobotoSlab";
+  src: url("../../public/fonts/RobotoSlab-VF.ttf");
+  font-weight: 100 1000;
+  font-stretch: 25% 151%;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 body {
-  @apply bg-primary text-white
+  @apply bg-primary text-white;
 }
