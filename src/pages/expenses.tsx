@@ -3,17 +3,24 @@ import { Table } from "components/table/Table";
 import { trpc } from "utils/trpc";
 import { useTablePagination } from "src/hooks/useTablePagination";
 import { ThreeDotsVertical } from "react-bootstrap-icons";
-import type { Expenses } from "@prisma/client";
+import type { EarningsEntryDate, Expenses } from "@prisma/client";
 import { Button } from "components/Button";
 import type { RowSelectionState, SortingState } from "@tanstack/react-table";
 import { Dropdown } from "components/dropdown/Dropdown";
 import { Modal } from "components/modal/Modal";
+import { ExpensesForm } from "components/expenses/ExpensesForm";
+
+export interface Expense extends Expenses {
+  date: Pick<EarningsEntryDate, "month" | "year">;
+}
 
 export default function ExpensesPage() {
   const [page, setPage] = React.useState<number>(0);
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [selectedRows, setSelectedRows] = React.useState<RowSelectionState>({});
+
   const [isOpen, setIsOpen] = React.useState(false);
+  const [tempExpense, setTempExpense] = React.useState<Expense | null>(null);
 
   const expensesQuery = trpc.useQuery(["expenses.all-infinite", page], {
     keepPreviousData: true,
@@ -28,23 +35,15 @@ export default function ExpensesPage() {
     },
   });
 
-  const editExpense = trpc.useMutation("expenses.edit-expense", {
-    onSuccess: () => {
-      context.invalidateQueries(["expenses.all-infinite"]);
-    },
-  });
-
-  function handleDeleteExpense(expense: Expenses) {
+  function handleDeleteExpense(expense: Expense) {
     deleteExpense.mutate({
       id: expense.id,
     });
   }
 
-  function handleEditExpense(expense: Expenses, data: any) {
-    editExpense.mutate({
-      id: expense.id,
-      ...data,
-    });
+  function handleEditExpense(expense: Expense) {
+    setIsOpen(true);
+    setTempExpense(expense);
   }
 
   async function addNewExpense() {
@@ -96,9 +95,7 @@ export default function ExpensesPage() {
                       </Button>
                     }
                   >
-                    <Dropdown.Item onClick={() => handleEditExpense(expense, {})}>
-                      Edit
-                    </Dropdown.Item>
+                    <Dropdown.Item onClick={() => handleEditExpense(expense)}>Edit</Dropdown.Item>
                     <Dropdown.Item onClick={() => handleDeleteExpense(expense)}>
                       Delete
                     </Dropdown.Item>
@@ -118,9 +115,14 @@ export default function ExpensesPage() {
       </div>
 
       <Modal isOpen={isOpen} onOpenChange={setIsOpen}>
-        <Modal.Title>hello world</Modal.Title>
+        <Modal.Title>Add new expense</Modal.Title>
+        <Modal.Description>
+          Add a new expense. This expense will be visible on the chart once added.
+        </Modal.Description>
 
-        <div>hello world this isa test</div>
+        <div>
+          <ExpensesForm expense={tempExpense} />
+        </div>
       </Modal>
     </div>
   );
