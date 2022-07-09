@@ -1,5 +1,5 @@
-import { signIn } from "next-auth/react";
 import Head from "next/head";
+import { useRouter } from "next/router";
 import * as React from "react";
 import { trpc } from "utils/trpc";
 import { Sidebar } from "./sidebar/Sidebar";
@@ -10,14 +10,15 @@ interface LayoutProps {
 
 export function Layout({ children }: LayoutProps) {
   const sessionQuery = trpc.useQuery(["user.getSession"], { ssr: false });
+  const router = useRouter();
 
   React.useEffect(() => {
-    if (!sessionQuery.data && !sessionQuery.isLoading) {
-      signIn("github");
+    if (!sessionQuery.data && !sessionQuery.isLoading && router.pathname !== "/login") {
+      router.push("/login");
     }
-  }, [sessionQuery]);
+  }, [sessionQuery, router]);
 
-  if (sessionQuery.isLoading || !sessionQuery.data) {
+  if ((sessionQuery.isLoading || !sessionQuery.data) && router.pathname !== "/login") {
     return (
       <div className="fixed inset-0 grid place-items-center" aria-label="Loading...">
         <svg
@@ -47,8 +48,12 @@ export function Layout({ children }: LayoutProps) {
       </Head>
 
       <div className="flex">
-        <Sidebar />
-        <div className="w-72 flex-shrink-0" />
+        {router.pathname === "/login" ? null : (
+          <>
+            <Sidebar />
+            <div className="w-72 flex-shrink-0" />
+          </>
+        )}
         <main className="w-full">{children}</main>
       </div>
     </>
