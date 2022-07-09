@@ -10,10 +10,7 @@ import type { ReactElement, ReactNode } from "react";
 import superjson from "superjson";
 import { Layout } from "components/Layout";
 import type { AppRouter } from "server/routers/_app";
-
 import { SessionProvider } from "next-auth/react";
-
-// import type { SSRContext } from "utils/trpc";
 
 import "styles/globals.css";
 

@@ -1,20 +1,9 @@
-import { Month, Prisma } from "@prisma/client";
+import { Month } from "@prisma/client";
 import { z } from "zod";
 import { createRouter } from "server/createRouter";
 import { prisma } from "utils/prisma";
 import { TRPCError } from "@trpc/server";
-
-const defaultEarningsSelect = Prisma.validator<Prisma.IncomeSelect>()({
-  id: true,
-  user: true,
-  userId: true,
-  date: { select: { month: true, year: true } },
-  dateId: true,
-  amount: true,
-  description: true,
-  createdAt: true,
-  updatedAt: true,
-});
+import { defaultEarningsSelect } from "./expenses";
 
 export const incomeRouter = createRouter()
   .query("all-infinite", {

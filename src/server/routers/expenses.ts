@@ -4,7 +4,7 @@ import { createRouter } from "server/createRouter";
 import { prisma } from "utils/prisma";
 import { TRPCError } from "@trpc/server";
 
-const defaultEarningsSelect = Prisma.validator<Prisma.ExpensesSelect>()({
+export const defaultEarningsSelect = Prisma.validator<Prisma.ExpensesSelect>()({
   id: true,
   user: true,
   userId: true,

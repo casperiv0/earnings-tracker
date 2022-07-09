@@ -7,11 +7,6 @@ import { dashboardRouter } from "./dashboard";
 
 export const appRouter = createRouter()
   .transformer(superjson)
-  .query("health", {
-    async resolve() {
-      return "yay!";
-    },
-  })
   .merge("user.", userRouter)
   .merge("expenses.", expensesRouter)
   .merge("income.", incomeRouter)

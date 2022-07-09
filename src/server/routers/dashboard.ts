@@ -1,18 +1,6 @@
-import { Prisma } from "@prisma/client";
 import { createRouter } from "server/createRouter";
 import { prisma } from "utils/prisma";
-
-const defaultEarningsSelect = Prisma.validator<Prisma.ExpensesSelect>()({
-  id: true,
-  user: true,
-  userId: true,
-  date: { select: { month: true, year: true } },
-  dateId: true,
-  amount: true,
-  description: true,
-  createdAt: true,
-  updatedAt: true,
-});
+import { defaultEarningsSelect } from "./expenses";
 
 export const dashboardRouter = createRouter().query("all-infinite", {
   async resolve() {
