@@ -2,7 +2,6 @@ import { signIn } from "next-auth/react";
 import Head from "next/head";
 import * as React from "react";
 import { trpc } from "utils/trpc";
-// import { ReactQueryDevtools } from "react-query/devtools";
 import { Sidebar } from "./sidebar/Sidebar";
 
 interface LayoutProps {
@@ -52,8 +51,6 @@ export function Layout({ children }: LayoutProps) {
         <div className="w-72 flex-shrink-0" />
         <main className="w-full">{children}</main>
       </div>
-
-      {/* {process.env.NODE_ENV !== "production" && <ReactQueryDevtools initialIsOpen={false} />} */}
     </>
   );
 }

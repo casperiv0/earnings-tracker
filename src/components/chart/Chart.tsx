@@ -81,7 +81,7 @@ export default function Chart({ expenses, income }: Props) {
 
   return (
     <Line
-      className="bg-secondary p-5 rounded-sm"
+      className="bg-secondary p-5 rounded-sm shadow-md"
       options={{
         color: "white",
         responsive: true,
