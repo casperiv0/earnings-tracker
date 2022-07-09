@@ -33,7 +33,9 @@ Modal.Title = ({ children }: { children: React.ReactNode }) => (
 );
 
 Modal.Description = ({ children }: { children: React.ReactNode }) => (
-  <Dialog.Description className="text-base my-3 text-neutral-400">{children}</Dialog.Description>
+  <Dialog.Description className="text-base my-3 mb-5 text-neutral-400">
+    {children}
+  </Dialog.Description>
 );
 
 Modal.Close = ({ children }: { children: React.ReactNode }) => (

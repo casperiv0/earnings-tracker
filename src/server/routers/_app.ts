@@ -3,6 +3,7 @@ import { earningsRouter } from "./earnings";
 import superjson from "superjson";
 import { userRouter } from "./user";
 import { expensesRouter } from "./expenses";
+import { incomeRouter } from "./income";
 
 export const appRouter = createRouter()
   .transformer(superjson)
@@ -13,6 +14,7 @@ export const appRouter = createRouter()
   })
   .merge("user.", userRouter)
   .merge("earnings.", earningsRouter)
-  .merge("expenses.", expensesRouter);
+  .merge("expenses.", expensesRouter)
+  .merge("income.", incomeRouter);
 
 export type AppRouter = typeof appRouter;

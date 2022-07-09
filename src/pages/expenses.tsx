@@ -35,15 +35,42 @@ export default function ExpensesPage() {
     },
   });
 
+  const deleteBulkExpense = trpc.useMutation("expenses.bulk-delete-expenses", {
+    onSuccess: () => {
+      context.invalidateQueries(["expenses.all-infinite"]);
+    },
+  });
+
   function handleDeleteExpense(expense: Expense) {
     deleteExpense.mutate({
       id: expense.id,
     });
   }
 
+  async function handleBulkDeleteExpenses() {
+    const expenseIds = [];
+
+    for (const idx in selectedRows) {
+      const expense = expensesQuery.data?.items[parseInt(idx, 10)];
+      if (!expense) continue;
+
+      expenseIds.push(expense.id);
+    }
+
+    await deleteBulkExpense.mutateAsync({
+      ids: expenseIds,
+    });
+    setSelectedRows({});
+  }
+
   function handleEditExpense(expense: Expense) {
     setIsOpen(true);
     setTempExpense(expense);
+  }
+
+  function handleClose() {
+    setTempExpense(null);
+    setIsOpen(false);
   }
 
   async function addNewExpense() {
@@ -69,7 +96,10 @@ export default function ExpensesPage() {
         ) : (
           <div>
             <div className="mb-2">
-              <Button disabled={Object.keys(selectedRows).length <= 0}>
+              <Button
+                onClick={handleBulkDeleteExpenses}
+                disabled={deleteBulkExpense.isLoading || Object.keys(selectedRows).length <= 0}
+              >
                 Delete selected expenses
               </Button>
             </div>
@@ -87,6 +117,7 @@ export default function ExpensesPage() {
                 amount: expense.amount,
                 month: expense.date.month,
                 year: expense.date.year,
+                description: expense.description || "None",
                 actions: (
                   <Dropdown
                     trigger={
@@ -107,6 +138,7 @@ export default function ExpensesPage() {
                 { header: "Amount", accessorKey: "amount" },
                 { header: "Month", accessorKey: "month" },
                 { header: "Year", accessorKey: "year" },
+                { header: "Description", accessorKey: "description" },
                 { header: "actions", accessorKey: "actions" },
               ]}
             />
@@ -114,14 +146,14 @@ export default function ExpensesPage() {
         )}
       </div>
 
-      <Modal isOpen={isOpen} onOpenChange={setIsOpen}>
+      <Modal isOpen={isOpen} onOpenChange={handleClose}>
         <Modal.Title>Add new expense</Modal.Title>
         <Modal.Description>
           Add a new expense. This expense will be visible on the chart once added.
         </Modal.Description>
 
         <div>
-          <ExpensesForm expense={tempExpense} />
+          <ExpensesForm onSubmit={handleClose} expense={tempExpense} />
         </div>
       </Modal>
     </div>

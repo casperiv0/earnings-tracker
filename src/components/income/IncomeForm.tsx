@@ -5,7 +5,7 @@ import { FormField } from "components/form/FormField";
 import { Input } from "components/form/Input";
 import { Textarea } from "components/form/Textarea";
 import { Modal } from "components/modal/Modal";
-import type { Expense } from "src/pages/expenses";
+import type { Income } from "src/pages/income";
 import { trpc } from "utils/trpc";
 import z from "zod";
 
@@ -16,36 +16,36 @@ const schema = z.object({
 });
 
 interface Props {
-  expense?: Expense | null;
+  income?: Income | null;
   onSubmit?(): void;
 }
 
-export function ExpensesForm({ expense, onSubmit }: Props) {
+export function IncomeForm({ income, onSubmit }: Props) {
   const context = trpc.useContext();
-  const addExpenseMutation = trpc.useMutation("expenses.add-expense", {
+  const addIncome = trpc.useMutation("income.add-income", {
     onSuccess: () => {
-      context.invalidateQueries(["expenses.all-infinite"]);
+      context.invalidateQueries(["income.all-infinite"]);
     },
   });
 
-  const editExpense = trpc.useMutation("expenses.edit-expense", {
+  const editIncome = trpc.useMutation("income.edit-income", {
     onSuccess: () => {
-      context.invalidateQueries(["expenses.all-infinite"]);
+      context.invalidateQueries(["income.all-infinite"]);
     },
   });
 
   const defaultValues = {
-    amount: expense?.amount ?? 0,
-    date: expense ? `${expense.date.year}-${getIdxFromMonth(expense.date.month)}-01` : "",
-    description: expense?.description ?? "",
+    amount: income?.amount ?? 0,
+    date: income ? `${income.date.year}-${getIdxFromMonth(income.date.month)}-01` : "",
+    description: income?.description ?? "",
   };
 
   async function handleSubmit(data: typeof defaultValues) {
     const date = new Date(data.date);
 
-    if (expense) {
-      await editExpense.mutateAsync({
-        id: expense.id,
+    if (income) {
+      await editIncome.mutateAsync({
+        id: income.id,
         amount: data.amount,
         month: getMonthFromIdx(date.getMonth()),
         year: date.getFullYear(),
@@ -54,7 +54,7 @@ export function ExpensesForm({ expense, onSubmit }: Props) {
 
       onSubmit?.();
     } else {
-      await addExpenseMutation.mutateAsync({
+      await addIncome.mutateAsync({
         amount: data.amount,
         month: getMonthFromIdx(date.getMonth()),
         year: date.getFullYear(),
@@ -85,7 +85,7 @@ export function ExpensesForm({ expense, onSubmit }: Props) {
             <Modal.Close>
               <Button type="reset">Cancel</Button>
             </Modal.Close>
-            <Button type="submit">{expense ? "Save Changes" : "Add new expense"}</Button>
+            <Button type="submit">{income ? "Save Changes" : "Add new income"}</Button>
           </footer>
         </>
       )}

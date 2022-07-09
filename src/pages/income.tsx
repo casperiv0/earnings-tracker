@@ -3,60 +3,78 @@ import { Table } from "components/table/Table";
 import { trpc } from "utils/trpc";
 import { useTablePagination } from "src/hooks/useTablePagination";
 import { ThreeDotsVertical } from "react-bootstrap-icons";
-import type { Expenses } from "@prisma/client";
+import type { EarningsEntryDate, Income as _Income } from "@prisma/client";
 import { Button } from "components/Button";
 import type { RowSelectionState, SortingState } from "@tanstack/react-table";
 import { Dropdown } from "components/dropdown/Dropdown";
+import { Modal } from "components/modal/Modal";
+import { IncomeForm } from "components/income/IncomeForm";
 
-export default function ExpensesPage() {
+export interface Income extends _Income {
+  date: Pick<EarningsEntryDate, "month" | "year">;
+}
+
+export default function IncomePage() {
   const [page, setPage] = React.useState<number>(0);
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [selectedRows, setSelectedRows] = React.useState<RowSelectionState>({});
 
-  const expensesQuery = trpc.useQuery(["expenses.all-infinite", page], {
+  const [isOpen, setIsOpen] = React.useState(false);
+  const [tempIncome, setTempIncome] = React.useState<Income | null>(null);
+
+  const incomeQuery = trpc.useQuery(["income.all-infinite", page], {
     keepPreviousData: true,
   });
 
-  const pagination = useTablePagination({ query: expensesQuery, page, setPage });
+  const pagination = useTablePagination({ query: incomeQuery, page, setPage });
   const context = trpc.useContext();
 
-  const addExpense = trpc.useMutation("expenses.add-expense", {
+  const deleteIncome = trpc.useMutation("income.delete-income", {
     onSuccess: () => {
-      context.invalidateQueries(["expenses.all-infinite"]);
+      context.invalidateQueries(["income.all-infinite"]);
     },
   });
 
-  const deleteExpense = trpc.useMutation("expenses.delete-expense", {
+  const deleteBulkIncome = trpc.useMutation("income.bulk-delete-income", {
     onSuccess: () => {
-      context.invalidateQueries(["expenses.all-infinite"]);
+      context.invalidateQueries(["income.all-infinite"]);
     },
   });
 
-  const editExpense = trpc.useMutation("expenses.edit-expense", {
-    onSuccess: () => {
-      context.invalidateQueries(["expenses.all-infinite"]);
-    },
-  });
-
-  function handleDeleteExpense(expense: Expenses) {
-    deleteExpense.mutate({
-      id: expense.id,
+  function handleDeleteIncome(income: Income) {
+    deleteIncome.mutate({
+      id: income.id,
     });
   }
 
-  function handleEditExpense(expense: Expenses, data: any) {
-    editExpense.mutate({
-      id: expense.id,
-      ...data,
+  async function handleBulkDeleteIncome() {
+    const incomeIds = [];
+
+    for (const idx in selectedRows) {
+      const income = incomeQuery.data?.items[parseInt(idx, 10)];
+      if (!income) continue;
+
+      incomeIds.push(income.id);
+    }
+
+    await deleteBulkIncome.mutateAsync({
+      ids: incomeIds,
     });
+    setSelectedRows({});
   }
 
-  async function addNewExpense() {
-    addExpense.mutate({
-      amount: 100,
-      month: "July",
-      year: 2022,
-    });
+  function handleEditIncome(income: Income) {
+    setIsOpen(true);
+    setTempIncome(income);
+  }
+
+  function handleClose() {
+    setTempIncome(null);
+    setIsOpen(false);
+  }
+
+  async function addNewIncome() {
+    setIsOpen(true);
   }
 
   return (
@@ -68,17 +86,20 @@ export default function ExpensesPage() {
         </div>
 
         <div>
-          <Button onClick={addNewExpense}>Add new income</Button>
+          <Button onClick={addNewIncome}>Add new income</Button>
         </div>
       </header>
 
       <div className="mt-5">
-        {(expensesQuery.data?.items.length ?? 0) <= 0 ? (
-          <p className="px-5 text-neutral-300">There is no income yet.</p>
+        {(incomeQuery.data?.items.length ?? 0) <= 0 ? (
+          <p className="text-neutral-300">There is no income yet.</p>
         ) : (
           <div>
             <div className="mb-2">
-              <Button disabled={Object.keys(selectedRows).length <= 0}>
+              <Button
+                onClick={handleBulkDeleteIncome}
+                disabled={deleteBulkIncome.isLoading || Object.keys(selectedRows).length <= 0}
+              >
                 Delete selected income
               </Button>
             </div>
@@ -91,11 +112,12 @@ export default function ExpensesPage() {
                 setRowSelection: setSelectedRows,
               }}
               pagination={pagination}
-              data={(expensesQuery.data?.items ?? []).map((expense, idx) => ({
+              data={(incomeQuery.data?.items ?? []).map((income, idx) => ({
                 id: 35 * page + idx + 1,
-                amount: expense.amount,
-                month: expense.date.month,
-                year: expense.date.year,
+                amount: income.amount,
+                month: income.date.month,
+                year: income.date.year,
+                description: income.description || "None",
                 actions: (
                   <Dropdown
                     trigger={
@@ -104,12 +126,8 @@ export default function ExpensesPage() {
                       </Button>
                     }
                   >
-                    <Dropdown.Item onClick={() => handleEditExpense(expense, {})}>
-                      Edit
-                    </Dropdown.Item>
-                    <Dropdown.Item onClick={() => handleDeleteExpense(expense)}>
-                      Delete
-                    </Dropdown.Item>
+                    <Dropdown.Item onClick={() => handleEditIncome(income)}>Edit</Dropdown.Item>
+                    <Dropdown.Item onClick={() => handleDeleteIncome(income)}>Delete</Dropdown.Item>
                   </Dropdown>
                 ),
               }))}
@@ -118,12 +136,24 @@ export default function ExpensesPage() {
                 { header: "Amount", accessorKey: "amount" },
                 { header: "Month", accessorKey: "month" },
                 { header: "Year", accessorKey: "year" },
+                { header: "Description", accessorKey: "description" },
                 { header: "actions", accessorKey: "actions" },
               ]}
             />
           </div>
         )}
       </div>
+
+      <Modal isOpen={isOpen} onOpenChange={handleClose}>
+        <Modal.Title>Add new income</Modal.Title>
+        <Modal.Description>
+          Add a new income. This income will be visible on the chart once added.
+        </Modal.Description>
+
+        <div>
+          <IncomeForm onSubmit={handleClose} income={tempIncome} />
+        </div>
+      </Modal>
     </div>
   );
 }

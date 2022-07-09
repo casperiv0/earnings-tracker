@@ -38,8 +38,10 @@ export function useTablePagination<T extends { maxPages: number }>(
   }
 
   React.useEffect(() => {
-    window.scrollTo({ behavior: "smooth", top: 0 });
-  }, [options.page]);
+    if (!options.query.isLoading) {
+      window.scrollTo({ behavior: "smooth", top: 0 });
+    }
+  }, [options.query.isLoading, options.query.data]);
 
   return {
     totalPageCount: options.query.data?.maxPages ?? 0,

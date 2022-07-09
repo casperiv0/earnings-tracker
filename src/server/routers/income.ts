@@ -4,7 +4,7 @@ import { createRouter } from "server/createRouter";
 import { prisma } from "utils/prisma";
 import { TRPCError } from "@trpc/server";
 
-const defaultEarningsSelect = Prisma.validator<Prisma.ExpensesSelect>()({
+const defaultEarningsSelect = Prisma.validator<Prisma.IncomeSelect>()({
   id: true,
   user: true,
   userId: true,
@@ -16,15 +16,15 @@ const defaultEarningsSelect = Prisma.validator<Prisma.ExpensesSelect>()({
   updatedAt: true,
 });
 
-export const expensesRouter = createRouter()
+export const incomeRouter = createRouter()
   .query("all-infinite", {
     input: z.number(),
     async resolve({ input }) {
       const skip = input * 35;
 
       const [totalCount, items] = await Promise.all([
-        prisma.expenses.count(),
-        prisma.expenses.findMany({
+        prisma.income.count(),
+        prisma.income.findMany({
           take: 35,
           skip,
           select: defaultEarningsSelect,
@@ -35,7 +35,7 @@ export const expensesRouter = createRouter()
       return { maxPages: Math.floor(totalCount / 35), items };
     },
   })
-  .mutation("add-expense", {
+  .mutation("add-income", {
     input: z.object({
       amount: z.number().min(1),
       year: z.number(),
@@ -49,7 +49,7 @@ export const expensesRouter = createRouter()
         throw new TRPCError({ code: "UNAUTHORIZED" });
       }
 
-      const post = await prisma.expenses.create({
+      const post = await prisma.income.create({
         data: {
           amount: input.amount,
           description: input.description,
@@ -63,7 +63,7 @@ export const expensesRouter = createRouter()
       return post;
     },
   })
-  .mutation("edit-expense", {
+  .mutation("edit-income", {
     input: z.object({
       id: z.string(),
       amount: z.number().min(1),
@@ -73,7 +73,7 @@ export const expensesRouter = createRouter()
     }),
     async resolve({ input }) {
       const { id, ...data } = input;
-      const post = await prisma.expenses.update({
+      const post = await prisma.income.update({
         where: { id },
         data: {
           amount: data.amount,
@@ -85,7 +85,7 @@ export const expensesRouter = createRouter()
       return post;
     },
   })
-  .mutation("bulk-delete-expenses", {
+  .mutation("bulk-delete-income", {
     input: z.object({
       ids: z.array(z.string()),
     }),
@@ -94,7 +94,7 @@ export const expensesRouter = createRouter()
 
       await prisma.$transaction(
         ids.map((id) =>
-          prisma.expenses.delete({
+          prisma.income.delete({
             where: { id },
           }),
         ),
@@ -105,13 +105,13 @@ export const expensesRouter = createRouter()
       };
     },
   })
-  .mutation("delete-expense", {
+  .mutation("delete-income", {
     input: z.object({
       id: z.string(),
     }),
     async resolve({ input }) {
       const { id } = input;
-      await prisma.expenses.delete({ where: { id } });
+      await prisma.income.delete({ where: { id } });
 
       return {
         id,
