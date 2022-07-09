@@ -3,16 +3,15 @@ import { classNames } from "components/sidebar/Sidebar";
 
 interface Props<TData extends RowData> {
   row: Row<TData>;
+  idx: number;
 }
 
-export function TableRow<RowType extends object>({ row }: Props<RowType>) {
+export function TableRow<RowType extends object>({ row, idx }: Props<RowType>) {
   return (
     <tr
-      className={classNames(
-        "transition-colors bg-transparent",
-        row.index % 2 !== 0 && "bg-quaternary/60",
-      )}
-      data-row-index={row.index}
+      // todo: add color if row is selected
+      className={classNames(idx % 2 !== 0 && "bg-quaternary/60")}
+      data-row-index={idx}
       key={row.id}
     >
       {row.getVisibleCells().map((cell) => {

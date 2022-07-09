@@ -52,7 +52,7 @@ export function Table<TData extends RowData>({
     onRowSelectionChange: options.setRowSelection,
     enableRowSelection: true,
     enableSorting: true,
-    ...options,
+    onSortingChange: options.setSorting,
     state: {
       rowSelection: options.rowSelection,
       sorting: options.sorting,
@@ -72,8 +72,8 @@ export function Table<TData extends RowData>({
           ))}
         </thead>
         <tbody>
-          {table.getRowModel().rows.map((row) => (
-            <TableRow key={row.id} row={row} />
+          {table.getRowModel().rows.map((row, idx) => (
+            <TableRow key={row.id} row={row} idx={idx} />
           ))}
         </tbody>
       </table>
