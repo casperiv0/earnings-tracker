@@ -59,30 +59,32 @@ export default function Chart({ expenses, income }: Props) {
         label: "# Income",
         data: makeTotalForMonth(income),
         fill: false,
-        backgroundColor: "blue",
-        borderColor: "blue",
+        backgroundColor: "rgb(59 130 246)",
+        borderColor: "rgb(59 130 246)",
       },
       {
         label: "# Expenses",
         data: makeTotalForMonth(expenses),
         fill: false,
-        backgroundColor: "red",
-        borderColor: "red",
+        backgroundColor: "rgb(185 28 28)",
+        borderColor: "rgb(185 28 28)",
       },
       {
         label: "# Difference",
         data: makeDifference(months, income, expenses),
         fill: false,
-        backgroundColor: "green",
-        borderColor: "green",
+        backgroundColor: "rgb(22 163 74)",
+        borderColor: "rgb(22 163 74)",
       },
     ],
   };
 
   return (
     <Line
-      className="bg-neutral-100 p-5"
+      className="bg-secondary p-5 rounded-sm"
       options={{
+        color: "white",
+        responsive: true,
         interaction: {
           mode: "index",
           intersect: false,
