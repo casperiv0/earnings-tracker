@@ -45,6 +45,15 @@ export function Layout({ children }: LayoutProps) {
     <>
       <Head>
         <title>Earnings Tracker</title>
+
+        <link rel="preload" href="/fonts/Raleway-VF.ttf" as="font" type="font/ttf" crossOrigin="" />
+        <link
+          rel="preload"
+          href="/fonts/RobotoSlab-VF.ttf"
+          as="font"
+          type="font/ttf"
+          crossOrigin=""
+        />
       </Head>
 
       <div className="flex">

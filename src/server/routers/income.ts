@@ -6,6 +6,13 @@ import { TRPCError } from "@trpc/server";
 import { defaultEarningsSelect } from "./expenses";
 
 export const incomeRouter = createRouter()
+  .middleware(async ({ ctx, next }) => {
+    if (!ctx.session) {
+      throw new TRPCError({ code: "UNAUTHORIZED" });
+    }
+
+    return next();
+  })
   .query("all-infinite", {
     input: z.number(),
     async resolve({ input }) {

@@ -7,6 +7,7 @@ export function IndeterminateCheckbox({
   className = "",
   ...rest
 }: { indeterminate?: boolean } & React.HTMLAttributes<HTMLInputElement>) {
+  const id = React.useId();
   const ref = React.useRef<HTMLInputElement>(null!);
 
   React.useEffect(() => {
@@ -16,12 +17,18 @@ export function IndeterminateCheckbox({
   }, [ref, indeterminate]);
 
   return (
-    <input
-      type="checkbox"
-      ref={ref}
-      className={classNames("cursor-pointer", className)}
-      {...rest}
-    />
+    <span>
+      <label htmlFor={`checkbox_${id}`} className="sr-only">
+        Select table row
+      </label>
+      <input
+        id={`checkbox_${id}`}
+        type="checkbox"
+        ref={ref}
+        className={classNames("cursor-pointer", className)}
+        {...rest}
+      />
+    </span>
   );
 }
 

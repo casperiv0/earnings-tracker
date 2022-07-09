@@ -17,6 +17,13 @@ export const defaultEarningsSelect = Prisma.validator<Prisma.ExpensesSelect>()({
 });
 
 export const expensesRouter = createRouter()
+  .middleware(async ({ ctx, next }) => {
+    if (!ctx.session) {
+      throw new TRPCError({ code: "UNAUTHORIZED" });
+    }
+
+    return next();
+  })
   .query("all-infinite", {
     input: z.number(),
     async resolve({ input }) {

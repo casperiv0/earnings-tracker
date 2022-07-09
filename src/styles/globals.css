@@ -9,6 +9,7 @@ html {
   src: url("../../public/fonts/Raleway-VF.ttf");
   font-weight: 100 1000;
   font-stretch: 25% 151%;
+  font-display: swap;
 }
 
 @font-face {
@@ -16,6 +17,7 @@ html {
   src: url("../../public/fonts/RobotoSlab-VF.ttf");
   font-weight: 100 1000;
   font-stretch: 25% 151%;
+  font-display: swap;
 }
 
 @tailwind base;
