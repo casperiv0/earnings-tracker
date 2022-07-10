@@ -1,6 +1,7 @@
 import { TRPCError } from "@trpc/server";
 import { createRouter } from "server/createRouter";
 import { prisma } from "utils/prisma";
+import { z } from "zod";
 import { defaultEarningsSelect } from "./expenses";
 
 export const dashboardRouter = createRouter()
@@ -12,17 +13,18 @@ export const dashboardRouter = createRouter()
     return next();
   })
   .query("all-infinite", {
-    async resolve() {
-      const currentYear = new Date().getFullYear();
+    input: z.number().min(2018).max(2099),
+    async resolve({ input }) {
+      const year = input || new Date().getFullYear();
 
       const [expenses, income] = await Promise.all([
         prisma.expenses.findMany({
-          where: { date: { year: currentYear } },
+          where: { date: { year } },
           select: defaultEarningsSelect,
           orderBy: { createdAt: "asc" },
         }),
         prisma.income.findMany({
-          where: { date: { year: currentYear } },
+          where: { date: { year } },
           select: defaultEarningsSelect,
           orderBy: { createdAt: "asc" },
         }),

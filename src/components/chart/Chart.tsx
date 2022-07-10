@@ -22,7 +22,7 @@ interface Props {
   income: Income[];
 }
 
-function makeDifference(months: Month[], income: Income[], expenses: Expense[]) {
+export function makeDifference(months: Month[], income: Income[], expenses: Expense[]) {
   const _data = [];
 
   for (const month of months) {
@@ -38,7 +38,7 @@ function makeDifference(months: Month[], income: Income[], expenses: Expense[]) 
   return _data;
 }
 
-function makeTotalForMonth(data: Income[] | Expense[]) {
+export function getTotalForMonth(data: Income[] | Expense[]) {
   const _data: Partial<Record<Month, number>> = {};
 
   for (const item of data) {
@@ -46,25 +46,32 @@ function makeTotalForMonth(data: Income[] | Expense[]) {
     _data[item.date.month] = current ? item.amount + current : item.amount;
   }
 
+  console.log({ _data });
+
   return Object.values(_data);
 }
 
-export default function Chart({ expenses, income }: Props) {
+export function getMonths(expenses: Expense[], income: Income[]) {
   const months = [...new Set([...expenses, ...income].map((e) => e.date.month))];
+  return months;
+}
+
+export default function Chart({ expenses, income }: Props) {
+  const months = getMonths(expenses, income);
 
   const chartData: ChartData<"line"> = {
     labels: months.map((month) => month),
     datasets: [
       {
         label: "# Income",
-        data: makeTotalForMonth(income),
+        data: getTotalForMonth(income),
         fill: false,
         backgroundColor: "rgb(59 130 246)",
         borderColor: "rgb(59 130 246)",
       },
       {
         label: "# Expenses",
-        data: makeTotalForMonth(expenses),
+        data: getTotalForMonth(expenses),
         fill: false,
         backgroundColor: "rgb(185 28 28)",
         borderColor: "rgb(185 28 28)",

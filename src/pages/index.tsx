@@ -1,8 +1,16 @@
-import Chart from "components/chart/Chart";
+import * as React from "react";
+import Chart, { getMonths, getTotalForMonth, makeDifference, sum } from "components/chart/Chart";
 import { trpc } from "utils/trpc";
+import type { Expense } from "./expenses";
+import type { Income } from "./income";
 
 export default function Index() {
-  const dashboardQuery = trpc.useQuery(["dashboard.all-infinite"]);
+  const [year, setYear] = React.useState(() => new Date().getFullYear());
+
+  const dashboardQuery = trpc.useQuery(["dashboard.all-infinite", year]);
+
+  const income = dashboardQuery.data?.income ?? [];
+  const expenses = dashboardQuery.data?.expenses ?? [];
 
   return (
     <div className="m-8 mx-10 h-full">
@@ -14,12 +22,52 @@ export default function Index() {
       </header>
 
       {/* todo: allow selecting year */}
-      <section>todo: add more information here</section>
+      <div className="flex flex-col gap-y-2">
+        <div className="bg-secondary p-5 rounded-sm shadow-md">
+          <h3 onClick={() => setYear(2021)} className="font-semibold text-2xl mb-2 font-serif">
+            {year}
+          </h3>
 
-      <Chart
-        expenses={dashboardQuery.data?.expenses ?? []}
-        income={dashboardQuery.data?.income ?? []}
-      />
+          <p>
+            <span className="font-semibold">Total Income:</span>{" "}
+            <span className="font-mono">{getTotal(income)}</span>
+          </p>
+          <p>
+            <span className="font-semibold">Total Expenses:</span>{" "}
+            <span className="font-mono">{getTotal(expenses)}</span>
+          </p>
+          <p>
+            <span className="font-semibold">
+              Total Difference <span className="text-sm">(Inc. - Exp.)</span>:
+            </span>{" "}
+            <span className="font-mono">{getTotalDifference(expenses, income)}</span>
+          </p>
+          <p>
+            <span className="font-semibold">Average income per month:</span>{" "}
+            <span className="font-mono">{getAverageIncomePerMonth(income)}</span>
+          </p>
+        </div>
+
+        <Chart expenses={expenses} income={income} />
+      </div>
     </div>
   );
+}
+
+export function getTotal(data: (Income | Expense)[]) {
+  const total = sum(...data.map((item) => item.amount)).toFixed(2);
+  return `${total} EUR`;
+}
+
+export function getTotalDifference(expenses: Expense[], income: Income[]) {
+  const months = getMonths(expenses, income);
+  const total = makeDifference(months, income, expenses);
+  return sum(...total).toFixed(2);
+}
+
+export function getAverageIncomePerMonth(income: Income[]) {
+  const total = sum(...getTotalForMonth(income));
+  const months = getMonths([], income);
+
+  return `${(total / months.length).toFixed(2)} EUR`;
 }
