@@ -31,4 +31,17 @@ export const userRouter = createRouter()
 
       return { session: ctx.session, user: dbUser };
     },
+  })
+  .mutation("delete-user", {
+    async resolve({ ctx }) {
+      if (!ctx.session?.user?.email) {
+        throw new TRPCError({ code: "UNAUTHORIZED" });
+      }
+
+      await prisma.user.delete({
+        where: { email: ctx.session.user.email },
+      });
+
+      return { deleted: true };
+    },
   });

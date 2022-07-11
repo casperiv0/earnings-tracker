@@ -5,12 +5,25 @@ import { FormField } from "components/form/FormField";
 import { Input } from "components/form/Input";
 import { trpc } from "utils/trpc";
 import { Modal } from "components/modal/Modal";
+import { signOut } from "next-auth/react";
 
 export default function SettingsPage() {
   const [isOpen, setIsOpen] = React.useState(false);
 
   const sessionQuery = trpc.useQuery(["user.getSession"], { ssr: false });
+  const deleteUserMutation = trpc.useMutation("user.delete-user");
   const user = sessionQuery.data?.user;
+
+  function handleLogout() {
+    signOut({ callbackUrl: "/login" });
+  }
+
+  async function handleDeleteUser(e: React.FormEvent) {
+    e.preventDefault();
+
+    await deleteUserMutation.mutateAsync();
+    handleLogout();
+  }
 
   if (!user) {
     return null;
@@ -70,25 +83,33 @@ export default function SettingsPage() {
           <h2 className="font-serif text-2xl font-semibold">Danger Zone</h2>
         </header>
 
-        <Button onClick={() => setIsOpen(true)} variant="danger" className="font-medium">
-          Delete Account
-        </Button>
+        <div className="flex gap-2">
+          <Button onClick={() => setIsOpen(true)} variant="danger" className="font-medium">
+            Delete Account
+          </Button>
+
+          <Button onClick={handleLogout} variant="danger" className="font-medium">
+            Logout
+          </Button>
+        </div>
 
         <Modal isOpen={isOpen} onOpenChange={() => setIsOpen(false)}>
-          <Modal.Title>Delete Account</Modal.Title>
-          <Modal.Description>
-            Are you sure you want to delete this account? All data will be removed and cannot be
-            recovered.
-          </Modal.Description>
+          <form onSubmit={handleDeleteUser}>
+            <Modal.Title>Delete Account</Modal.Title>
+            <Modal.Description>
+              Are you sure you want to delete this account? All data will be removed and cannot be
+              recovered.
+            </Modal.Description>
 
-          <footer className="mt-7 flex justify-end gap-2">
-            <Modal.Close>
-              <Button type="reset">Nope, cancel</Button>
-            </Modal.Close>
-            <Button variant="danger" type="submit">
-              Yes, delete Account
-            </Button>
-          </footer>
+            <footer className="mt-7 flex justify-end gap-2">
+              <Modal.Close>
+                <Button type="reset">Nope, cancel</Button>
+              </Modal.Close>
+              <Button variant="danger" type="submit">
+                Yes, delete Account
+              </Button>
+            </footer>
+          </form>
         </Modal>
       </section>
     </div>

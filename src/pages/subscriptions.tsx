@@ -15,7 +15,7 @@ export default function ExpensesPage() {
   const [selectedRows, setSelectedRows] = React.useState<RowSelectionState>({});
 
   const [isOpen, setIsOpen] = React.useState(false);
-  const [tempExpense, setTempExpense] = React.useState<Subscription | null>(null);
+  const [, setTempExpense] = React.useState<Subscription | null>(null);
 
   const subscriptionsQUery = trpc.useQuery(["subscriptions.all-infinite", page], {
     keepPreviousData: true,
