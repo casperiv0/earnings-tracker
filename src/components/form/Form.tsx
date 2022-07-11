@@ -17,7 +17,7 @@ interface Form<Values extends FieldValues> extends UseFormReturn<Values> {
 
 interface Props<Values extends FieldValues> extends Omit<UseFormProps, "defaultValues"> {
   children(form: Form<Values>): React.ReactNode;
-  schema: z.Schema<any, any>;
+  schema?: z.Schema<any, any>;
   defaultValues: DeepPartial<Values>;
   onSubmit: SubmitHandler<Values>;
 }
@@ -32,7 +32,7 @@ export function Form<Values extends FieldValues>({
   const form = useForm<Values>({
     ...rest,
     defaultValues,
-    resolver: zodResolver(schema),
+    resolver: schema ? zodResolver(schema) : undefined,
     reValidateMode: "onChange",
   });
 
