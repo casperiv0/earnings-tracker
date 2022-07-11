@@ -11,20 +11,20 @@ datasource db {
 }
 
 model User {
-  id             String         @id @default(auto()) @map("_id") @db.ObjectId
-  email          String         @unique
+  id             String          @id @default(auto()) @map("_id") @db.ObjectId
+  email          String          @unique
   name           String
   imageUrl       String?
   earningEntries EarningEntry[]
   Expenses       Expenses[]
   Income         Income[]
-  Subscriptions Subscriptions[]
+  Subscriptions  Subscription[]
 
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
-model Subscriptions {
+model Subscription {
   id          String           @id @default(auto()) @map("_id") @db.ObjectId
   user        User             @relation(fields: [userId], references: [id])
   userId      String           @db.ObjectId
@@ -32,6 +32,8 @@ model Subscriptions {
   description String?
   price       Float
   type        SubscriptionType @default(Monthly)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
 }
 
 model Expenses {
