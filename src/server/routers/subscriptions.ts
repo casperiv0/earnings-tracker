@@ -3,6 +3,7 @@ import { z } from "zod";
 import { createRouter } from "server/createRouter";
 import { prisma } from "utils/prisma";
 import { TRPCError } from "@trpc/server";
+import { MAX_ITEMS_PER_TABLE } from "utils/constants";
 
 const subscriptionSelect = Prisma.validator<Prisma.SubscriptionSelect>()({
   id: true,
@@ -18,7 +19,7 @@ const subscriptionSelect = Prisma.validator<Prisma.SubscriptionSelect>()({
 
 export const subscriptionsRouter = createRouter()
   .middleware(async ({ ctx, next }) => {
-    if (!ctx.session) {
+    if (!ctx.session || !ctx.dbUser) {
       throw new TRPCError({ code: "UNAUTHORIZED" });
     }
 
@@ -27,19 +28,19 @@ export const subscriptionsRouter = createRouter()
   .query("all-infinite", {
     input: z.number(),
     async resolve({ input }) {
-      const skip = input * 35;
+      const skip = input * MAX_ITEMS_PER_TABLE;
 
       const [totalCount, items] = await Promise.all([
         prisma.subscription.count(),
         prisma.subscription.findMany({
-          take: 35,
+          take: MAX_ITEMS_PER_TABLE,
           skip,
           select: subscriptionSelect,
           orderBy: { createdAt: "desc" },
         }),
       ]);
 
-      return { maxPages: Math.floor(totalCount / 35), items };
+      return { maxPages: Math.floor(totalCount / MAX_ITEMS_PER_TABLE), items };
     },
   })
   .mutation("add-subscription", {
@@ -66,6 +67,7 @@ export const subscriptionsRouter = createRouter()
         },
         select: subscriptionSelect,
       });
+
       return post;
     },
   })
@@ -105,10 +107,6 @@ export const subscriptionsRouter = createRouter()
           }),
         ),
       );
-
-      return {
-        ids,
-      };
     },
   })
   .mutation("delete-subscription", {
@@ -118,9 +116,5 @@ export const subscriptionsRouter = createRouter()
     async resolve({ input }) {
       const { id } = input;
       await prisma.subscription.delete({ where: { id } });
-
-      return {
-        id,
-      };
     },
   });

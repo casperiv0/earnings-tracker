@@ -8,6 +8,7 @@ import { Button } from "components/Button";
 import type { RowSelectionState, SortingState } from "@tanstack/react-table";
 import { Dropdown } from "components/dropdown/Dropdown";
 import { Modal } from "components/modal/Modal";
+import { MAX_ITEMS_PER_TABLE } from "utils/constants";
 
 export default function ExpensesPage() {
   const [page, setPage] = React.useState<number>(0);
@@ -120,7 +121,7 @@ export default function ExpensesPage() {
               }}
               pagination={pagination}
               data={(subscriptionsQUery.data?.items ?? []).map((subscription, idx) => ({
-                id: 35 * page + idx + 1,
+                id: MAX_ITEMS_PER_TABLE * page + idx + 1,
                 price: <span className="font-mono">{subscription.price}</span>,
                 name: subscription.name,
                 type: subscription.type,

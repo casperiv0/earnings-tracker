@@ -4,10 +4,11 @@ import { createRouter } from "server/createRouter";
 import { prisma } from "utils/prisma";
 import { TRPCError } from "@trpc/server";
 import { defaultEarningsSelect } from "./expenses";
+import { MAX_ITEMS_PER_TABLE } from "utils/constants";
 
 export const incomeRouter = createRouter()
   .middleware(async ({ ctx, next }) => {
-    if (!ctx.session) {
+    if (!ctx.session || !ctx.dbUser) {
       throw new TRPCError({ code: "UNAUTHORIZED" });
     }
 
@@ -16,19 +17,19 @@ export const incomeRouter = createRouter()
   .query("all-infinite", {
     input: z.number(),
     async resolve({ input }) {
-      const skip = input * 35;
+      const skip = input * MAX_ITEMS_PER_TABLE;
 
       const [totalCount, items] = await Promise.all([
         prisma.income.count(),
         prisma.income.findMany({
-          take: 35,
+          take: MAX_ITEMS_PER_TABLE,
           skip,
           select: defaultEarningsSelect,
           orderBy: { createdAt: "desc" },
         }),
       ]);
 
-      return { maxPages: Math.floor(totalCount / 35), items };
+      return { maxPages: Math.floor(totalCount / MAX_ITEMS_PER_TABLE), items };
     },
   })
   .mutation("add-income", {
@@ -39,11 +40,7 @@ export const incomeRouter = createRouter()
       month: z.nativeEnum(Month),
     }),
     async resolve({ ctx, input }) {
-      const userId = ctx.dbUser?.id ?? "62bee0cd017b854271152f8b";
-
-      if (!userId) {
-        throw new TRPCError({ code: "UNAUTHORIZED" });
-      }
+      const userId = ctx.dbUser!.id;
 
       const post = await prisma.income.create({
         data: {
@@ -56,6 +53,7 @@ export const incomeRouter = createRouter()
         },
         select: defaultEarningsSelect,
       });
+
       return post;
     },
   })
@@ -68,16 +66,16 @@ export const incomeRouter = createRouter()
       month: z.nativeEnum(Month),
     }),
     async resolve({ input }) {
-      const { id, ...data } = input;
       const post = await prisma.income.update({
-        where: { id },
+        where: { id: input.id },
         data: {
-          amount: data.amount,
-          description: data.description,
-          date: { update: { month: data.month, year: data.year } },
+          amount: input.amount,
+          description: input.description,
+          date: { update: { month: input.month, year: input.year } },
         },
         select: defaultEarningsSelect,
       });
+
       return post;
     },
   })
@@ -86,31 +84,18 @@ export const incomeRouter = createRouter()
       ids: z.array(z.string()),
     }),
     async resolve({ input }) {
-      const { ids } = input;
-
       await prisma.$transaction(
-        ids.map((id) =>
+        input.ids.map((id) =>
           prisma.income.delete({
             where: { id },
           }),
         ),
       );
-
-      return {
-        ids,
-      };
     },
   })
   .mutation("delete-income", {
-    input: z.object({
-      id: z.string(),
-    }),
+    input: z.object({ id: z.string() }),
     async resolve({ input }) {
-      const { id } = input;
-      await prisma.income.delete({ where: { id } });
-
-      return {
-        id,
-      };
+      await prisma.income.delete({ where: { id: input.id } });
     },
   });

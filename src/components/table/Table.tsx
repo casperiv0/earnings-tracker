@@ -53,6 +53,7 @@ export function Table<TData extends RowData>({
     enableRowSelection: true,
     enableSorting: true,
     onSortingChange: options.setSorting,
+    pageCount: pagination?.totalPageCount,
     state: {
       rowSelection: options.rowSelection,
       sorting: options.sorting,

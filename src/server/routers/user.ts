@@ -12,7 +12,7 @@ const defaultUserSelect = Prisma.validator<Prisma.UserSelect>()({
 
 export const userRouter = createRouter()
   .middleware(async ({ ctx, next }) => {
-    if (!ctx.session) {
+    if (!ctx.session || !ctx.dbUser) {
       throw new TRPCError({ code: "UNAUTHORIZED" });
     }
 
@@ -20,12 +20,8 @@ export const userRouter = createRouter()
   })
   .query("getSession", {
     async resolve({ ctx }) {
-      if (!ctx.session?.user?.email) {
-        throw new TRPCError({ code: "UNAUTHORIZED" });
-      }
-
       const dbUser = await prisma.user.findUnique({
-        where: { email: ctx.session.user.email },
+        where: { email: ctx.dbUser!.email },
         select: defaultUserSelect,
       });
 

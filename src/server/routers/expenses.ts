@@ -3,6 +3,7 @@ import { z } from "zod";
 import { createRouter } from "server/createRouter";
 import { prisma } from "utils/prisma";
 import { TRPCError } from "@trpc/server";
+import { MAX_ITEMS_PER_TABLE } from "utils/constants";
 
 export const defaultEarningsSelect = Prisma.validator<Prisma.ExpensesSelect>()({
   id: true,
@@ -18,7 +19,7 @@ export const defaultEarningsSelect = Prisma.validator<Prisma.ExpensesSelect>()({
 
 export const expensesRouter = createRouter()
   .middleware(async ({ ctx, next }) => {
-    if (!ctx.session) {
+    if (!ctx.session || !ctx.dbUser) {
       throw new TRPCError({ code: "UNAUTHORIZED" });
     }
 
@@ -27,19 +28,19 @@ export const expensesRouter = createRouter()
   .query("all-infinite", {
     input: z.number(),
     async resolve({ input }) {
-      const skip = input * 35;
+      const skip = input * MAX_ITEMS_PER_TABLE;
 
       const [totalCount, items] = await Promise.all([
         prisma.expenses.count(),
         prisma.expenses.findMany({
-          take: 35,
+          take: MAX_ITEMS_PER_TABLE,
           skip,
           select: defaultEarningsSelect,
           orderBy: { createdAt: "desc" },
         }),
       ]);
 
-      return { maxPages: Math.floor(totalCount / 35), items };
+      return { maxPages: Math.floor(totalCount / MAX_ITEMS_PER_TABLE), items };
     },
   })
   .mutation("add-expense", {
@@ -50,11 +51,7 @@ export const expensesRouter = createRouter()
       month: z.nativeEnum(Month),
     }),
     async resolve({ ctx, input }) {
-      const userId = ctx.dbUser?.id ?? "62bee0cd017b854271152f8b";
-
-      if (!userId) {
-        throw new TRPCError({ code: "UNAUTHORIZED" });
-      }
+      const userId = ctx.dbUser!.id;
 
       const post = await prisma.expenses.create({
         data: {
@@ -79,13 +76,12 @@ export const expensesRouter = createRouter()
       month: z.nativeEnum(Month),
     }),
     async resolve({ input }) {
-      const { id, ...data } = input;
       const post = await prisma.expenses.update({
-        where: { id },
+        where: { id: input.id },
         data: {
-          amount: data.amount,
-          description: data.description,
-          date: { update: { month: data.month, year: data.year } },
+          amount: input.amount,
+          description: input.description,
+          date: { update: { month: input.month, year: input.year } },
         },
         select: defaultEarningsSelect,
       });
@@ -97,19 +93,13 @@ export const expensesRouter = createRouter()
       ids: z.array(z.string()),
     }),
     async resolve({ input }) {
-      const { ids } = input;
-
       await prisma.$transaction(
-        ids.map((id) =>
+        input.ids.map((id) =>
           prisma.expenses.delete({
             where: { id },
           }),
         ),
       );
-
-      return {
-        ids,
-      };
     },
   })
   .mutation("delete-expense", {
@@ -119,9 +109,5 @@ export const expensesRouter = createRouter()
     async resolve({ input }) {
       const { id } = input;
       await prisma.expenses.delete({ where: { id } });
-
-      return {
-        id,
-      };
     },
   });
