@@ -31,7 +31,7 @@ export function UserArea({ user }: Props) {
   return (
     <Dropdown alignOffset={0} sideOffset={10} trigger={trigger}>
       <Dropdown.Item
-        onClick={() => signOut({ redirect: true })}
+        onClick={() => signOut({ callbackUrl: "/login" })}
         className="w-full text-left cursor-pointer px-3 p-1.5 rounded-sm transition-colors"
       >
         Sign out

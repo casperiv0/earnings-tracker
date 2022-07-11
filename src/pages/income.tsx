@@ -26,7 +26,12 @@ export default function IncomePage() {
     keepPreviousData: true,
   });
 
-  const pagination = useTablePagination({ query: incomeQuery, page, setPage });
+  const pagination = useTablePagination({
+    isLoading: incomeQuery.isRefetching || incomeQuery.isLoading,
+    query: incomeQuery,
+    page,
+    setPage,
+  });
   const context = trpc.useContext();
 
   const deleteIncome = trpc.useMutation("income.delete-income", {
@@ -112,8 +117,7 @@ export default function IncomePage() {
                 setRowSelection: setSelectedRows,
               }}
               pagination={pagination}
-              data={(incomeQuery.data?.items ?? []).map((income, idx) => ({
-                id: 35 * page + idx + 1,
+              data={(incomeQuery.data?.items ?? []).map((income) => ({
                 amount: income.amount,
                 month: income.date.month,
                 year: income.date.year,
@@ -132,7 +136,6 @@ export default function IncomePage() {
                 ),
               }))}
               columns={[
-                { header: "#", accessorKey: "id" },
                 { header: "Amount", accessorKey: "amount" },
                 { header: "Month", accessorKey: "month" },
                 { header: "Year", accessorKey: "year" },

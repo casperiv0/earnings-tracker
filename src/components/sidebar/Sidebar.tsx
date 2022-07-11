@@ -18,7 +18,6 @@ export function classNames(...classes: unknown[]) {
 export function Sidebar() {
   const sessionQuery = trpc.useQuery(["user.getSession"], { ssr: false });
   const user = sessionQuery.data?.user;
-
   const router = useRouter();
 
   if (!user) {
@@ -29,7 +28,9 @@ export function Sidebar() {
     <aside className="fixed z-30 w-72 flex-shrink-0 min-h-full h-screen flex flex-col justify-between p-4 bg-secondary">
       <div>
         <header>
-          <h1 className="text-white">LOGO</h1>
+          <h1 className="text-neutral-400 text-xs font-semibold uppercase select-none">
+            Earnings Tracker
+          </h1>
         </header>
 
         <ul className="mt-5">

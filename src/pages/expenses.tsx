@@ -117,8 +117,7 @@ export default function ExpensesPage() {
                 setRowSelection: setSelectedRows,
               }}
               pagination={pagination}
-              data={(expensesQuery.data?.items ?? []).map((expense, idx) => ({
-                id: 35 * page + idx + 1,
+              data={(expensesQuery.data?.items ?? []).map((expense) => ({
                 amount: <span className="font-mono">{expense.amount}</span>,
                 month: expense.date.month,
                 year: expense.date.year,
@@ -139,7 +138,6 @@ export default function ExpensesPage() {
                 ),
               }))}
               columns={[
-                { header: "#", accessorKey: "id" },
                 { header: "Amount", accessorKey: "amount" },
                 { header: "Month", accessorKey: "month" },
                 { header: "Year", accessorKey: "year" },
