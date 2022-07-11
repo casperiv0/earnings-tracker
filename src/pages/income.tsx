@@ -9,6 +9,7 @@ import type { RowSelectionState, SortingState } from "@tanstack/react-table";
 import { Dropdown } from "components/dropdown/Dropdown";
 import { Modal } from "components/modal/Modal";
 import { IncomeForm } from "components/income/IncomeForm";
+import { Loader } from "components/Loader";
 
 export interface Income extends _Income {
   date: Pick<EarningsEntryDate, "month" | "year">;
@@ -96,7 +97,9 @@ export default function IncomePage() {
       </header>
 
       <div className="mt-5">
-        {(incomeQuery.data?.items.length ?? 0) <= 0 ? (
+        {incomeQuery.isLoading ? (
+          <Loader fixed />
+        ) : (incomeQuery.data?.items.length ?? 0) <= 0 ? (
           <p className="text-neutral-300">There is no income yet.</p>
         ) : (
           <div>

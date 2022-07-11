@@ -9,6 +9,7 @@ import type { RowSelectionState, SortingState } from "@tanstack/react-table";
 import { Dropdown } from "components/dropdown/Dropdown";
 import { Modal } from "components/modal/Modal";
 import { ExpensesForm } from "components/expenses/ExpensesForm";
+import { Loader } from "components/Loader";
 
 export interface Expense extends Expenses {
   date: Pick<EarningsEntryDate, "month" | "year">;
@@ -96,7 +97,9 @@ export default function ExpensesPage() {
       </header>
 
       <div className="mt-5">
-        {(expensesQuery.data?.items.length ?? 0) <= 0 ? (
+        {expensesQuery.isLoading ? (
+          <Loader fixed />
+        ) : (expensesQuery.data?.items.length ?? 0) <= 0 ? (
           <p className="text-neutral-300">There are no expenses yet.</p>
         ) : (
           <div>
