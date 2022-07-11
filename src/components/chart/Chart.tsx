@@ -46,8 +46,6 @@ export function getTotalForMonth(data: Income[] | Expense[]) {
     _data[item.date.month] = current ? item.amount + current : item.amount;
   }
 
-  console.log({ _data });
-
   return Object.values(_data);
 }
 

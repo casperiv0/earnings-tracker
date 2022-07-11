@@ -26,7 +26,12 @@ export default function ExpensesPage() {
     keepPreviousData: true,
   });
 
-  const pagination = useTablePagination({ query: expensesQuery, page, setPage });
+  const pagination = useTablePagination({
+    isLoading: expensesQuery.isRefetching || expensesQuery.isLoading,
+    query: expensesQuery,
+    page,
+    setPage,
+  });
   const context = trpc.useContext();
 
   const deleteExpense = trpc.useMutation("expenses.delete-expense", {
@@ -114,7 +119,7 @@ export default function ExpensesPage() {
               pagination={pagination}
               data={(expensesQuery.data?.items ?? []).map((expense, idx) => ({
                 id: 35 * page + idx + 1,
-                amount: expense.amount,
+                amount: <span className="font-mono">{expense.amount}</span>,
                 month: expense.date.month,
                 year: expense.date.year,
                 description: expense.description || "None",

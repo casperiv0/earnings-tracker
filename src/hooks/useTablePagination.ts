@@ -2,12 +2,14 @@ import * as React from "react";
 import type { UseQueryResult } from "react-query";
 
 interface Options<T extends { maxPages: number }> {
+  isLoading: boolean;
   query: UseQueryResult<T>;
   page: number;
   setPage: React.Dispatch<React.SetStateAction<number>>;
 }
 
 export interface TablePaginationOptions {
+  isLoading: boolean;
   isNextDisabled: boolean;
   isPreviousDisabled: boolean;
   currentPage: number;
@@ -38,12 +40,13 @@ export function useTablePagination<T extends { maxPages: number }>(
   }
 
   React.useEffect(() => {
-    if (!options.query.isLoading) {
+    if (!options.isLoading) {
       window.scrollTo({ behavior: "smooth", top: 0 });
     }
-  }, [options.query.isLoading, options.query.data]);
+  }, [options.isLoading, options.query.data]);
 
   return {
+    isLoading: options.isLoading,
     totalPageCount: options.query.data?.maxPages ?? 0,
     currentPage: options.page,
     isNextDisabled,

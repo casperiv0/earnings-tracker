@@ -13,8 +13,8 @@ export function Modal({ children, isOpen, onOpenChange }: Props) {
   return (
     <Dialog.Dialog open={isOpen} onOpenChange={onOpenChange}>
       <Dialog.Portal>
-        <Dialog.Overlay className="z-40 fixed inset-0 bg-secondary/60" />
-        <Dialog.Content className="z-50 rounded-sm bg-primary shadow-md p-5 fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90vw] max-w-[600px] max-h-[85vh]">
+        <Dialog.Overlay className="z-40 fixed inset-0 bg-secondary/60 modal-overlay" />
+        <Dialog.Content className="z-50 rounded-sm bg-primary shadow-md p-5 fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90vw] max-w-[600px] max-h-[85vh] modal-content">
           {children}
 
           <Dialog.Close asChild>
