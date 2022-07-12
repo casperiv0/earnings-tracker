@@ -42,9 +42,7 @@ export default function Index() {
             <span className="font-mono">{getTotal(expenses)}</span>
           </p>
           <p>
-            <span className="font-semibold">
-              Total Difference <span className="text-sm">(Inc. - Exp.)</span>:
-            </span>{" "}
+            <span className="font-semibold">Total Netto:</span>{" "}
             <span className="font-mono">{getTotalDifference(expenses, income)}</span>
           </p>
           <p>

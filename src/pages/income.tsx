@@ -152,7 +152,7 @@ export default function IncomePage() {
               pagination={pagination}
               data={(incomeQuery.data?.items ?? []).map((income) => ({
                 type: income.type,
-                amount: income.amount,
+                amount: <span className="font-mono">{income.amount}</span>,
                 month: income.date.month,
                 year: income.date.year,
                 description: income.description || "None",

@@ -6,6 +6,7 @@ import { Input } from "components/form/Input";
 import { trpc } from "utils/trpc";
 import { Modal } from "components/modal/Modal";
 import { signOut } from "next-auth/react";
+import Image from "next/future/image";
 
 export default function SettingsPage() {
   const [isOpen, setIsOpen] = React.useState(false);
@@ -55,7 +56,7 @@ export default function SettingsPage() {
           {({ register }) => (
             <>
               <div className="flex-shrink-0 h-20 w-20 my-7">
-                <img
+                <Image
                   draggable={false}
                   className="h-20 w-20 rounded-full"
                   src={user.imageUrl!}

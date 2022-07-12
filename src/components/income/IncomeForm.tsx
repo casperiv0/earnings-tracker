@@ -75,7 +75,7 @@ export function IncomeForm({ income, onSubmit }: Props) {
       {({ register, errors }) => (
         <>
           <FormField errorMessage={errors.amount} label="Amount">
-            <Input {...register("amount", { valueAsNumber: true })} />
+            <Input className="font-mono" {...register("amount", { valueAsNumber: true })} />
           </FormField>
 
           <FormField errorMessage={errors.type} label="Type">
