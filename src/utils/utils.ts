@@ -15,3 +15,7 @@ export function getSelectedRowDataIds<T extends { id: string }>(
 
   return ids;
 }
+
+export function classNames(...classes: unknown[]) {
+  return classes.filter(Boolean).join(" ");
+}

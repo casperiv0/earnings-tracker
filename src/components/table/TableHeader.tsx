@@ -1,5 +1,5 @@
 import { flexRender, Header, RowData } from "@tanstack/react-table";
-import { classNames } from "components/sidebar/Sidebar";
+import { classNames } from "utils/classNames";
 import { ArrowDownSquareFill } from "react-bootstrap-icons";
 
 interface Props<TData extends RowData> {

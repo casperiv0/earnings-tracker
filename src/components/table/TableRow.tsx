@@ -1,5 +1,5 @@
 import { flexRender, Row, RowData } from "@tanstack/react-table";
-import { classNames } from "components/sidebar/Sidebar";
+import { classNames } from "utils/classNames";
 
 interface Props<TData extends RowData> {
   row: Row<TData>;

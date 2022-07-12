@@ -1,4 +1,4 @@
-import { classNames } from "components/sidebar/Sidebar";
+import { classNames } from "utils/classNames";
 import * as React from "react";
 
 type Props = Omit<JSX.IntrinsicElements["input"], "id"> & {

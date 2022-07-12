@@ -2,6 +2,7 @@ import Link from "next/link";
 import { trpc } from "utils/trpc";
 import { useRouter } from "next/router";
 import { UserArea } from "./UserArea";
+import { classNames } from "../../utils/classNames";
 
 const sidebarNavigation = [
   { name: "Dashboard", href: "/" },
@@ -10,10 +11,6 @@ const sidebarNavigation = [
   { name: "Subscriptions", href: "/subscriptions" },
   { name: "Settings", href: "/settings" },
 ];
-
-export function classNames(...classes: unknown[]) {
-  return classes.filter(Boolean).join(" ");
-}
 
 export function Sidebar() {
   const sessionQuery = trpc.useQuery(["user.getSession"], { ssr: false });

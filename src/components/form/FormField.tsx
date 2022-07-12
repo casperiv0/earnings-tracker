@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useField } from "@react-aria/label";
-import { classNames } from "components/sidebar/Sidebar";
+import { classNames } from "utils/classNames";
 import type { FieldError } from "react-hook-form";
 
 interface Props {

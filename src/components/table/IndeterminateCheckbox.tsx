@@ -1,6 +1,6 @@
 import * as React from "react";
 import type { ColumnDef, RowData } from "@tanstack/react-table";
-import { classNames } from "components/sidebar/Sidebar";
+import { classNames } from "utils/classNames";
 
 export function IndeterminateCheckbox({
   indeterminate,
