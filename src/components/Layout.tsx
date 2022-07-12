@@ -36,6 +36,7 @@ export function Layout({ children }: LayoutProps) {
           type="font/ttf"
           crossOrigin=""
         />
+        <meta name="description" content="A simple and good looking income/expenses tracker." />
       </Head>
 
       <div className="flex">

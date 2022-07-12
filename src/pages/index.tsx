@@ -25,9 +25,9 @@ export default function Index() {
       {/* todo: allow selecting year */}
       <div className="flex flex-col gap-y-2">
         <div className="bg-secondary p-5 rounded-sm shadow-md">
-          <h3 onClick={() => setYear(2021)} className="font-semibold text-2xl mb-2 font-serif">
+          <h2 onClick={() => setYear(2021)} className="font-semibold text-2xl mb-2 font-serif">
             {year}
-          </h3>
+          </h2>
 
           <p>
             <span className="font-semibold">Total Income:</span>{" "}
