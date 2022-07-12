@@ -6,7 +6,7 @@ interface Props<TData extends RowData> {
   idx: number;
 }
 
-export function TableRow<RowType extends object>({ row, idx }: Props<RowType>) {
+export function TableRow<TData extends RowData>({ row, idx }: Props<TData>) {
   return (
     <tr
       // todo: add color if row is selected
@@ -16,7 +16,7 @@ export function TableRow<RowType extends object>({ row, idx }: Props<RowType>) {
     >
       {row.getVisibleCells().map((cell) => {
         const cellValue =
-          cell.column.id === "select" ? cell.column.columnDef.cell : cell.getValue();
+          cell.column.id === "select" ? cell.column.columnDef.cell : cell.getValue<any>();
 
         return (
           <td

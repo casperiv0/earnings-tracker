@@ -3,7 +3,7 @@ import { classNames } from "utils/classNames";
 import { ArrowDownSquareFill } from "react-bootstrap-icons";
 
 interface Props<TData extends RowData> {
-  header: Header<TData>;
+  header: Header<TData, any>;
 }
 
 export function TableHeader<TData extends RowData>({ header }: Props<TData>) {
