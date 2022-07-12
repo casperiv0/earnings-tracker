@@ -13,7 +13,7 @@ import {
 } from "chart.js";
 import type { Expense } from "src/pages/expenses";
 import type { Income } from "src/pages/income";
-import type { Month } from "@prisma/client";
+import type { IncomeType, Month } from "@prisma/client";
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
@@ -38,11 +38,13 @@ export function makeDifference(months: Month[], income: Income[], expenses: Expe
   return _data;
 }
 
-export function getTotalForMonth(data: Income[] | Expense[]) {
+export function getTotalForMonth(data: Income[] | Expense[], type?: IncomeType) {
   const _data: Partial<Record<Month, number>> = {};
 
   for (const item of data) {
     const current = _data[item.date.month];
+    if (type && "type" in item && item.type !== type) continue;
+
     _data[item.date.month] = current ? item.amount + current : item.amount;
   }
 

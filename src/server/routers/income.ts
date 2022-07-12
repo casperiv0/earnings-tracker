@@ -1,10 +1,22 @@
-import { Month } from "@prisma/client";
+import { IncomeType, Month, Prisma } from "@prisma/client";
 import { z } from "zod";
 import { createRouter } from "server/createRouter";
 import { prisma } from "utils/prisma";
 import { TRPCError } from "@trpc/server";
-import { defaultEarningsSelect } from "./expenses";
 import { MAX_ITEMS_PER_TABLE } from "utils/constants";
+
+export const incomeSelect = Prisma.validator<Prisma.IncomeSelect>()({
+  id: true,
+  type: true,
+  user: true,
+  userId: true,
+  date: true,
+  dateId: true,
+  amount: true,
+  description: true,
+  createdAt: true,
+  updatedAt: true,
+});
 
 export const incomeRouter = createRouter()
   .middleware(async ({ ctx, next }) => {
@@ -24,7 +36,7 @@ export const incomeRouter = createRouter()
         prisma.income.findMany({
           take: MAX_ITEMS_PER_TABLE,
           skip,
-          select: defaultEarningsSelect,
+          select: incomeSelect,
           orderBy: { createdAt: "desc" },
         }),
       ]);
@@ -34,6 +46,7 @@ export const incomeRouter = createRouter()
   })
   .mutation("add-income", {
     input: z.object({
+      type: z.nativeEnum(IncomeType),
       amount: z.number().min(1),
       year: z.number(),
       description: z.string().nullable().optional(),
@@ -44,6 +57,7 @@ export const incomeRouter = createRouter()
 
       const post = await prisma.income.create({
         data: {
+          type: input.type,
           amount: input.amount,
           description: input.description,
           date: {
@@ -51,7 +65,7 @@ export const incomeRouter = createRouter()
           },
           user: { connect: { id: userId } },
         },
-        select: defaultEarningsSelect,
+        select: incomeSelect,
       });
 
       return post;
@@ -60,6 +74,7 @@ export const incomeRouter = createRouter()
   .mutation("edit-income", {
     input: z.object({
       id: z.string(),
+      type: z.nativeEnum(IncomeType),
       amount: z.number().min(1),
       year: z.number(),
       description: z.string().nullable().optional(),
@@ -69,14 +84,31 @@ export const incomeRouter = createRouter()
       const post = await prisma.income.update({
         where: { id: input.id },
         data: {
+          type: input.type,
           amount: input.amount,
           description: input.description,
           date: { update: { month: input.month, year: input.year } },
         },
-        select: defaultEarningsSelect,
+        select: incomeSelect,
       });
 
       return post;
+    },
+  })
+  .mutation("bulk-update-type", {
+    input: z.object({
+      type: z.nativeEnum(IncomeType),
+      ids: z.array(z.string()),
+    }),
+    async resolve({ input }) {
+      await prisma.$transaction(
+        input.ids.map((id) =>
+          prisma.income.update({
+            where: { id },
+            data: { type: input.type },
+          }),
+        ),
+      );
     },
   })
   .mutation("bulk-delete-income", {

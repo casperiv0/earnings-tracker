@@ -1,3 +1,4 @@
+import { classNames } from "components/sidebar/Sidebar";
 import * as React from "react";
 
 type Props = Omit<JSX.IntrinsicElements["input"], "id"> & {
@@ -8,14 +9,13 @@ export const Input = React.forwardRef<HTMLInputElement, Props>(({ errorMessage, 
   <input
     ref={ref}
     {...rest}
-    className={`
-    w-full p-1.5 px-3 rounded-md border-[1.5px]
-    outline-none focus:border-gray-500
-    bg-secondary text-white
-    disabled:cursor-not-allowed disabled:opacity-80
-    placeholder:opacity-50
-    transition-all ${rest.className} ${
-      errorMessage ? "border-red-500 focus:border-red-700" : "border-gray-600"
-    } `}
+    className={classNames(
+      "border-[1.5px] focus:border-gray-500",
+      "w-full p-1.5 px-3 rounded-sm outline-none transition-all",
+      "bg-secondary text-white",
+      "disabled:cursor-not-allowed disabled:opacity-80 placeholder:opacity-50",
+      rest.className,
+      errorMessage ? "border-red-500 focus:border-red-700" : "border-gray-600",
+    )}
   />
 ));

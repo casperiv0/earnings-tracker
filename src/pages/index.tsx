@@ -3,6 +3,7 @@ import Chart, { getMonths, getTotalForMonth, makeDifference, sum } from "compone
 import { trpc } from "utils/trpc";
 import type { Expense } from "./expenses";
 import type { Income } from "./income";
+import { IncomeType } from "@prisma/client";
 
 export default function Index() {
   const [year, setYear] = React.useState(() => new Date().getFullYear());
@@ -31,6 +32,10 @@ export default function Index() {
           <p>
             <span className="font-semibold">Total Income:</span>{" "}
             <span className="font-mono">{getTotal(income)}</span>
+          </p>
+          <p>
+            <span className="font-semibold">Total Salary income:</span>{" "}
+            <span className="font-mono">{getTotalSalaryThisYear(income)}</span>
           </p>
           <p>
             <span className="font-semibold">Total Expenses:</span>{" "}
@@ -70,4 +75,10 @@ export function getAverageIncomePerMonth(income: Income[]) {
   const months = getMonths([], income);
 
   return `${(total / months.length).toFixed(2)} EUR`;
+}
+
+function getTotalSalaryThisYear(income: Income[]) {
+  const total = sum(...getTotalForMonth(income, IncomeType.Salary));
+
+  return `${total.toFixed(2)} EUR`;
 }

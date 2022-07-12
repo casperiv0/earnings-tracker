@@ -1,8 +1,9 @@
-import { Month } from "@prisma/client";
+import { IncomeType, Month } from "@prisma/client";
 import { Button } from "components/Button";
 import { Form } from "components/form/Form";
 import { FormField } from "components/form/FormField";
 import { Input } from "components/form/Input";
+import { Select } from "components/form/Select";
 import { Textarea } from "components/form/Textarea";
 import { Modal } from "components/modal/Modal";
 import type { Income } from "src/pages/income";
@@ -10,6 +11,7 @@ import { trpc } from "utils/trpc";
 import z from "zod";
 
 const schema = z.object({
+  type: z.nativeEnum(IncomeType),
   amount: z.number().min(1),
   date: z.date(),
   description: z.string().nullable().optional(),
@@ -35,6 +37,7 @@ export function IncomeForm({ income, onSubmit }: Props) {
   });
 
   const defaultValues = {
+    type: income?.type ?? IncomeType.Other,
     amount: income?.amount ?? 0,
     date: income ? `${income.date.year}-${getIdxFromMonth(income.date.month)}-01` : "",
     description: income?.description ?? "",
@@ -43,23 +46,25 @@ export function IncomeForm({ income, onSubmit }: Props) {
   async function handleSubmit(data: typeof defaultValues) {
     const date = new Date(data.date);
 
+    console.log({ data });
+
+    const defaultMutationData = {
+      amount: data.amount,
+      month: getMonthFromIdx(date.getMonth()),
+      year: date.getFullYear(),
+      description: data.description,
+      type: data.type,
+    };
+
     if (income) {
       await editIncome.mutateAsync({
         id: income.id,
-        amount: data.amount,
-        month: getMonthFromIdx(date.getMonth()),
-        year: date.getFullYear(),
-        description: data.description,
+        ...defaultMutationData,
       });
 
       onSubmit?.();
     } else {
-      await addIncome.mutateAsync({
-        amount: data.amount,
-        month: getMonthFromIdx(date.getMonth()),
-        year: date.getFullYear(),
-        description: data.description,
-      });
+      await addIncome.mutateAsync(defaultMutationData);
 
       onSubmit?.();
     }
@@ -71,6 +76,16 @@ export function IncomeForm({ income, onSubmit }: Props) {
         <>
           <FormField errorMessage={errors.amount} label="Amount">
             <Input {...register("amount", { valueAsNumber: true })} />
+          </FormField>
+
+          <FormField errorMessage={errors.type} label="Type">
+            <Select {...register("type")}>
+              {Object.values(IncomeType).map((type) => (
+                <option key={type} value={type}>
+                  {type}
+                </option>
+              ))}
+            </Select>
           </FormField>
 
           <FormField errorMessage={errors.date} label="Date">

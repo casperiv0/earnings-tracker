@@ -3,6 +3,7 @@ import { createRouter } from "server/createRouter";
 import { prisma } from "utils/prisma";
 import { z } from "zod";
 import { defaultEarningsSelect } from "./expenses";
+import { incomeSelect } from "./income";
 
 export const dashboardRouter = createRouter()
   .middleware(async ({ ctx, next }) => {
@@ -25,7 +26,7 @@ export const dashboardRouter = createRouter()
         }),
         prisma.income.findMany({
           where: { date: { year } },
-          select: defaultEarningsSelect,
+          select: incomeSelect,
           orderBy: { createdAt: "asc" },
         }),
       ]);
