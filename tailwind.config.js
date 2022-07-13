@@ -5,10 +5,11 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        primary: "#1a1a1a",
-        secondary: "#1e1e1e",
-        tertiary: "#2f2f2f",
-        quaternary: "#2b2b2b",
+        primary: "#131517",
+        secondary: "#1a1c20",
+        tertiary: "#2d2f33",
+        quaternary: "#3f4148",
+        accent: "#0262ff",
       },
       borderRadius: {
         sm: "4px",

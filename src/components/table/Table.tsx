@@ -14,10 +14,15 @@ import { TableHeader } from "./TableHeader";
 import { TablePagination } from "./TablePagination";
 import type { TablePaginationOptions } from "src/hooks/useTablePagination";
 import { makeCheckboxHeader } from "./IndeterminateCheckbox";
+import { TableFilters, TableFilterType } from "./TableFilters";
+
+type TableColumn<TData extends RowData> = ColumnDef<TData> & {
+  filter?: TableFilterType;
+};
 
 interface Props<TData extends RowData> {
   data: TData[];
-  columns: ColumnDef<TData>[];
+  columns: TableColumn<TData>[];
 
   pagination?: TablePaginationOptions;
   options?: {
@@ -62,8 +67,10 @@ export function Table<TData extends RowData>({
   });
 
   return (
-    <div>
-      <table className="w-full overflow-hidden whitespace-nowrap max-h-64">
+    <div className="block max-w-full overflow-x-auto">
+      <TableFilters<TData> headers={table.getHeaderGroups().flatMap((header) => header.headers)} />
+
+      <table className="w-full overflow-x-hidden whitespace-nowrap max-h-64">
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>

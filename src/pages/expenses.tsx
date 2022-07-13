@@ -70,14 +70,14 @@ export default function ExpensesPage() {
             options={{ sorting, setSorting }}
             pagination={pagination}
             data={(expensesQuery.data?.items ?? []).map((expense) => ({
-              amount: <span className="font-mono">{expense.amount}</span>,
+              amount: <span className="font-mono">&euro;{expense.amount}</span>,
               month: expense.date.month,
               year: expense.date.year,
               description: expense.description || "None",
               actions: (
                 <Dropdown
                   trigger={
-                    <Button aria-label="Row options">
+                    <Button size="xss" aria-label="Row options">
                       <ThreeDotsVertical />
                     </Button>
                   }

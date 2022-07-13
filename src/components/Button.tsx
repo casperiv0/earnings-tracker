@@ -13,8 +13,9 @@ export const buttonVariants = {
 };
 
 export const buttonSizes = {
+  xss: "p-0.5 px-1.5 text-[0.95rem]",
   xs: "p-0.5 px-2",
-  sm: "p-1 px-4",
+  sm: "p-[3px] px-3",
   lg: "p-2 px-6",
 } as const;
 
@@ -22,7 +23,8 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ variant = "default", size = "sm", className = "", ...rest }, ref) => (
     <button
       className={classNames(
-        "rounded-sm transition-all disabled:opacity-60 disabled:cursor-not-allowed border-[1.5px] border-transparent",
+        "rounded-sm transition-all border-[1.5px] border-transparent",
+        "disabled:opacity-60 disabled:cursor-not-allowed",
         buttonSizes[size],
         variant && buttonVariants[variant],
         className,

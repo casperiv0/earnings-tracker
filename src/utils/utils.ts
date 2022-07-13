@@ -24,15 +24,16 @@ export function classNames(...classes: unknown[]) {
 export function getOrderByFromInput<T extends { sorting?: { desc: boolean; id: string }[] }>(
   input: T,
 ) {
-  const orderBy = input.sorting
-    ? input.sorting.reduce(
-        (ac, cv) => ({
-          ...ac,
-          ...createOrderByObj(cv),
-        }),
-        {},
-      )
-    : { createdAt: "desc" };
+  const orderBy =
+    (input.sorting?.length ?? 0) >= 1
+      ? input.sorting?.reduce(
+          (ac, cv) => ({
+            ...ac,
+            ...createOrderByObj(cv),
+          }),
+          {},
+        )
+      : { createdAt: "desc" };
 
   return orderBy;
 }

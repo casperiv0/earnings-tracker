@@ -37,7 +37,7 @@ body {
 }
 
 .layout-main {
-  width: calc(100vw - 288px)
+  width: calc(100vw - 288px);
 }
 
 .modal-content {
@@ -48,6 +48,9 @@ body {
   animation: modal-overlay-open 150ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
+#dropdown-trigger-item[data-state="open"] {
+  background-color: #1a1c20;
+}
 
 @keyframes modal-overlay-open {
   from {

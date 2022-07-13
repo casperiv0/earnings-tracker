@@ -3,15 +3,13 @@ import { Table } from "components/table/Table";
 import { trpc } from "utils/trpc";
 import { useTablePagination } from "src/hooks/useTablePagination";
 import { ThreeDotsVertical } from "react-bootstrap-icons";
-import { EarningsEntryDate, Income as _Income, IncomeType } from "@prisma/client";
+import type { EarningsEntryDate, Income as _Income } from "@prisma/client";
 import { Button } from "components/Button";
 import type { RowSelectionState, SortingState } from "@tanstack/react-table";
 import { Dropdown } from "components/dropdown/Dropdown";
 import { Modal } from "components/modal/Modal";
 import { IncomeForm } from "components/income/IncomeForm";
 import { Loader } from "components/Loader";
-import { Select } from "components/form/Select";
-import { getSelectedRowDataIds } from "utils/utils";
 
 export interface Income extends _Income {
   date: Pick<EarningsEntryDate, "month" | "year">;
@@ -25,8 +23,6 @@ export default function IncomePage() {
   const [isOpen, setIsOpen] = React.useState(false);
   const [isDeleteOpen, setDeleteOpen] = React.useState(false);
   const [tempIncome, setTempIncome] = React.useState<Income | null>(null);
-
-  const [selectedType, setSelectedType] = React.useState<IncomeType | "null">("null");
 
   const incomeQuery = trpc.useQuery(["income.all-infinite", { page, sorting }], {
     keepPreviousData: true,
@@ -46,12 +42,6 @@ export default function IncomePage() {
     },
   });
 
-  const bulkEditIncomeType = trpc.useMutation("income.bulk-update-type", {
-    onSuccess: () => {
-      context.invalidateQueries(["income.all-infinite"]);
-    },
-  });
-
   async function handleDeleteIncome(e: React.FormEvent) {
     e.preventDefault();
     if (!tempIncome) return;
@@ -62,21 +52,6 @@ export default function IncomePage() {
 
     setTempIncome(null);
     setDeleteOpen(false);
-  }
-
-  async function handleTypeChange(e: React.ChangeEvent<HTMLSelectElement>) {
-    const value = e.target.value as IncomeType | "null";
-    setSelectedType(value);
-
-    if (value === "null") return;
-
-    await bulkEditIncomeType.mutateAsync({
-      ids: getSelectedRowDataIds(selectedRows, incomeQuery.data?.items),
-      type: value,
-    });
-
-    setSelectedType("null");
-    setSelectedRows({});
   }
 
   function handleEditIncome(income: Income) {
@@ -122,62 +97,44 @@ export default function IncomePage() {
         ) : (incomeQuery.data?.items.length ?? 0) <= 0 ? (
           <p className="text-neutral-300">There is no income yet.</p>
         ) : (
-          <div>
-            <div className="flex items-center gap-2 mb-2">
-              <Select
-                disabled={bulkEditIncomeType.isLoading || Object.keys(selectedRows).length <= 0}
-                value={String(selectedType)}
-                onChange={handleTypeChange}
-                className="w-fit"
-              >
-                <option value={"null"}>Select type...</option>
-                {Object.values(IncomeType).map((type) => (
-                  <option key={type} value={type}>
-                    {type}
-                  </option>
-                ))}
-              </Select>
-            </div>
-
-            <Table
-              options={{
-                sorting,
-                setSorting,
-                rowSelection: selectedRows,
-                setRowSelection: setSelectedRows,
-              }}
-              pagination={pagination}
-              data={(incomeQuery.data?.items ?? []).map((income) => ({
-                type: income.type,
-                amount: <span className="font-mono">{income.amount}</span>,
-                month: income.date.month,
-                year: income.date.year,
-                description: income.description || "None",
-                actions: (
-                  <Dropdown
-                    trigger={
-                      <Button>
-                        <ThreeDotsVertical />
-                      </Button>
-                    }
-                  >
-                    <Dropdown.Item onClick={() => handleEditIncome(income)}>Edit</Dropdown.Item>
-                    <Dropdown.Item onClick={() => handleDeleteIncomeClick(income)}>
-                      Delete
-                    </Dropdown.Item>
-                  </Dropdown>
-                ),
-              }))}
-              columns={[
-                { header: "Type", accessorKey: "type" },
-                { header: "Amount", accessorKey: "amount" },
-                { header: "Month", accessorKey: "month" },
-                { header: "Year", accessorKey: "year" },
-                { header: "Description", accessorKey: "description" },
-                { header: "actions", accessorKey: "actions" },
-              ]}
-            />
-          </div>
+          <Table
+            options={{
+              sorting,
+              setSorting,
+              rowSelection: selectedRows,
+              setRowSelection: setSelectedRows,
+            }}
+            pagination={pagination}
+            data={(incomeQuery.data?.items ?? []).map((income) => ({
+              type: income.type,
+              amount: <span className="font-mono">&euro;{income.amount}</span>,
+              month: income.date.month,
+              year: income.date.year,
+              description: income.description || "None",
+              actions: (
+                <Dropdown
+                  trigger={
+                    <Button size="xss" aria-label="Row options">
+                      <ThreeDotsVertical />
+                    </Button>
+                  }
+                >
+                  <Dropdown.Item onClick={() => handleEditIncome(income)}>Edit</Dropdown.Item>
+                  <Dropdown.Item onClick={() => handleDeleteIncomeClick(income)}>
+                    Delete
+                  </Dropdown.Item>
+                </Dropdown>
+              ),
+            }))}
+            columns={[
+              { header: "Type", accessorKey: "type", filter: "string" },
+              { header: "Amount", accessorKey: "amount", filter: "number" },
+              { header: "Month", accessorKey: "month", filter: "string" },
+              { header: "Year", accessorKey: "year", filter: "number" },
+              { header: "Description", accessorKey: "description" },
+              { header: "actions", accessorKey: "actions" },
+            ]}
+          />
         )}
       </div>
 
@@ -199,7 +156,7 @@ export default function IncomePage() {
             Are you sure you want to delete this income? This action cannot be undone.
           </Modal.Description>
 
-          <footer className="mt-5 flex justify-end gap-2">
+          <footer className="mt-5 flex justify-end gap-3">
             <Modal.Close>
               <Button disabled={deleteIncome.isLoading} type="reset">
                 Nope, Cancel
