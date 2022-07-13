@@ -22,7 +22,7 @@ export default function ExpensesPage() {
   const [isOpen, setIsOpen] = React.useState(false);
   const [tempExpense, setTempExpense] = React.useState<Expense | null>(null);
 
-  const expensesQuery = trpc.useQuery(["expenses.all-infinite", page], {
+  const expensesQuery = trpc.useQuery(["expenses.all-infinite", { page, sorting }], {
     keepPreviousData: true,
   });
 

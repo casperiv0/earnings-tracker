@@ -4,13 +4,17 @@ import { classNames } from "utils/classNames";
 interface Props<TData extends RowData> {
   row: Row<TData>;
   idx: number;
+  isSelected?: boolean;
 }
 
-export function TableRow<TData extends RowData>({ row, idx }: Props<TData>) {
+export function TableRow<TData extends RowData>({ isSelected, row, idx }: Props<TData>) {
   return (
     <tr
-      // todo: add color if row is selected
-      className={classNames(idx % 2 !== 0 && "bg-quaternary/60")}
+      className={classNames(
+        idx % 2 !== 0 && "bg-quaternary/60",
+        isSelected && "brightness-150",
+        "transition",
+      )}
       data-row-index={idx}
       key={row.id}
     >

@@ -4,6 +4,7 @@ import { createRouter } from "server/createRouter";
 import { prisma } from "utils/prisma";
 import { TRPCError } from "@trpc/server";
 import { MAX_ITEMS_PER_TABLE } from "utils/constants";
+import { getOrderByFromInput } from "utils/utils";
 
 export const incomeSelect = Prisma.validator<Prisma.IncomeSelect>()({
   id: true,
@@ -29,28 +30,10 @@ export const incomeRouter = createRouter()
   .query("all-infinite", {
     input: z.object({
       page: z.number(),
-      sorting: z
-        .array(
-          z.object({
-            id: z.string(),
-            desc: z.boolean().optional().nullable(),
-          }),
-        )
-        .nullable()
-        .optional(),
+      sorting: z.array(z.object({ id: z.string(), desc: z.boolean() })).optional(),
     }),
     async resolve({ input }) {
       const skip = input.page * MAX_ITEMS_PER_TABLE;
-
-      const orderBy = input.sorting
-        ? input.sorting.reduce(
-            (ac, cv) => ({
-              ...ac,
-              [cv.id]: getSortingDir(cv),
-            }),
-            {},
-          )
-        : { createdAt: "desc" };
 
       const [totalCount, items] = await Promise.all([
         prisma.income.count(),
@@ -58,7 +41,7 @@ export const incomeRouter = createRouter()
           take: MAX_ITEMS_PER_TABLE,
           skip,
           select: incomeSelect,
-          orderBy,
+          orderBy: getOrderByFromInput(input),
         }),
       ]);
 
@@ -138,8 +121,3 @@ export const incomeRouter = createRouter()
       await prisma.income.delete({ where: { id: input.id } });
     },
   });
-
-function getSortingDir(cv: { desc?: boolean | null }): Prisma.SortOrder {
-  if (!cv.desc) return Prisma.SortOrder.asc;
-  return Prisma.SortOrder.desc;
-}
