@@ -54,6 +54,7 @@ export function Table<TData extends RowData>({
     enableSorting: true,
     onSortingChange: options.setSorting,
     pageCount: pagination?.totalPageCount,
+    manualSorting: true,
     state: {
       rowSelection: options.rowSelection,
       sorting: options.sorting,

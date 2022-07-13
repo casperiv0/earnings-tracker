@@ -28,7 +28,7 @@ export default function IncomePage() {
 
   const [selectedType, setSelectedType] = React.useState<IncomeType | "null">("null");
 
-  const incomeQuery = trpc.useQuery(["income.all-infinite", page], {
+  const incomeQuery = trpc.useQuery(["income.all-infinite", { page, sorting }], {
     keepPreviousData: true,
   });
 

@@ -27,9 +27,30 @@ export const incomeRouter = createRouter()
     return next();
   })
   .query("all-infinite", {
-    input: z.number(),
+    input: z.object({
+      page: z.number(),
+      sorting: z
+        .array(
+          z.object({
+            id: z.string(),
+            desc: z.boolean().optional().nullable(),
+          }),
+        )
+        .nullable()
+        .optional(),
+    }),
     async resolve({ input }) {
-      const skip = input * MAX_ITEMS_PER_TABLE;
+      const skip = input.page * MAX_ITEMS_PER_TABLE;
+
+      const orderBy = input.sorting
+        ? input.sorting.reduce(
+            (ac, cv) => ({
+              ...ac,
+              [cv.id]: getSortingDir(cv),
+            }),
+            {},
+          )
+        : { createdAt: "desc" };
 
       const [totalCount, items] = await Promise.all([
         prisma.income.count(),
@@ -37,7 +58,7 @@ export const incomeRouter = createRouter()
           take: MAX_ITEMS_PER_TABLE,
           skip,
           select: incomeSelect,
-          orderBy: { createdAt: "desc" },
+          orderBy,
         }),
       ]);
 
@@ -117,3 +138,8 @@ export const incomeRouter = createRouter()
       await prisma.income.delete({ where: { id: input.id } });
     },
   });
+
+function getSortingDir(cv: { desc?: boolean | null }): Prisma.SortOrder {
+  if (!cv.desc) return Prisma.SortOrder.asc;
+  return Prisma.SortOrder.desc;
+}
