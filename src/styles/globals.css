@@ -36,6 +36,10 @@ body {
   @apply bg-primary text-white;
 }
 
+.layout-main {
+  width: calc(100vw - 288px)
+}
+
 .modal-content {
   animation: modal-content-open 150ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
@@ -43,6 +47,7 @@ body {
 .model-overlay {
   animation: modal-overlay-open 150ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
+
 
 @keyframes modal-overlay-open {
   from {

@@ -15,7 +15,7 @@ export default function Index() {
 
   return (
     <div className="m-8 mx-10 h-full">
-      <header className="flex flex-col lg:flex-row lg:items-center justify-between w-full mb-5 gap-y-3">
+      <header className="flex flex-col lg:flex-row lg:items-center justify-between mb-5 gap-y-3">
         <div>
           <h1 className="text-2xl md:text-3xl lg:text-4xl font-semibold font-serif">Dashboard</h1>
           <p className="mt-2 font-medium">Welcome back!</p>

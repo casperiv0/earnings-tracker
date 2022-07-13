@@ -46,7 +46,7 @@ export function Layout({ children }: LayoutProps) {
             <div className="w-72 flex-shrink-0" />
           </>
         )}
-        <main className="w-full">{children}</main>
+        <main className="layout-main">{children}</main>
       </div>
     </>
   );
