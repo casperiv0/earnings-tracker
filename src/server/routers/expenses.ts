@@ -88,20 +88,6 @@ export const expensesRouter = createRouter()
       return post;
     },
   })
-  .mutation("bulk-delete-expenses", {
-    input: z.object({
-      ids: z.array(z.string()),
-    }),
-    async resolve({ input }) {
-      await prisma.$transaction(
-        input.ids.map((id) =>
-          prisma.expenses.delete({
-            where: { id },
-          }),
-        ),
-      );
-    },
-  })
   .mutation("delete-expense", {
     input: z.object({
       id: z.string(),

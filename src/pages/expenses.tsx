@@ -5,7 +5,7 @@ import { useTablePagination } from "src/hooks/useTablePagination";
 import { ThreeDotsVertical } from "react-bootstrap-icons";
 import type { EarningsEntryDate, Expenses } from "@prisma/client";
 import { Button } from "components/Button";
-import type { RowSelectionState, SortingState } from "@tanstack/react-table";
+import type { SortingState } from "@tanstack/react-table";
 import { Dropdown } from "components/dropdown/Dropdown";
 import { Modal } from "components/modal/Modal";
 import { ExpensesForm } from "components/expenses/ExpensesForm";
@@ -18,7 +18,6 @@ export interface Expense extends Expenses {
 export default function ExpensesPage() {
   const [page, setPage] = React.useState<number>(0);
   const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [selectedRows, setSelectedRows] = React.useState<RowSelectionState>({});
 
   const [isOpen, setIsOpen] = React.useState(false);
   const [tempExpense, setTempExpense] = React.useState<Expense | null>(null);
@@ -41,32 +40,10 @@ export default function ExpensesPage() {
     },
   });
 
-  const deleteBulkExpense = trpc.useMutation("expenses.bulk-delete-expenses", {
-    onSuccess: () => {
-      context.invalidateQueries(["expenses.all-infinite"]);
-    },
-  });
-
   function handleDeleteExpense(expense: Expense) {
     deleteExpense.mutate({
       id: expense.id,
     });
-  }
-
-  async function handleBulkDeleteExpenses() {
-    const expenseIds = [];
-
-    for (const idx in selectedRows) {
-      const expense = expensesQuery.data?.items[parseInt(idx, 10)];
-      if (!expense) continue;
-
-      expenseIds.push(expense.id);
-    }
-
-    await deleteBulkExpense.mutateAsync({
-      ids: expenseIds,
-    });
-    setSelectedRows({});
   }
 
   function handleEditExpense(expense: Expense) {
@@ -102,53 +79,35 @@ export default function ExpensesPage() {
         ) : (expensesQuery.data?.items.length ?? 0) <= 0 ? (
           <p className="text-neutral-300">There are no expenses yet.</p>
         ) : (
-          <div>
-            <div className="mb-2">
-              <Button
-                onClick={handleBulkDeleteExpenses}
-                disabled={deleteBulkExpense.isLoading || Object.keys(selectedRows).length <= 0}
-              >
-                Delete selected expenses
-              </Button>
-            </div>
-
-            <Table
-              options={{
-                sorting,
-                setSorting,
-                rowSelection: selectedRows,
-                setRowSelection: setSelectedRows,
-              }}
-              pagination={pagination}
-              data={(expensesQuery.data?.items ?? []).map((expense) => ({
-                amount: <span className="font-mono">{expense.amount}</span>,
-                month: expense.date.month,
-                year: expense.date.year,
-                description: expense.description || "None",
-                actions: (
-                  <Dropdown
-                    trigger={
-                      <Button aria-label="Row options">
-                        <ThreeDotsVertical />
-                      </Button>
-                    }
-                  >
-                    <Dropdown.Item onClick={() => handleEditExpense(expense)}>Edit</Dropdown.Item>
-                    <Dropdown.Item onClick={() => handleDeleteExpense(expense)}>
-                      Delete
-                    </Dropdown.Item>
-                  </Dropdown>
-                ),
-              }))}
-              columns={[
-                { header: "Amount", accessorKey: "amount" },
-                { header: "Month", accessorKey: "month" },
-                { header: "Year", accessorKey: "year" },
-                { header: "Description", accessorKey: "description" },
-                { header: "actions", accessorKey: "actions" },
-              ]}
-            />
-          </div>
+          <Table
+            options={{ sorting, setSorting }}
+            pagination={pagination}
+            data={(expensesQuery.data?.items ?? []).map((expense) => ({
+              amount: <span className="font-mono">{expense.amount}</span>,
+              month: expense.date.month,
+              year: expense.date.year,
+              description: expense.description || "None",
+              actions: (
+                <Dropdown
+                  trigger={
+                    <Button aria-label="Row options">
+                      <ThreeDotsVertical />
+                    </Button>
+                  }
+                >
+                  <Dropdown.Item onClick={() => handleEditExpense(expense)}>Edit</Dropdown.Item>
+                  <Dropdown.Item onClick={() => handleDeleteExpense(expense)}>Delete</Dropdown.Item>
+                </Dropdown>
+              ),
+            }))}
+            columns={[
+              { header: "Amount", accessorKey: "amount" },
+              { header: "Month", accessorKey: "month" },
+              { header: "Year", accessorKey: "year" },
+              { header: "Description", accessorKey: "description" },
+              { header: "actions", accessorKey: "actions" },
+            ]}
+          />
         )}
       </div>
 

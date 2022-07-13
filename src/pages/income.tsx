@@ -45,12 +45,6 @@ export default function IncomePage() {
     },
   });
 
-  const deleteBulkIncome = trpc.useMutation("income.bulk-delete-income", {
-    onSuccess: () => {
-      context.invalidateQueries(["income.all-infinite"]);
-    },
-  });
-
   const bulkEditIncomeType = trpc.useMutation("income.bulk-update-type", {
     onSuccess: () => {
       context.invalidateQueries(["income.all-infinite"]);
@@ -73,13 +67,6 @@ export default function IncomePage() {
       ids: getSelectedRowDataIds(selectedRows, incomeQuery.data?.items),
       type: value,
     });
-
-    setSelectedRows({});
-  }
-
-  async function handleBulkDeleteIncome() {
-    const ids = getSelectedRowDataIds(selectedRows, incomeQuery.data?.items);
-    await deleteBulkIncome.mutateAsync({ ids });
 
     setSelectedRows({});
   }
@@ -119,14 +106,6 @@ export default function IncomePage() {
         ) : (
           <div>
             <div className="flex items-center gap-2 mb-2">
-              <Button
-                className="min-w-fit"
-                onClick={handleBulkDeleteIncome}
-                disabled={deleteBulkIncome.isLoading || Object.keys(selectedRows).length <= 0}
-              >
-                Delete selected income
-              </Button>
-
               <Select
                 disabled={bulkEditIncomeType.isLoading || Object.keys(selectedRows).length <= 0}
                 value={String(selectedType)}

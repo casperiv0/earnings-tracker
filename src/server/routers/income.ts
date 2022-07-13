@@ -111,20 +111,6 @@ export const incomeRouter = createRouter()
       );
     },
   })
-  .mutation("bulk-delete-income", {
-    input: z.object({
-      ids: z.array(z.string()),
-    }),
-    async resolve({ input }) {
-      await prisma.$transaction(
-        input.ids.map((id) =>
-          prisma.income.delete({
-            where: { id },
-          }),
-        ),
-      );
-    },
-  })
   .mutation("delete-income", {
     input: z.object({ id: z.string() }),
     async resolve({ input }) {
