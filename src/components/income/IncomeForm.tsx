@@ -5,6 +5,7 @@ import { FormField } from "components/form/FormField";
 import { Input } from "components/form/Input";
 import { Select } from "components/form/Select";
 import { Textarea } from "components/form/Textarea";
+import { Loader } from "components/Loader";
 import { Modal } from "components/modal/Modal";
 import type { Income } from "src/pages/income";
 import { trpc } from "utils/trpc";
@@ -98,9 +99,18 @@ export function IncomeForm({ income, onSubmit }: Props) {
 
           <footer className="mt-5 flex justify-end gap-2">
             <Modal.Close>
-              <Button type="reset">Cancel</Button>
+              <Button disabled={editIncome.isLoading} type="reset">
+                Cancel
+              </Button>
             </Modal.Close>
-            <Button type="submit">{income ? "Save Changes" : "Add new income"}</Button>
+            <Button
+              className="flex items-center gap-2"
+              disabled={editIncome.isLoading}
+              type="submit"
+            >
+              {editIncome.isLoading ? <Loader size="sm" /> : null}
+              {income ? "Save Changes" : "Add new income"}
+            </Button>
           </footer>
         </>
       )}

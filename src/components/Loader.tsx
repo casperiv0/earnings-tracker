@@ -16,7 +16,7 @@ export function Loader({ fixed, size: _size = "lg" }: Props) {
 
   return (
     <div
-      className={classNames(size, fixed && "fixed inset-0 grid place-items-center z-50 bg-primary")}
+      className={classNames(fixed && "fixed inset-0 grid place-items-center z-50 bg-primary")}
       aria-label="Loading..."
     >
       <svg
