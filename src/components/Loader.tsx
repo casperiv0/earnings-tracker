@@ -2,17 +2,29 @@ import { classNames } from "../utils/classNames";
 
 interface Props {
   fixed?: boolean;
+  size?: keyof typeof sizes;
 }
 
-export function Loader({ fixed }: Props) {
+const sizes = {
+  sm: "w-6 h-6",
+  md: "w-10 h-10",
+  lg: "w-12 h-12",
+};
+
+export function Loader({ fixed, size: _size = "lg" }: Props) {
+  const size = sizes[_size];
+
   return (
     <div
-      className={classNames(fixed && "fixed inset-0 grid place-items-center z-50 bg-primary")}
+      className={classNames(size, fixed && "fixed inset-0 grid place-items-center z-50 bg-primary")}
       aria-label="Loading..."
     >
       <svg
         role="status"
-        className="w-12 h-12 mr-2 text-quaternary brightness-200 animate-spin fill-secondary"
+        className={classNames(
+          size,
+          "mr-2 text-quaternary brightness-200 animate-spin fill-secondary",
+        )}
         viewBox="0 0 100 101"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"

@@ -32,19 +32,6 @@ export default function ExpensesPage() {
     page,
     setPage,
   });
-  const context = trpc.useContext();
-
-  const deleteExpense = trpc.useMutation("expenses.delete-expense", {
-    onSuccess: () => {
-      context.invalidateQueries(["expenses.all-infinite"]);
-    },
-  });
-
-  function handleDeleteExpense(expense: Expense) {
-    deleteExpense.mutate({
-      id: expense.id,
-    });
-  }
 
   function handleEditExpense(expense: Expense) {
     setIsOpen(true);
@@ -96,7 +83,6 @@ export default function ExpensesPage() {
                   }
                 >
                   <Dropdown.Item onClick={() => handleEditExpense(expense)}>Edit</Dropdown.Item>
-                  <Dropdown.Item onClick={() => handleDeleteExpense(expense)}>Delete</Dropdown.Item>
                 </Dropdown>
               ),
             }))}

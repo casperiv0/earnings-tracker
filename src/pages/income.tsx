@@ -23,6 +23,7 @@ export default function IncomePage() {
   const [selectedRows, setSelectedRows] = React.useState<RowSelectionState>({});
 
   const [isOpen, setIsOpen] = React.useState(false);
+  const [isDeleteOpen, setDeleteOpen] = React.useState(false);
   const [tempIncome, setTempIncome] = React.useState<Income | null>(null);
 
   const [selectedType, setSelectedType] = React.useState<IncomeType | "null">("null");
@@ -51,10 +52,16 @@ export default function IncomePage() {
     },
   });
 
-  function handleDeleteIncome(income: Income) {
-    deleteIncome.mutate({
-      id: income.id,
+  async function handleDeleteIncome(e: React.FormEvent) {
+    e.preventDefault();
+    if (!tempIncome) return;
+
+    await deleteIncome.mutateAsync({
+      id: tempIncome.id,
     });
+
+    setTempIncome(null);
+    setDeleteOpen(false);
   }
 
   async function handleTypeChange(e: React.ChangeEvent<HTMLSelectElement>) {
@@ -68,6 +75,7 @@ export default function IncomePage() {
       type: value,
     });
 
+    setSelectedType("null");
     setSelectedRows({});
   }
 
@@ -76,9 +84,19 @@ export default function IncomePage() {
     setTempIncome(income);
   }
 
+  function handleDeleteIncomeClick(income: Income) {
+    setDeleteOpen(true);
+    setTempIncome(income);
+  }
+
   function handleClose() {
     setTempIncome(null);
     setIsOpen(false);
+  }
+
+  function handleCloseDelete() {
+    setDeleteOpen(false);
+    setTempIncome(null);
   }
 
   async function addNewIncome() {
@@ -144,7 +162,9 @@ export default function IncomePage() {
                     }
                   >
                     <Dropdown.Item onClick={() => handleEditIncome(income)}>Edit</Dropdown.Item>
-                    <Dropdown.Item onClick={() => handleDeleteIncome(income)}>Delete</Dropdown.Item>
+                    <Dropdown.Item onClick={() => handleDeleteIncomeClick(income)}>
+                      Delete
+                    </Dropdown.Item>
                   </Dropdown>
                 ),
               }))}
@@ -170,6 +190,32 @@ export default function IncomePage() {
         <div>
           <IncomeForm onSubmit={handleClose} income={tempIncome} />
         </div>
+      </Modal>
+
+      <Modal isOpen={isDeleteOpen} onOpenChange={handleCloseDelete}>
+        <form onSubmit={handleDeleteIncome}>
+          <Modal.Title>Delete Income</Modal.Title>
+          <Modal.Description>
+            Are you sure you want to delete this income? This action cannot be undone.
+          </Modal.Description>
+
+          <footer className="mt-5 flex justify-end gap-2">
+            <Modal.Close>
+              <Button disabled={deleteIncome.isLoading} type="reset">
+                Nope, Cancel
+              </Button>
+            </Modal.Close>
+            <Button
+              className="flex items-center gap-2"
+              disabled={deleteIncome.isLoading}
+              variant="danger"
+              type="submit"
+            >
+              {deleteIncome.isLoading ? <Loader size="sm" /> : null}
+              Yes, delete income
+            </Button>
+          </footer>
+        </form>
       </Modal>
     </div>
   );
