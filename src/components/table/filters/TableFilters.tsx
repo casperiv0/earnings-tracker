@@ -1,7 +1,7 @@
 import { Button } from "components/Button";
 import { Dropdown } from "components/dropdown/Dropdown";
 import * as React from "react";
-import { ChevronDown, Plus } from "react-bootstrap-icons";
+import { ChevronDown, ChevronRight, Plus } from "react-bootstrap-icons";
 import type { UseQueryResult } from "react-query";
 import { classNames } from "utils/utils";
 import type { TableFiltersStateProps } from "../Table";
@@ -54,9 +54,10 @@ export function TableFilters({ query, filterTypes, filters, setFilters }: Props)
             sideOffset={5}
             alignOffset={0}
             trigger={
-              <Button size="xss" className="flex items-center gap-1">
-                {filter.name}
-
+              <Button size="xxs" className="flex items-center gap-1">
+                <span className="font-medium">{filter.name}</span>
+                <span className="text-neutral-200">{filter.type}</span>
+                <span className="font-medium">{filter.content}</span>
                 <ChevronDown className="w-3 h-3" />
               </Button>
             }
@@ -75,7 +76,7 @@ export function TableFilters({ query, filterTypes, filters, setFilters }: Props)
       <Dropdown
         alignOffset={0}
         trigger={
-          <Button variant="accent" size="xss" className="flex items-center gap-1">
+          <Button variant="accent" size="xxs" className="flex items-center gap-1">
             <Plus className="w-5 h-5" /> Add Filter
           </Button>
         }
@@ -88,12 +89,17 @@ export function TableFilters({ query, filterTypes, filters, setFilters }: Props)
               extra={{ maxWidth: 250 }}
               triggerKind="trigger-item"
               key={filter.name}
+              sideOffset={7}
               trigger={
                 <Dropdown.TriggerItem
                   disabled={isFilterAlreadySet}
-                  className={classNames("capitalize", isFilterAlreadySet && "pointer-events-none")}
+                  className={classNames(
+                    "capitalize flex items-center justify-between",
+                    isFilterAlreadySet && "pointer-events-none",
+                  )}
                 >
                   {filter.name}
+                  <ChevronRight className="w-3 h-3" />
                 </Dropdown.TriggerItem>
               }
             >

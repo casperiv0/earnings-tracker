@@ -115,7 +115,7 @@ export default function ExpensesPage() {
               actions: (
                 <Dropdown
                   trigger={
-                    <Button size="xss" aria-label="Row options">
+                    <Button size="xxs" aria-label="Row options">
                       <ThreeDotsVertical />
                     </Button>
                   }

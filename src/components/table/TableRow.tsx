@@ -11,8 +11,8 @@ export function TableRow<TData extends RowData>({ isSelected, row, idx }: Props<
   return (
     <tr
       className={classNames(
-        // idx % 2 !== 0 && "bg-quaternary/60",
         "border-b-2 border-secondary",
+        "hover:bg-secondary/60",
         isSelected && "brightness-150",
         "transition",
       )}

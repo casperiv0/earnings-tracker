@@ -11,7 +11,7 @@ import Image from "next/future/image";
 export default function SettingsPage() {
   const [isOpen, setIsOpen] = React.useState(false);
 
-  const sessionQuery = trpc.useQuery(["user.getSession"], { ssr: false });
+  const sessionQuery = trpc.useQuery(["user.getSession"]);
   const deleteUserMutation = trpc.useMutation("user.delete-user");
   const user = sessionQuery.data?.user;
 

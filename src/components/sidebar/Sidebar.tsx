@@ -13,7 +13,7 @@ const sidebarNavigation = [
 ];
 
 export function Sidebar() {
-  const sessionQuery = trpc.useQuery(["user.getSession"], { ssr: false });
+  const sessionQuery = trpc.useQuery(["user.getSession"]);
   const user = sessionQuery.data?.user;
   const router = useRouter();
 

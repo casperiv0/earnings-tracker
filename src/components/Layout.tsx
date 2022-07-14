@@ -10,10 +10,7 @@ interface LayoutProps {
 }
 
 export function Layout({ children }: LayoutProps) {
-  const sessionQuery = trpc.useQuery(["user.getSession"], {
-    ssr: false,
-    context: { test: "cookie" },
-  });
+  const sessionQuery = trpc.useQuery(["user.getSession"]);
   const router = useRouter();
 
   React.useEffect(() => {

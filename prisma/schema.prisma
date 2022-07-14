@@ -11,13 +11,13 @@ datasource db {
 }
 
 model User {
-  id             String         @id @default(auto()) @map("_id") @db.ObjectId
-  email          String         @unique
-  name           String
-  imageUrl       String?
-  Expenses       Expenses[]
-  Income         Income[]
-  Subscriptions  Subscription[]
+  id            String         @id @default(auto()) @map("_id") @db.ObjectId
+  email         String         @unique
+  name          String
+  imageUrl      String?
+  Expenses      Expenses[]
+  Income        Income[]
+  Subscriptions Subscription[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

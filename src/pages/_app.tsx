@@ -13,7 +13,7 @@ import { SessionProvider } from "next-auth/react";
 import "styles/globals.css";
 
 const MyApp = (({ Component, pageProps }: AppProps) => {
-  const sessionQuery = trpc.useQuery(["user.getSession"], { ssr: false });
+  const sessionQuery = trpc.useQuery(["user.getSession"]);
 
   return (
     <SessionProvider session={sessionQuery.data?.session}>
@@ -38,8 +38,14 @@ function getBaseUrl() {
 }
 
 export default withTRPC<AppRouter>({
-  config() {
+  config({ ctx }) {
     return {
+      headers() {
+        return {
+          cookie: ctx?.req?.headers.cookie,
+          ssr: "true",
+        };
+      },
       url: getBaseUrl(),
       fetch(url: RequestInfo | URL, options?: RequestInit | undefined) {
         return fetch(url, {

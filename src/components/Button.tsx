@@ -14,7 +14,7 @@ export const buttonVariants = {
 };
 
 export const buttonSizes = {
-  xss: "p-0.5 px-1.5 text-[0.95rem]",
+  xxs: "p-0.5 px-1.5 text-[0.95rem]",
   xs: "p-0.5 px-2",
   sm: "p-[3px] px-3",
   lg: "p-2 px-6",

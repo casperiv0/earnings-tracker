@@ -62,9 +62,6 @@ export function TableFilterForms({
                 <FormField checkbox label="Equals">
                   <Input value="equals" className="!w-10" type="radio" {...register("type")} />
                 </FormField>
-                <FormField checkbox label="Contains">
-                  <Input value="contains" className="!w-10" type="radio" {...register("type")} />
-                </FormField>
                 <FormField checkbox label="Less than">
                   <Input value="lt" className="!w-10" type="radio" {...register("type")} />
                 </FormField>
