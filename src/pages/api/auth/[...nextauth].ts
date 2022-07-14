@@ -19,13 +19,9 @@ export const authOptions: NextAuthOptions = {
     async signIn({ user, profile }) {
       const { image, avatar_url } = profile;
 
-      console.log({ user, profile });
-
       const email = profile.email || user.email;
       const name = profile.name || user.name;
       const imageUrl = String(image || avatar_url || user.image) || null;
-
-      console.log({ email, name });
 
       if (!email || !name) {
         return false;

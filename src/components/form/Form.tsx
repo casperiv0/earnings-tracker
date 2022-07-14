@@ -1,3 +1,4 @@
+import * as React from "react";
 import {
   DeepPartial,
   DeepRequired,
@@ -37,6 +38,24 @@ export function Form<Values extends FieldValues>({
   });
 
   const errors = form.formState.errors;
+
+  React.useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      const target = e.target as HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;
+
+      if (!["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName)) return;
+
+      if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
+        form.handleSubmit(onSubmit)();
+      }
+    };
+
+    window.addEventListener("keydown", handler);
+
+    return () => {
+      window.removeEventListener("keydown", handler);
+    };
+  }, [form, onSubmit]);
 
   return <form onSubmit={form.handleSubmit(onSubmit)}>{children({ ...form, errors })}</form>;
 }
