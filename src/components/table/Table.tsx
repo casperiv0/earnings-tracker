@@ -15,6 +15,7 @@ import { TablePagination } from "./TablePagination";
 import type { TablePaginationOptions } from "src/hooks/useTablePagination";
 import { makeCheckboxHeader } from "./IndeterminateCheckbox";
 import { TableFilter, TableFilters } from "./filters/TableFilters";
+import type { UseQueryResult } from "react-query";
 
 export interface TableFiltersStateProps {
   filters: TableFilter[];
@@ -25,6 +26,7 @@ interface Props<TData extends RowData> {
   data: TData[];
   columns: ColumnDef<TData>[];
 
+  query?: UseQueryResult;
   filterTypes?: TableFilter[];
   pagination?: TablePaginationOptions;
   options?: {
@@ -42,6 +44,7 @@ export function Table<TData extends RowData>({
   columns,
   pagination,
   filterTypes,
+  query,
   options = {},
 }: Props<TData>) {
   const tableColumns = React.useMemo(() => {
@@ -78,6 +81,7 @@ export function Table<TData extends RowData>({
           filterTypes={filterTypes}
           setFilters={options.setFilters}
           filters={options.filters}
+          query={query}
         />
       ) : null}
 

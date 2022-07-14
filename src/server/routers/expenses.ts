@@ -4,7 +4,8 @@ import { createRouter } from "server/createRouter";
 import { prisma } from "utils/prisma";
 import { TRPCError } from "@trpc/server";
 import { MAX_ITEMS_PER_TABLE } from "utils/constants";
-import { getOrderByFromInput } from "utils/utils";
+import { createPrismaWhereFromFilters, getOrderByFromInput } from "utils/utils";
+import { TABLE_FILTER } from "./income";
 
 export const defaultEarningsSelect = Prisma.validator<Prisma.ExpensesSelect>()({
   id: true,
@@ -30,17 +31,21 @@ export const expensesRouter = createRouter()
     input: z.object({
       page: z.number(),
       sorting: z.array(z.object({ id: z.string(), desc: z.boolean() })).optional(),
+      filters: z.array(TABLE_FILTER).optional(),
     }),
     async resolve({ input }) {
       const skip = input.page * MAX_ITEMS_PER_TABLE;
 
       const [totalCount, items] = await Promise.all([
-        prisma.expenses.count(),
+        prisma.expenses.count({
+          where: input.filters ? createPrismaWhereFromFilters(input.filters) : undefined,
+        }),
         prisma.expenses.findMany({
           take: MAX_ITEMS_PER_TABLE,
           skip,
           select: defaultEarningsSelect,
           orderBy: getOrderByFromInput(input),
+          where: input.filters ? createPrismaWhereFromFilters(input.filters) : undefined,
         }),
       ]);
 

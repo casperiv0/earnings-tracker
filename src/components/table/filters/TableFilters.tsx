@@ -2,12 +2,14 @@ import { Button } from "components/Button";
 import { Dropdown } from "components/dropdown/Dropdown";
 import * as React from "react";
 import { ChevronDown, Plus } from "react-bootstrap-icons";
+import type { UseQueryResult } from "react-query";
 import { classNames } from "utils/utils";
 import type { TableFiltersStateProps } from "../Table";
 import { TableFilterForms } from "./Forms";
 
 interface Props extends TableFiltersStateProps {
   filterTypes: TableFilter[];
+  query?: UseQueryResult;
 }
 
 export interface TableFilter<FilterType extends TableFilterType = TableFilterType> {
@@ -21,7 +23,9 @@ export interface TableFilter<FilterType extends TableFilterType = TableFilterTyp
 export type TableFilterFilterType = "equals" | "contains" | "lt" | "gt";
 export type TableFilterType = "string" | "date" | "number" | "enum";
 
-export function TableFilters({ filterTypes, filters, setFilters }: Props) {
+export function TableFilters({ query, filterTypes, filters, setFilters }: Props) {
+  const isLoading = query?.isLoading || query?.isRefetching || query?.isFetching;
+
   function handleFiltersSubmit(data: TableFilter) {
     const hasFilter = filters.some((v) => v.name === data.name);
 
@@ -37,8 +41,7 @@ export function TableFilters({ filterTypes, filters, setFilters }: Props) {
   }
 
   function handleRemoveFilter(filter: TableFilter | TableFilter) {
-    const filterType = "filterType" in filter ? filter.filterType : filter.type;
-    setFilters((prev) => prev.filter((v) => v.filterType !== filterType));
+    setFilters((prev) => prev.filter((v) => v.name !== filter.name));
   }
 
   return (
@@ -63,6 +66,7 @@ export function TableFilters({ filterTypes, filters, setFilters }: Props) {
               handleFiltersSubmit={handleFiltersSubmit}
               filter={filter}
               isRemovable
+              isLoading={isLoading}
             />
           </Dropdown>
         );
@@ -97,6 +101,7 @@ export function TableFilters({ filterTypes, filters, setFilters }: Props) {
                 handleRemoveFilter={handleRemoveFilter}
                 handleFiltersSubmit={handleFiltersSubmit}
                 filter={filter}
+                isLoading={isLoading}
               />
             </Dropdown>
           );

@@ -3,11 +3,14 @@ import { Form } from "components/form/Form";
 import { FormField } from "components/form/FormField";
 import { Input } from "components/form/Input";
 import { Select } from "components/form/Select";
+import { Textarea } from "components/form/Textarea";
+import { Loader } from "components/Loader";
 import type { TableFilter } from "./TableFilters";
 
 interface Props {
   filter: TableFilter;
   isRemovable?: boolean;
+  isLoading?: boolean;
   handleFiltersSubmit(filter: any): void;
   handleRemoveFilter(filter: TableFilter): void;
 }
@@ -15,6 +18,7 @@ interface Props {
 export function TableFilterForms({
   filter,
   isRemovable,
+  isLoading,
   handleFiltersSubmit,
   handleRemoveFilter,
 }: Props) {
@@ -76,6 +80,26 @@ export function TableFilterForms({
               </div>
             ) : null}
 
+            {filterType === "string" ? (
+              <div className="mb-3">
+                <h3 className="font-serif font-semibold text-lg mb-3">Text Filter</h3>
+
+                <FormField checkbox label="Equals">
+                  <Input value="equals" className="!w-10" type="radio" {...register("type")} />
+                </FormField>
+                <FormField checkbox label="Contains">
+                  <Input value="contains" className="!w-10" type="radio" {...register("type")} />
+                </FormField>
+
+                <FormField label="Content">
+                  <Textarea
+                    placeholder="Hello world"
+                    {...register("content", { required: true })}
+                  />
+                </FormField>
+              </div>
+            ) : null}
+
             <div>
               <Button
                 onClick={() => {
@@ -83,9 +107,11 @@ export function TableFilterForms({
                   setValue("name", filterName);
                 }}
                 type="submit"
-                className="font-medium w-full"
+                className="font-medium w-full flex items-center justify-center gap-2"
                 variant="accent"
+                disabled={isLoading}
               >
+                {isLoading ? <Loader size="sm" /> : null}
                 Apply filter
               </Button>
               {isRemovable ? (
@@ -93,6 +119,7 @@ export function TableFilterForms({
                   onClick={() => handleRemoveFilter(filter)}
                   type="reset"
                   className="font-medium w-full mt-2"
+                  disabled={isLoading}
                 >
                   Remove filter
                 </Button>

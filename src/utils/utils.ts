@@ -1,5 +1,7 @@
 import { Prisma } from "@prisma/client";
 import type { RowSelectionState } from "@tanstack/react-table";
+import type { TABLE_FILTER } from "server/routers/income";
+import type { z } from "zod";
 
 export function getSelectedRowDataIds<T extends { id: string }>(
   selectedRows: RowSelectionState,
@@ -49,4 +51,26 @@ function createOrderByObj(sort: { desc: boolean; id: string }) {
 export function getSortingDir(cv: { desc?: boolean | null }): Prisma.SortOrder {
   if (!cv.desc) return Prisma.SortOrder.asc;
   return Prisma.SortOrder.desc;
+}
+
+export function createPrismaWhereFromFilters(filters: z.infer<typeof TABLE_FILTER>[]) {
+  const andClause = [];
+
+  for (const filter of filters) {
+    if (!filter.type || !filter.content) continue;
+
+    const useDateObj = ["month", "year"].includes(filter.name);
+    const addMode = ["string"].includes(filter.filterType);
+
+    const obj = {
+      [filter.name]: {
+        [filter.type]: filter.content,
+        mode: addMode ? Prisma.QueryMode.insensitive : undefined,
+      },
+    };
+
+    andClause.push(useDateObj ? { date: obj } : obj);
+  }
+
+  return { AND: andClause };
 }

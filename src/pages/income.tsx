@@ -5,7 +5,7 @@ import { useTablePagination } from "src/hooks/useTablePagination";
 import { ThreeDotsVertical } from "react-bootstrap-icons";
 import { EarningsEntryDate, Income as _Income, IncomeType, Month } from "@prisma/client";
 import { Button } from "components/Button";
-import type { RowSelectionState, SortingState } from "@tanstack/react-table";
+import type { SortingState } from "@tanstack/react-table";
 import { Dropdown } from "components/dropdown/Dropdown";
 import { Modal } from "components/modal/Modal";
 import { IncomeForm } from "components/income/IncomeForm";
@@ -19,7 +19,6 @@ export interface Income extends _Income {
 export default function IncomePage() {
   const [page, setPage] = React.useState<number>(0);
   const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [selectedRows, setSelectedRows] = React.useState<RowSelectionState>({});
   const [filters, setFilters] = React.useState<TableFilter[]>([]);
 
   const [isOpen, setIsOpen] = React.useState(false);
@@ -103,11 +102,10 @@ export default function IncomePage() {
             options={{
               sorting,
               setSorting,
-              rowSelection: selectedRows,
-              setRowSelection: setSelectedRows,
               filters,
               setFilters,
             }}
+            query={incomeQuery}
             pagination={pagination}
             data={(incomeQuery.data?.items ?? []).map((income) => ({
               type: income.type,
@@ -135,6 +133,7 @@ export default function IncomePage() {
               { name: "amount", filterType: "number" },
               { name: "month", filterType: "enum", options: Object.values(Month) },
               { name: "year", filterType: "number" },
+              { name: "description", filterType: "string" },
             ]}
             columns={[
               { header: "Type", accessorKey: "type" },

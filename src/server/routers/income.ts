@@ -4,7 +4,7 @@ import { createRouter } from "server/createRouter";
 import { prisma } from "utils/prisma";
 import { TRPCError } from "@trpc/server";
 import { MAX_ITEMS_PER_TABLE } from "utils/constants";
-import { getOrderByFromInput } from "utils/utils";
+import { createPrismaWhereFromFilters, getOrderByFromInput } from "utils/utils";
 
 export const incomeSelect = Prisma.validator<Prisma.IncomeSelect>()({
   id: true,
@@ -19,7 +19,7 @@ export const incomeSelect = Prisma.validator<Prisma.IncomeSelect>()({
   updatedAt: true,
 });
 
-const TABLE_FILTER = z.object({
+export const TABLE_FILTER = z.object({
   name: z.string(),
   filterType: z.enum(["string", "date", "number", "enum"]),
   content: z.string().or(z.number()).optional(),
@@ -46,14 +46,14 @@ export const incomeRouter = createRouter()
 
       const [totalCount, items] = await Promise.all([
         prisma.income.count({
-          where: input.filters ? makeWhereFromFilters(input.filters) : undefined,
+          where: input.filters ? createPrismaWhereFromFilters(input.filters) : undefined,
         }),
         prisma.income.findMany({
           take: MAX_ITEMS_PER_TABLE,
           skip,
           select: incomeSelect,
           orderBy: getOrderByFromInput(input),
-          where: input.filters ? makeWhereFromFilters(input.filters) : undefined,
+          where: input.filters ? createPrismaWhereFromFilters(input.filters) : undefined,
         }),
       ]);
 
@@ -133,22 +133,3 @@ export const incomeRouter = createRouter()
       await prisma.income.delete({ where: { id: input.id } });
     },
   });
-
-// todo: make utils function
-function makeWhereFromFilters(filters: z.infer<typeof TABLE_FILTER>[]) {
-  const andClause = [];
-
-  for (const filter of filters) {
-    if (!filter.type || !filter.content) continue;
-
-    const useDateObj = ["month", "year"].includes(filter.name);
-
-    andClause.push(
-      useDateObj
-        ? { date: { [filter.name]: { [filter.type]: filter.content } } }
-        : { [filter.name]: { [filter.type]: filter.content } },
-    );
-  }
-
-  return { AND: andClause };
-}
