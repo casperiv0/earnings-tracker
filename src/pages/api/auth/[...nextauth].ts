@@ -13,7 +13,10 @@ export const authOptions: NextAuthOptions = {
   ],
   callbacks: {
     async signIn({ user, profile }) {
-      const { email, name, image, avatar_url } = profile;
+      const { image, avatar_url } = profile;
+
+      const email = profile.email ?? user.email;
+      const name = profile.name ?? user.name;
       const imageUrl = String(image || avatar_url || user.image) || null;
 
       if (!email || !name) {
