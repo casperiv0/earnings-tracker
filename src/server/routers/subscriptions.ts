@@ -4,6 +4,8 @@ import { createRouter } from "server/createRouter";
 import { prisma } from "utils/prisma";
 import { TRPCError } from "@trpc/server";
 import { MAX_ITEMS_PER_TABLE } from "utils/constants";
+import { TABLE_FILTER } from "./income";
+import { createPrismaWhereFromFilters, getOrderByFromInput } from "utils/utils";
 
 const subscriptionSelect = Prisma.validator<Prisma.SubscriptionSelect>()({
   id: true,
@@ -26,17 +28,24 @@ export const subscriptionsRouter = createRouter()
     return next();
   })
   .query("all-infinite", {
-    input: z.number(),
+    input: z.object({
+      page: z.number(),
+      sorting: z.array(z.object({ id: z.string(), desc: z.boolean() })).optional(),
+      filters: z.array(TABLE_FILTER).optional(),
+    }),
     async resolve({ input }) {
-      const skip = input * MAX_ITEMS_PER_TABLE;
+      const skip = input.page * MAX_ITEMS_PER_TABLE;
 
       const [totalCount, items] = await Promise.all([
-        prisma.subscription.count(),
+        prisma.subscription.count({
+          where: input.filters ? createPrismaWhereFromFilters(input.filters) : undefined,
+        }),
         prisma.subscription.findMany({
           take: MAX_ITEMS_PER_TABLE,
           skip,
           select: subscriptionSelect,
-          orderBy: { createdAt: "desc" },
+          orderBy: getOrderByFromInput(input),
+          where: input.filters ? createPrismaWhereFromFilters(input.filters) : undefined,
         }),
       ]);
 

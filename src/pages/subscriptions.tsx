@@ -3,78 +3,78 @@ import { Table } from "components/table/Table";
 import { trpc } from "utils/trpc";
 import { useTablePagination } from "src/hooks/useTablePagination";
 import { ThreeDotsVertical } from "react-bootstrap-icons";
-import type { Subscription } from "@prisma/client";
+import { Subscription, SubscriptionType } from "@prisma/client";
 import { Button } from "components/Button";
-import type { RowSelectionState, SortingState } from "@tanstack/react-table";
+import type { SortingState } from "@tanstack/react-table";
 import { Dropdown } from "components/dropdown/Dropdown";
 import { Modal } from "components/modal/Modal";
-import { MAX_ITEMS_PER_TABLE } from "utils/constants";
+import { Loader } from "components/Loader";
+import type { TableFilter } from "components/table/filters/TableFilters";
+import { SubscriptionForm } from "components/subscriptions/SubscriptionForm";
 
-export default function ExpensesPage() {
+export default function SubscriptionsPage() {
   const [page, setPage] = React.useState<number>(0);
   const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [selectedRows, setSelectedRows] = React.useState<RowSelectionState>({});
+  const [filters, setFilters] = React.useState<TableFilter[]>([]);
 
   const [isOpen, setIsOpen] = React.useState(false);
-  const [, setTempExpense] = React.useState<Subscription | null>(null);
+  const [isDeleteOpen, setDeleteOpen] = React.useState(false);
+  const [tempSubscription, setTempSubscription] = React.useState<Subscription | null>(null);
 
-  const subscriptionsQUery = trpc.useQuery(["subscriptions.all-infinite", page], {
-    keepPreviousData: true,
-  });
+  const subscriptionsQuery = trpc.useQuery(
+    ["subscriptions.all-infinite", { page, sorting, filters }],
+    {
+      keepPreviousData: true,
+    },
+  );
 
   const pagination = useTablePagination({
-    isLoading: subscriptionsQUery.isRefetching || subscriptionsQUery.isLoading,
-    query: subscriptionsQUery,
+    isLoading: subscriptionsQuery.isRefetching || subscriptionsQuery.isLoading,
+    query: subscriptionsQuery,
     page,
     setPage,
   });
   const context = trpc.useContext();
 
-  const deleteExpense = trpc.useMutation("subscriptions.delete-subscription", {
+  const deleteSubscription = trpc.useMutation("subscriptions.delete-subscription", {
     onSuccess: () => {
       context.invalidateQueries(["subscriptions.all-infinite"]);
     },
   });
 
-  const deleteBulkExpense = trpc.useMutation("subscriptions.bulk-delete-subscription", {
-    onSuccess: () => {
-      context.invalidateQueries(["subscriptions.all-infinite"]);
-    },
-  });
+  async function handleDeleteSubscription(e: React.FormEvent) {
+    e.preventDefault();
+    if (!tempSubscription) return;
 
-  function handleDeleteSubscription(expense: Subscription) {
-    deleteExpense.mutate({
-      id: expense.id,
+    await deleteSubscription.mutateAsync({
+      id: tempSubscription.id,
     });
+
+    setTempSubscription(null);
+    setDeleteOpen(false);
   }
 
-  async function handleBulkDeleteExpenses() {
-    const expenseIds = [];
-
-    for (const idx in selectedRows) {
-      const expense = subscriptionsQUery.data?.items[parseInt(idx, 10)];
-      if (!expense) continue;
-
-      expenseIds.push(expense.id);
-    }
-
-    await deleteBulkExpense.mutateAsync({
-      ids: expenseIds,
-    });
-    setSelectedRows({});
-  }
-
-  function handleEditSubscription(expense: Subscription) {
+  function handleEditSubscription(subscription: Subscription) {
     setIsOpen(true);
-    setTempExpense(expense);
+    setTempSubscription(subscription);
+  }
+
+  function handleDeleteSubscriptionClick(subscription: Subscription) {
+    setDeleteOpen(true);
+    setTempSubscription(subscription);
   }
 
   function handleClose() {
-    setTempExpense(null);
+    setTempSubscription(null);
     setIsOpen(false);
   }
 
-  async function addNewExpense() {
+  function handleCloseDelete() {
+    setDeleteOpen(false);
+    setTempSubscription(null);
+  }
+
+  async function addNewSubscription() {
     setIsOpen(true);
   }
 
@@ -85,80 +85,105 @@ export default function ExpensesPage() {
           <h1 className="text-2xl md:text-3xl lg:text-4xl font-semibold font-serif">
             Subscriptions
           </h1>
-          <p className="mt-4 font-medium">
-            A list of subscriptions you are subscripted to. You can view the type and the amount of
-            the subscription
-          </p>
+          <p className="mt-4 font-medium">A list of all subscriptions.</p>
         </div>
 
-        <div className="min-w-fit">
-          <Button className="min-w-fit" onClick={addNewExpense}>
-            Add new subscription
-          </Button>
+        <div>
+          <Button onClick={addNewSubscription}>Add new subscription</Button>
         </div>
       </header>
 
       <div className="mt-5">
-        {(subscriptionsQUery.data?.items.length ?? 0) <= 0 ? (
-          <p className="text-neutral-300">You are not subscripted to anything yet.</p>
+        {subscriptionsQuery.isLoading ? (
+          <Loader fixed />
+        ) : (subscriptionsQuery.data?.items.length ?? 0) <= 0 && filters.length <= 0 ? (
+          <p className="text-neutral-300">There are no Subscriptions yet.</p>
         ) : (
-          <div>
-            <div className="mb-2">
-              <Button
-                onClick={handleBulkDeleteExpenses}
-                disabled={deleteBulkExpense.isLoading || Object.keys(selectedRows).length <= 0}
-              >
-                Delete selected subscriptions
-              </Button>
-            </div>
-
-            <Table
-              options={{
-                sorting,
-                setSorting,
-                rowSelection: selectedRows,
-                setRowSelection: setSelectedRows,
-              }}
-              pagination={pagination}
-              data={(subscriptionsQUery.data?.items ?? []).map((subscription, idx) => ({
-                id: MAX_ITEMS_PER_TABLE * page + idx + 1,
-                price: <span className="font-mono">{subscription.price}</span>,
-                name: subscription.name,
-                type: subscription.type,
-                description: subscription.description || "None",
-                actions: (
-                  <Dropdown
-                    trigger={
-                      <Button aria-label="Row options">
-                        <ThreeDotsVertical />
-                      </Button>
-                    }
-                  >
-                    <Dropdown.Item onClick={() => handleEditSubscription(subscription)}>
-                      Edit
-                    </Dropdown.Item>
-                    <Dropdown.Item onClick={() => handleDeleteSubscription(subscription)}>
-                      Delete
-                    </Dropdown.Item>
-                  </Dropdown>
-                ),
-              }))}
-              columns={[
-                { header: "#", accessorKey: "id" },
-                { header: "Price", accessorKey: "price" },
-                { header: "Name", accessorKey: "name" },
-                { header: "Type", accessorKey: "type" },
-                { header: "Description", accessorKey: "description" },
-                { header: "actions", accessorKey: "actions" },
-              ]}
-            />
-          </div>
+          <Table
+            options={{
+              sorting,
+              setSorting,
+              filters,
+              setFilters,
+            }}
+            query={subscriptionsQuery}
+            pagination={pagination}
+            data={(subscriptionsQuery.data?.items ?? []).map((subscription) => ({
+              type: subscription.type,
+              price: <span className="font-mono">&euro;{subscription.price}</span>,
+              name: subscription.name,
+              description: subscription.description || "None",
+              actions: (
+                <Dropdown
+                  trigger={
+                    <Button size="xss" aria-label="Row options">
+                      <ThreeDotsVertical />
+                    </Button>
+                  }
+                >
+                  <Dropdown.Item onClick={() => handleEditSubscription(subscription)}>
+                    Edit
+                  </Dropdown.Item>
+                  <Dropdown.Item onClick={() => handleDeleteSubscriptionClick(subscription)}>
+                    Delete
+                  </Dropdown.Item>
+                </Dropdown>
+              ),
+            }))}
+            filterTypes={[
+              { name: "type", filterType: "enum", options: Object.values(SubscriptionType) },
+              { name: "price", filterType: "number" },
+              { name: "name", filterType: "string" },
+              { name: "description", filterType: "string" },
+            ]}
+            columns={[
+              { header: "Type", accessorKey: "type" },
+              { header: "Price", accessorKey: "price" },
+              { header: "Name", accessorKey: "name" },
+              { header: "Description", accessorKey: "description" },
+              { header: "actions", accessorKey: "actions" },
+            ]}
+          />
         )}
       </div>
 
       <Modal isOpen={isOpen} onOpenChange={handleClose}>
-        <Modal.Title>Add new subscription</Modal.Title>
-        <Modal.Description>TODO</Modal.Description>
+        <Modal.Title>{tempSubscription ? "Edit Subscription" : "Add new subscription"}</Modal.Title>
+        {tempSubscription ? null : (
+          <Modal.Description>
+            Add a new subscription. This subscription will be visible on the chart once added.
+          </Modal.Description>
+        )}
+
+        <div>
+          <SubscriptionForm onSubmit={handleClose} subscription={tempSubscription} />
+        </div>
+      </Modal>
+
+      <Modal isOpen={isDeleteOpen} onOpenChange={handleCloseDelete}>
+        <form onSubmit={handleDeleteSubscription}>
+          <Modal.Title>Delete Subscription</Modal.Title>
+          <Modal.Description>
+            Are you sure you want to delete this subscription? This action cannot be undone.
+          </Modal.Description>
+
+          <footer className="mt-5 flex justify-end gap-3">
+            <Modal.Close>
+              <Button disabled={deleteSubscription.isLoading} type="reset">
+                Nope, Cancel
+              </Button>
+            </Modal.Close>
+            <Button
+              className="flex items-center gap-2"
+              disabled={deleteSubscription.isLoading}
+              variant="danger"
+              type="submit"
+            >
+              {deleteSubscription.isLoading ? <Loader size="sm" /> : null}
+              Yes, delete subscription
+            </Button>
+          </footer>
+        </form>
       </Modal>
     </div>
   );
