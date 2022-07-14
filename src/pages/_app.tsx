@@ -25,12 +25,12 @@ const MyApp = (({ Component, pageProps }: AppProps) => {
 }) as AppType;
 
 function getBaseUrl() {
+  if (process.env.NODE_ENV === "production") {
+    return "https://earnings-tracker.vercel.app";
+  }
+
   if (typeof window !== "undefined") {
     return `http://localhost:${process.env.PORT ?? 3000}`;
-  }
-  // reference for vercel.com
-  if (process.env.VERCEL_URL) {
-    return `https://${process.env.VERCEL_URL}`;
   }
 
   // assume localhost
