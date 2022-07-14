@@ -9,15 +9,23 @@ if (!process.env.GITHUB_ID || !process.env.SECRET || !process.env.GITHUB_SECRET)
 export const authOptions: NextAuthOptions = {
   secret: process.env.SECRET,
   providers: [
-    GithubProvider({ clientId: process.env.GITHUB_ID, clientSecret: process.env.GITHUB_SECRET }),
+    GithubProvider({
+      authorization: { params: { scope: "read:user user:email" } },
+      clientId: process.env.GITHUB_ID,
+      clientSecret: process.env.GITHUB_SECRET,
+    }),
   ],
   callbacks: {
     async signIn({ user, profile }) {
       const { image, avatar_url } = profile;
 
-      const email = profile.email ?? user.email;
-      const name = profile.name ?? user.name;
+      console.log({ user, profile });
+
+      const email = profile.email || user.email;
+      const name = profile.name || user.name;
       const imageUrl = String(image || avatar_url || user.image) || null;
+
+      console.log({ email, name });
 
       if (!email || !name) {
         return false;
