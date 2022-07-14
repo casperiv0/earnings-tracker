@@ -3,13 +3,14 @@ import { Table } from "components/table/Table";
 import { trpc } from "utils/trpc";
 import { useTablePagination } from "src/hooks/useTablePagination";
 import { ThreeDotsVertical } from "react-bootstrap-icons";
-import type { EarningsEntryDate, Income as _Income } from "@prisma/client";
+import { EarningsEntryDate, Income as _Income, IncomeType, Month } from "@prisma/client";
 import { Button } from "components/Button";
 import type { RowSelectionState, SortingState } from "@tanstack/react-table";
 import { Dropdown } from "components/dropdown/Dropdown";
 import { Modal } from "components/modal/Modal";
 import { IncomeForm } from "components/income/IncomeForm";
 import { Loader } from "components/Loader";
+import type { TableFilter } from "components/table/filters/TableFilters";
 
 export interface Income extends _Income {
   date: Pick<EarningsEntryDate, "month" | "year">;
@@ -19,12 +20,13 @@ export default function IncomePage() {
   const [page, setPage] = React.useState<number>(0);
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [selectedRows, setSelectedRows] = React.useState<RowSelectionState>({});
+  const [filters, setFilters] = React.useState<TableFilter[]>([]);
 
   const [isOpen, setIsOpen] = React.useState(false);
   const [isDeleteOpen, setDeleteOpen] = React.useState(false);
   const [tempIncome, setTempIncome] = React.useState<Income | null>(null);
 
-  const incomeQuery = trpc.useQuery(["income.all-infinite", { page, sorting }], {
+  const incomeQuery = trpc.useQuery(["income.all-infinite", { page, sorting, filters }], {
     keepPreviousData: true,
   });
 
@@ -94,7 +96,7 @@ export default function IncomePage() {
       <div className="mt-5">
         {incomeQuery.isLoading ? (
           <Loader fixed />
-        ) : (incomeQuery.data?.items.length ?? 0) <= 0 ? (
+        ) : (incomeQuery.data?.items.length ?? 0) <= 0 && filters.length <= 0 ? (
           <p className="text-neutral-300">There is no income yet.</p>
         ) : (
           <Table
@@ -103,6 +105,8 @@ export default function IncomePage() {
               setSorting,
               rowSelection: selectedRows,
               setRowSelection: setSelectedRows,
+              filters,
+              setFilters,
             }}
             pagination={pagination}
             data={(incomeQuery.data?.items ?? []).map((income) => ({
@@ -126,11 +130,17 @@ export default function IncomePage() {
                 </Dropdown>
               ),
             }))}
+            filterTypes={[
+              { name: "type", filterType: "enum", options: Object.values(IncomeType) },
+              { name: "amount", filterType: "number" },
+              { name: "month", filterType: "enum", options: Object.values(Month) },
+              { name: "year", filterType: "number" },
+            ]}
             columns={[
-              { header: "Type", accessorKey: "type", filter: "string" },
-              { header: "Amount", accessorKey: "amount", filter: "number" },
-              { header: "Month", accessorKey: "month", filter: "string" },
-              { header: "Year", accessorKey: "year", filter: "number" },
+              { header: "Type", accessorKey: "type" },
+              { header: "Amount", accessorKey: "amount" },
+              { header: "Month", accessorKey: "month" },
+              { header: "Year", accessorKey: "year" },
               { header: "Description", accessorKey: "description" },
               { header: "actions", accessorKey: "actions" },
             ]}

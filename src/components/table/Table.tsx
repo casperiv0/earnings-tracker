@@ -14,22 +14,26 @@ import { TableHeader } from "./TableHeader";
 import { TablePagination } from "./TablePagination";
 import type { TablePaginationOptions } from "src/hooks/useTablePagination";
 import { makeCheckboxHeader } from "./IndeterminateCheckbox";
-import { TableFilters, TableFilterType } from "./TableFilters";
+import { TableFilter, TableFilters } from "./filters/TableFilters";
 
-type TableColumn<TData extends RowData> = ColumnDef<TData> & {
-  filter?: TableFilterType;
-};
+export interface TableFiltersStateProps {
+  filters: TableFilter[];
+  setFilters: React.Dispatch<React.SetStateAction<TableFilter[]>>;
+}
 
 interface Props<TData extends RowData> {
   data: TData[];
-  columns: TableColumn<TData>[];
+  columns: ColumnDef<TData>[];
 
+  filterTypes?: TableFilter[];
   pagination?: TablePaginationOptions;
   options?: {
     sorting?: SortingState;
     setSorting?: OnChangeFn<SortingState>;
     rowSelection?: RowSelectionState;
     setRowSelection?: OnChangeFn<RowSelectionState>;
+    filters?: TableFilter[];
+    setFilters?: React.Dispatch<React.SetStateAction<TableFilter[]>>;
   };
 }
 
@@ -37,6 +41,7 @@ export function Table<TData extends RowData>({
   data,
   columns,
   pagination,
+  filterTypes,
   options = {},
 }: Props<TData>) {
   const tableColumns = React.useMemo(() => {
@@ -68,26 +73,40 @@ export function Table<TData extends RowData>({
 
   return (
     <div className="block max-w-full overflow-x-auto">
-      <TableFilters<TData> headers={table.getHeaderGroups().flatMap((header) => header.headers)} />
+      {filterTypes && options.filters && options.setFilters ? (
+        <TableFilters
+          filterTypes={filterTypes}
+          setFilters={options.setFilters}
+          filters={options.filters}
+        />
+      ) : null}
 
-      <table className="w-full overflow-x-hidden whitespace-nowrap max-h-64">
-        <thead>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id}>
-              {headerGroup.headers.map((header) => {
-                return <TableHeader key={header.id} header={header} />;
-              })}
-            </tr>
-          ))}
-        </thead>
-        <tbody>
-          {table.getRowModel().rows.map((row, idx) => (
-            <TableRow key={row.id} row={row} idx={idx} />
-          ))}
-        </tbody>
-      </table>
+      {(options.filters?.length ?? 0) >= 1 && data.length <= 0 ? (
+        <p className="text-neutral-300">
+          No results found with the selected filters. Please use a different query.
+        </p>
+      ) : (
+        <>
+          <table className="w-full overflow-x-hidden whitespace-nowrap max-h-64">
+            <thead>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <tr key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => {
+                    return <TableHeader key={header.id} header={header} />;
+                  })}
+                </tr>
+              ))}
+            </thead>
+            <tbody>
+              {table.getRowModel().rows.map((row, idx) => (
+                <TableRow key={row.id} row={row} idx={idx} />
+              ))}
+            </tbody>
+          </table>
 
-      {pagination ? <TablePagination pagination={pagination} /> : null}
+          {pagination ? <TablePagination pagination={pagination} /> : null}
+        </>
+      )}
     </div>
   );
 }

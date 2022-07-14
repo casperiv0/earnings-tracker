@@ -9,4 +9,3 @@ A simple Next.js app template.
 - Sass (scss modules)
 - ESLint
 - Prettier
-- React -> Preact on production build.

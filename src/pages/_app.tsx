@@ -26,7 +26,7 @@ const MyApp = (({ Component, pageProps }: AppProps) => {
 
 function getBaseUrl() {
   if (typeof window !== "undefined") {
-    return "";
+    return `http://localhost:${process.env.PORT ?? 3000}`;
   }
   // reference for vercel.com
   if (process.env.VERCEL_URL) {
@@ -40,6 +40,13 @@ function getBaseUrl() {
 export default withTRPC<AppRouter>({
   config() {
     return {
+      url: getBaseUrl(),
+      fetch(url: RequestInfo | URL, options?: RequestInit | undefined) {
+        return fetch(url, {
+          ...options,
+          credentials: "include",
+        });
+      },
       links: [
         // adds pretty logs to your console in development and logs errors in production
         loggerLink({

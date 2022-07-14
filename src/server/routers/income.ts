@@ -19,6 +19,14 @@ export const incomeSelect = Prisma.validator<Prisma.IncomeSelect>()({
   updatedAt: true,
 });
 
+const TABLE_FILTER = z.object({
+  name: z.string(),
+  filterType: z.enum(["string", "date", "number", "enum"]),
+  content: z.string().or(z.number()).optional(),
+  type: z.enum(["equals", "contains", "lt", "gt"]).optional(),
+  options: z.array(z.string()).optional(),
+});
+
 export const incomeRouter = createRouter()
   .middleware(async ({ ctx, next }) => {
     if (!ctx.session || !ctx.dbUser) {
@@ -31,17 +39,21 @@ export const incomeRouter = createRouter()
     input: z.object({
       page: z.number(),
       sorting: z.array(z.object({ id: z.string(), desc: z.boolean() })).optional(),
+      filters: z.array(TABLE_FILTER).optional(),
     }),
     async resolve({ input }) {
       const skip = input.page * MAX_ITEMS_PER_TABLE;
 
       const [totalCount, items] = await Promise.all([
-        prisma.income.count(),
+        prisma.income.count({
+          where: input.filters ? makeWhereFromFilters(input.filters) : undefined,
+        }),
         prisma.income.findMany({
           take: MAX_ITEMS_PER_TABLE,
           skip,
           select: incomeSelect,
           orderBy: getOrderByFromInput(input),
+          where: input.filters ? makeWhereFromFilters(input.filters) : undefined,
         }),
       ]);
 
@@ -121,3 +133,22 @@ export const incomeRouter = createRouter()
       await prisma.income.delete({ where: { id: input.id } });
     },
   });
+
+// todo: make utils function
+function makeWhereFromFilters(filters: z.infer<typeof TABLE_FILTER>[]) {
+  const andClause = [];
+
+  for (const filter of filters) {
+    if (!filter.type || !filter.content) continue;
+
+    const useDateObj = ["month", "year"].includes(filter.name);
+
+    andClause.push(
+      useDateObj
+        ? { date: { [filter.name]: { [filter.type]: filter.content } } }
+        : { [filter.name]: { [filter.type]: filter.content } },
+    );
+  }
+
+  return { AND: andClause };
+}
