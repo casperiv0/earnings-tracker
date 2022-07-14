@@ -139,10 +139,12 @@ export default function ExpensesPage() {
       </div>
 
       <Modal isOpen={isOpen} onOpenChange={handleClose}>
-        <Modal.Title>Add new expense</Modal.Title>
-        <Modal.Description>
-          Add a new expense. This expense will be visible on the chart once added.
-        </Modal.Description>
+        <Modal.Title>{tempExpense ? "Edit Expense" : "Add new expense"}</Modal.Title>
+        {tempExpense ? null : (
+          <Modal.Description>
+            Add a new expense. This expense will be visible on the chart once added.
+          </Modal.Description>
+        )}
 
         <div>
           <ExpensesForm onSubmit={handleClose} expense={tempExpense} />

@@ -148,10 +148,12 @@ export default function IncomePage() {
       </div>
 
       <Modal isOpen={isOpen} onOpenChange={handleClose}>
-        <Modal.Title>Add new income</Modal.Title>
-        <Modal.Description>
-          Add a new income. This income will be visible on the chart once added.
-        </Modal.Description>
+        <Modal.Title>{tempIncome ? "Edit Income" : "Add new income"}</Modal.Title>
+        {tempIncome ? null : (
+          <Modal.Description>
+            Add a new income. This income will be visible on the chart once added.
+          </Modal.Description>
+        )}
 
         <div>
           <IncomeForm onSubmit={handleClose} income={tempIncome} />
