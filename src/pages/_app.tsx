@@ -26,7 +26,7 @@ const MyApp = (({ Component, pageProps }: AppProps) => {
 
 function getBaseUrl() {
   if (process.env.NODE_ENV === "production") {
-    return "https://earnings-tracker.vercel.app";
+    return "https://earnings.caspertheghost.me";
   }
 
   if (typeof window !== "undefined") {

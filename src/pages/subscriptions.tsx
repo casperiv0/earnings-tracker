@@ -80,7 +80,7 @@ export default function SubscriptionsPage() {
   }
 
   return (
-    <div className="m-8 mx-10 h-full">
+    <div className="m-8 mx-5 md:mx-10 h-full">
       <PageHeader title="Subscriptions" description="A list of all subscriptions.">
         <Button onClick={addNewSubscription}>Add new subscription</Button>
       </PageHeader>

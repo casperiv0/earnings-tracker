@@ -19,7 +19,7 @@ export default function Index() {
   const expenses = dashboardQuery.data?.expenses ?? [];
 
   return (
-    <div className="m-8 mx-10 h-full">
+    <div className="m-8 mx-5 md:mx-10 h-full">
       <PageHeader title="Dashboard" description="Welcome Back!" />
 
       {/* todo: allow selecting year */}

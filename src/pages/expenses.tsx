@@ -80,7 +80,7 @@ export default function ExpensesPage() {
   }
 
   return (
-    <div className="m-8 mx-10 h-full">
+    <div className="m-8 mx-5 md:mx-10 h-full">
       <PageHeader
         title="Expenses"
         description="A list of all expenses from any year starting in 2018."

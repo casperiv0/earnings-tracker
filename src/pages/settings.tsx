@@ -38,7 +38,7 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="m-8 mx-10 h-full">
+    <div className="m-8 mx-5 md:mx-10mx-10 h-full">
       <PageHeader
         title="Settings"
         description="View your account settings. This information is managed by GitHub."

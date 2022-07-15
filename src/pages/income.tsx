@@ -81,7 +81,7 @@ export default function IncomePage() {
   }
 
   return (
-    <div className="m-8 mx-10 h-full">
+    <div className="m-8 mx-5 md:mx-10 h-full">
       <PageHeader title="Income" description="A list of all income from any year starting in 2018.">
         <Button onClick={addNewIncome}>Add new income</Button>
       </PageHeader>
