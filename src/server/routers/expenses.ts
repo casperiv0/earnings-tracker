@@ -6,6 +6,7 @@ import { TRPCError } from "@trpc/server";
 import { MAX_ITEMS_PER_TABLE } from "utils/constants";
 import { createPrismaWhereFromFilters, getOrderByFromInput } from "utils/utils";
 import { TABLE_FILTER } from "./income";
+import { getUserFromSession } from "utils/nextauth";
 
 export const defaultEarningsSelect = Prisma.validator<Prisma.ExpensesSelect>()({
   id: true,
@@ -33,19 +34,20 @@ export const expensesRouter = createRouter()
       sorting: z.array(z.object({ id: z.string(), desc: z.boolean() })).optional(),
       filters: z.array(TABLE_FILTER).optional(),
     }),
-    async resolve({ input }) {
+    async resolve({ ctx, input }) {
       const skip = input.page * MAX_ITEMS_PER_TABLE;
+      const userId = getUserFromSession(ctx).dbUser.id;
 
       const [totalCount, items] = await Promise.all([
         prisma.expenses.count({
-          where: input.filters ? createPrismaWhereFromFilters(input.filters) : undefined,
+          where: input.filters ? createPrismaWhereFromFilters(input.filters, userId) : { userId },
         }),
         prisma.expenses.findMany({
           take: MAX_ITEMS_PER_TABLE,
           skip,
           select: defaultEarningsSelect,
           orderBy: getOrderByFromInput(input),
-          where: input.filters ? createPrismaWhereFromFilters(input.filters) : undefined,
+          where: input.filters ? createPrismaWhereFromFilters(input.filters, userId) : { userId },
         }),
       ]);
 
@@ -60,9 +62,9 @@ export const expensesRouter = createRouter()
       month: z.nativeEnum(Month),
     }),
     async resolve({ ctx, input }) {
-      const userId = ctx.dbUser!.id;
+      const userId = getUserFromSession(ctx).dbUser.id;
 
-      const post = await prisma.expenses.create({
+      const createdExpense = await prisma.expenses.create({
         data: {
           amount: input.amount,
           description: input.description,
@@ -73,7 +75,7 @@ export const expensesRouter = createRouter()
         },
         select: defaultEarningsSelect,
       });
-      return post;
+      return createdExpense;
     },
   })
   .mutation("edit-expense", {
@@ -84,8 +86,14 @@ export const expensesRouter = createRouter()
       description: z.string().nullable().optional(),
       month: z.nativeEnum(Month),
     }),
-    async resolve({ input }) {
-      const post = await prisma.expenses.update({
+    async resolve({ ctx, input }) {
+      const userId = getUserFromSession(ctx).dbUser.id;
+
+      await prisma.expenses.findFirstOrThrow({
+        where: { userId, id: input.id },
+      });
+
+      const updatedExpense = await prisma.expenses.update({
         where: { id: input.id },
         data: {
           amount: input.amount,
@@ -94,15 +102,20 @@ export const expensesRouter = createRouter()
         },
         select: defaultEarningsSelect,
       });
-      return post;
+      return updatedExpense;
     },
   })
   .mutation("delete-expense", {
     input: z.object({
       id: z.string(),
     }),
-    async resolve({ input }) {
-      const { id } = input;
-      await prisma.expenses.delete({ where: { id } });
+    async resolve({ ctx, input }) {
+      const userId = getUserFromSession(ctx).dbUser.id;
+
+      await prisma.expenses.findFirstOrThrow({
+        where: { userId, id: input.id },
+      });
+
+      await prisma.expenses.delete({ where: { id: input.id } });
     },
   });

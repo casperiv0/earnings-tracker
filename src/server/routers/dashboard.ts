@@ -1,5 +1,6 @@
 import { TRPCError } from "@trpc/server";
 import { createRouter } from "server/createRouter";
+import { getUserFromSession } from "utils/nextauth";
 import { prisma } from "utils/prisma";
 import { z } from "zod";
 import { defaultEarningsSelect } from "./expenses";
@@ -15,17 +16,18 @@ export const dashboardRouter = createRouter()
   })
   .query("all-infinite", {
     input: z.number().min(2018).max(2099),
-    async resolve({ input }) {
+    async resolve({ ctx, input }) {
       const year = input || new Date().getFullYear();
+      const userId = getUserFromSession(ctx).dbUser.id;
 
       const [expenses, income] = await Promise.all([
         prisma.expenses.findMany({
-          where: { date: { year } },
+          where: { date: { year }, userId },
           select: defaultEarningsSelect,
           orderBy: { createdAt: "asc" },
         }),
         prisma.income.findMany({
-          where: { date: { year } },
+          where: { date: { year }, userId },
           select: incomeSelect,
           orderBy: { createdAt: "asc" },
         }),

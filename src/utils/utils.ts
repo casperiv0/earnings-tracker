@@ -53,8 +53,11 @@ export function getSortingDir(cv: { desc?: boolean | null }): Prisma.SortOrder {
   return Prisma.SortOrder.desc;
 }
 
-export function createPrismaWhereFromFilters(filters: z.infer<typeof TABLE_FILTER>[]): any {
-  const andClause = [];
+export function createPrismaWhereFromFilters(
+  filters: z.infer<typeof TABLE_FILTER>[],
+  userId: string,
+): any {
+  const andClause: any[] = [{ userId }];
 
   for (const filter of filters) {
     if (!filter.type || !filter.content) continue;

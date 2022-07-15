@@ -1,5 +1,5 @@
 import * as React from "react";
-import { classNames } from "utils/utils";
+import { classNames } from "utils/classNames";
 
 type Props = Omit<JSX.IntrinsicElements["textarea"], "id"> & {
   errorMessage?: string;

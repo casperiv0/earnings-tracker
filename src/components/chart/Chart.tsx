@@ -14,18 +14,20 @@ import {
 import type { Expense } from "src/pages/expenses";
 import type { Income } from "src/pages/income";
 import type { IncomeType, Month } from "@prisma/client";
+import { DEFINED_MONTHS } from "utils/constants";
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
 interface Props {
+  selectedYear: number;
   expenses: Expense[];
   income: Income[];
 }
 
-export function makeDifference(months: Month[], income: Income[], expenses: Expense[]) {
+export function makeDifference(income: Income[], expenses: Expense[]) {
   const _data = [];
 
-  for (const month of months) {
+  for (const month of DEFINED_MONTHS) {
     const incomeForMonth = income.filter((item) => item.date.month === month);
     const expensesForMonth = expenses.filter((item) => item.date.month === month);
 
@@ -41,11 +43,17 @@ export function makeDifference(months: Month[], income: Income[], expenses: Expe
 export function getTotalForMonth(data: Income[] | Expense[], type?: IncomeType) {
   const _data: Partial<Record<Month, number>> = {};
 
-  for (const item of data) {
-    const current = _data[item.date.month];
-    if (type && "type" in item && item.type !== type) continue;
+  for (const m of DEFINED_MONTHS) {
+    const month = m as Month;
+    const filtered = data.filter((item) => item.date.month === month) as Income[] | Expense[];
+    _data[month] = 0;
 
-    _data[item.date.month] = current ? item.amount + current : item.amount;
+    for (const item of filtered) {
+      const current = _data[item.date.month];
+      if (type && "type" in item && item.type !== type) continue;
+
+      _data[item.date.month] = current ? item.amount + current : item.amount;
+    }
   }
 
   return Object.values(_data);
@@ -56,11 +64,21 @@ export function getMonths(expenses: Expense[], income: Income[]) {
   return months;
 }
 
-export default function Chart({ expenses, income }: Props) {
-  const months = getMonths(expenses, income);
+export default function Chart({ selectedYear, expenses, income }: Props) {
+  const monthLabels = React.useMemo(() => {
+    const date = new Date();
+    const isCurrentYear = date.getFullYear() === selectedYear;
+    const currentMonth = new Date().getMonth();
+
+    if (isCurrentYear) {
+      return DEFINED_MONTHS.slice(0, currentMonth + 1);
+    }
+
+    return DEFINED_MONTHS;
+  }, [selectedYear]);
 
   const chartData: ChartData<"line"> = {
-    labels: months.map((month) => month),
+    labels: monthLabels,
     datasets: [
       {
         label: "# Income",
@@ -78,7 +96,7 @@ export default function Chart({ expenses, income }: Props) {
       },
       {
         label: "# Difference",
-        data: makeDifference(months, income, expenses),
+        data: makeDifference(income, expenses),
         fill: true,
         backgroundColor: "rgb(22 163 74)",
         borderColor: "rgb(22 163 74)",

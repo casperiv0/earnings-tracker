@@ -4,6 +4,10 @@ import { trpc } from "utils/trpc";
 import type { Expense } from "./expenses";
 import type { Income } from "./income";
 import { IncomeType } from "@prisma/client";
+import { Dropdown } from "components/dropdown/Dropdown";
+import { Button } from "components/Button";
+
+const YEARS = [2022, 2021, 2020, 2019, 2018];
 
 export default function Index() {
   const [year, setYear] = React.useState(() => new Date().getFullYear());
@@ -25,9 +29,16 @@ export default function Index() {
       {/* todo: allow selecting year */}
       <div className="flex flex-col gap-y-2">
         <div className="bg-secondary p-5 rounded-sm shadow-md">
-          <h2 onClick={() => setYear(2021)} className="font-semibold text-2xl mb-2 font-serif">
-            {year}
-          </h2>
+          <Dropdown
+            alignOffset={0}
+            trigger={<Button className="font-semibold text-2xl mb-2 font-serif">{year}</Button>}
+          >
+            {YEARS.map((year) => (
+              <Dropdown.Item key={year} onClick={() => setYear(year)}>
+                {year}
+              </Dropdown.Item>
+            ))}
+          </Dropdown>
 
           <p>
             <span className="font-semibold">Total Income:</span>{" "}
@@ -51,7 +62,7 @@ export default function Index() {
           </p>
         </div>
 
-        <Chart expenses={expenses} income={income} />
+        <Chart selectedYear={year} expenses={expenses} income={income} />
       </div>
     </div>
   );
@@ -63,8 +74,7 @@ export function getTotal(data: (Income | Expense)[]) {
 }
 
 export function getTotalDifference(expenses: Expense[], income: Income[]) {
-  const months = getMonths(expenses, income);
-  const total = makeDifference(months, income, expenses);
+  const total = makeDifference(income, expenses);
   return sum(...total).toFixed(2);
 }
 

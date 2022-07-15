@@ -6,6 +6,7 @@ import { TRPCError } from "@trpc/server";
 import { MAX_ITEMS_PER_TABLE } from "utils/constants";
 import { TABLE_FILTER } from "./income";
 import { createPrismaWhereFromFilters, getOrderByFromInput } from "utils/utils";
+import { getUserFromSession } from "utils/nextauth";
 
 const subscriptionSelect = Prisma.validator<Prisma.SubscriptionSelect>()({
   id: true,
@@ -33,19 +34,20 @@ export const subscriptionsRouter = createRouter()
       sorting: z.array(z.object({ id: z.string(), desc: z.boolean() })).optional(),
       filters: z.array(TABLE_FILTER).optional(),
     }),
-    async resolve({ input }) {
+    async resolve({ ctx, input }) {
       const skip = input.page * MAX_ITEMS_PER_TABLE;
+      const userId = getUserFromSession(ctx).dbUser.id;
 
       const [totalCount, items] = await Promise.all([
         prisma.subscription.count({
-          where: input.filters ? createPrismaWhereFromFilters(input.filters) : undefined,
+          where: input.filters ? createPrismaWhereFromFilters(input.filters, userId) : undefined,
         }),
         prisma.subscription.findMany({
           take: MAX_ITEMS_PER_TABLE,
           skip,
           select: subscriptionSelect,
           orderBy: getOrderByFromInput(input),
-          where: input.filters ? createPrismaWhereFromFilters(input.filters) : undefined,
+          where: input.filters ? createPrismaWhereFromFilters(input.filters, userId) : undefined,
         }),
       ]);
 
@@ -60,13 +62,9 @@ export const subscriptionsRouter = createRouter()
       description: z.string().nullable().optional(),
     }),
     async resolve({ ctx, input }) {
-      const userId = ctx.dbUser?.id ?? "62bee0cd017b854271152f8b";
+      const userId = getUserFromSession(ctx).dbUser.id;
 
-      if (!userId) {
-        throw new TRPCError({ code: "UNAUTHORIZED" });
-      }
-
-      const post = await prisma.subscription.create({
+      const subscription = await prisma.subscription.create({
         data: {
           price: input.price,
           name: input.name,
@@ -77,7 +75,7 @@ export const subscriptionsRouter = createRouter()
         select: subscriptionSelect,
       });
 
-      return post;
+      return subscription;
     },
   })
   .mutation("edit-subscription", {
@@ -88,8 +86,14 @@ export const subscriptionsRouter = createRouter()
       type: z.nativeEnum(SubscriptionType),
       description: z.string().nullable().optional(),
     }),
-    async resolve({ input }) {
-      const post = await prisma.subscription.update({
+    async resolve({ ctx, input }) {
+      const userId = getUserFromSession(ctx).dbUser.id;
+
+      await prisma.subscription.findFirstOrThrow({
+        where: { userId, id: input.id },
+      });
+
+      const subscription = await prisma.subscription.update({
         where: { id: input.id },
         data: {
           price: input.price,
@@ -99,31 +103,20 @@ export const subscriptionsRouter = createRouter()
         },
         select: subscriptionSelect,
       });
-      return post;
-    },
-  })
-  .mutation("bulk-delete-subscription", {
-    input: z.object({
-      ids: z.array(z.string()),
-    }),
-    async resolve({ input }) {
-      const { ids } = input;
-
-      await prisma.$transaction(
-        ids.map((id) =>
-          prisma.subscription.delete({
-            where: { id },
-          }),
-        ),
-      );
+      return subscription;
     },
   })
   .mutation("delete-subscription", {
     input: z.object({
       id: z.string(),
     }),
-    async resolve({ input }) {
-      const { id } = input;
-      await prisma.subscription.delete({ where: { id } });
+    async resolve({ ctx, input }) {
+      const userId = getUserFromSession(ctx).dbUser.id;
+
+      await prisma.subscription.findFirstOrThrow({
+        where: { userId, id: input.id },
+      });
+
+      await prisma.subscription.delete({ where: { id: input.id } });
     },
   });
