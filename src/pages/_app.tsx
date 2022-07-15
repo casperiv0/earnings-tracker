@@ -6,7 +6,7 @@ import { trpc } from "utils/trpc";
 import type { AppProps } from "next/app";
 import type { AppType } from "next/dist/shared/lib/utils";
 import superjson from "superjson";
-import { Layout } from "components/Layout";
+import { Layout } from "components/ui/Layout";
 import type { AppRouter } from "server/routers/_app";
 import { SessionProvider } from "next-auth/react";
 

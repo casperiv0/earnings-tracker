@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import * as React from "react";
 import { trpc } from "utils/trpc";
 import { Loader } from "./Loader";
-import { Sidebar } from "./sidebar/Sidebar";
+import { Sidebar } from "../sidebar/Sidebar";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -39,11 +39,11 @@ export function Layout({ children }: LayoutProps) {
         <meta name="description" content="A simple and good looking income/expenses tracker." />
       </Head>
 
-      <div className="flex">
+      <div className="md:flex">
         {router.pathname === "/login" ? null : (
           <>
             <Sidebar />
-            <div className="w-72 flex-shrink-0" />
+            <div className="w-0 md:w-72 flex-shrink-0" />
           </>
         )}
         <main className="layout-main">{children}</main>

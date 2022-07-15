@@ -83,7 +83,6 @@ export default function Chart({ selectedYear, expenses, income }: Props) {
       {
         label: "# Income",
         data: getTotalForMonth(income),
-        fill: true,
         backgroundColor: "rgb(59 130 246)",
         borderColor: "rgb(59 130 246)",
       },
@@ -105,18 +104,22 @@ export default function Chart({ selectedYear, expenses, income }: Props) {
   };
 
   return (
-    <Line
-      className="bg-secondary p-5 rounded-sm shadow-md"
-      options={{
-        color: "white",
-        responsive: true,
-        interaction: {
-          mode: "index",
-          intersect: false,
-        },
-      }}
-      data={chartData}
-    />
+    <div className="h-[500px]">
+      <Line
+        className="bg-secondary p-5 rounded-sm shadow-md"
+        options={{
+          maintainAspectRatio: false,
+          normalized: true,
+          color: "white",
+          responsive: true,
+          interaction: {
+            mode: "index",
+            intersect: false,
+          },
+        }}
+        data={chartData}
+      />
+    </div>
   );
 }
 

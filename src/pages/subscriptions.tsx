@@ -4,13 +4,14 @@ import { trpc } from "utils/trpc";
 import { useTablePagination } from "src/hooks/useTablePagination";
 import { ThreeDotsVertical } from "react-bootstrap-icons";
 import { Subscription, SubscriptionType } from "@prisma/client";
-import { Button } from "components/Button";
+import { Button } from "components/ui/Button";
 import type { SortingState } from "@tanstack/react-table";
 import { Dropdown } from "components/dropdown/Dropdown";
 import { Modal } from "components/modal/Modal";
-import { Loader } from "components/Loader";
+import { Loader } from "components/ui/Loader";
 import type { TableFilter } from "components/table/filters/TableFilters";
 import { SubscriptionForm } from "components/subscriptions/SubscriptionForm";
+import { PageHeader } from "components/ui/PageHeader";
 
 export default function SubscriptionsPage() {
   const [page, setPage] = React.useState<number>(0);
@@ -80,18 +81,9 @@ export default function SubscriptionsPage() {
 
   return (
     <div className="m-8 mx-10 h-full">
-      <header className="flex flex-col lg:flex-row lg:items-center justify-between w-full mb-5 gap-y-3">
-        <div>
-          <h1 className="text-2xl md:text-3xl lg:text-4xl font-semibold font-serif">
-            Subscriptions
-          </h1>
-          <p className="mt-4 font-medium">A list of all subscriptions.</p>
-        </div>
-
-        <div>
-          <Button onClick={addNewSubscription}>Add new subscription</Button>
-        </div>
-      </header>
+      <PageHeader title="Subscriptions" description="A list of all subscriptions.">
+        <Button onClick={addNewSubscription}>Add new subscription</Button>
+      </PageHeader>
 
       <div className="mt-5">
         {subscriptionsQuery.isLoading ? (

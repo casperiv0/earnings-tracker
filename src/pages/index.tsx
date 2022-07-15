@@ -5,7 +5,8 @@ import type { Expense } from "./expenses";
 import type { Income } from "./income";
 import { IncomeType } from "@prisma/client";
 import { Dropdown } from "components/dropdown/Dropdown";
-import { Button } from "components/Button";
+import { Button } from "components/ui/Button";
+import { PageHeader } from "components/ui/PageHeader";
 
 const YEARS = [2022, 2021, 2020, 2019, 2018];
 
@@ -19,12 +20,7 @@ export default function Index() {
 
   return (
     <div className="m-8 mx-10 h-full">
-      <header className="flex flex-col lg:flex-row lg:items-center justify-between mb-5 gap-y-3">
-        <div>
-          <h1 className="text-2xl md:text-3xl lg:text-4xl font-semibold font-serif">Dashboard</h1>
-          <p className="mt-2 font-medium">Welcome back!</p>
-        </div>
-      </header>
+      <PageHeader title="Dashboard" description="Welcome Back!" />
 
       {/* todo: allow selecting year */}
       <div className="flex flex-col gap-y-2">

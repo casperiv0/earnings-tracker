@@ -1,6 +1,6 @@
 import type * as React from "react";
 import * as Dialog from "@radix-ui/react-dialog";
-import { Button } from "components/Button";
+import { Button } from "components/ui/Button";
 import { X } from "react-bootstrap-icons";
 
 interface Props {

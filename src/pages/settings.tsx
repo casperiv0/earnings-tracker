@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Button } from "components/Button";
+import { Button } from "components/ui/Button";
 import { Form } from "components/form/Form";
 import { FormField } from "components/form/FormField";
 import { Input } from "components/form/Input";
@@ -7,6 +7,7 @@ import { trpc } from "utils/trpc";
 import { Modal } from "components/modal/Modal";
 import { signOut } from "next-auth/react";
 import Image from "next/future/image";
+import { PageHeader } from "components/ui/PageHeader";
 
 export default function SettingsPage() {
   const [isOpen, setIsOpen] = React.useState(false);
@@ -38,14 +39,10 @@ export default function SettingsPage() {
 
   return (
     <div className="m-8 mx-10 h-full">
-      <header className="flex flex-col lg:flex-row lg:items-center justify-between w-full mb-5 gap-y-3">
-        <div>
-          <h1 className="text-2xl md:text-3xl lg:text-4xl font-semibold font-serif">Settings</h1>
-          <p className="mt-2 font-medium">
-            View your account settings. This information is managed by GitHub.
-          </p>
-        </div>
-      </header>
+      <PageHeader
+        title="Settings"
+        description="View your account settings. This information is managed by GitHub."
+      />
 
       <section id="account_info">
         <header>

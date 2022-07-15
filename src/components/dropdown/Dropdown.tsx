@@ -1,7 +1,8 @@
 import * as React from "react";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
-import { Button, ButtonProps } from "components/Button";
+import { Button, ButtonProps } from "components/ui/Button";
 import { classNames } from "utils/classNames";
+import Link from "next/link";
 
 interface Props extends DropdownMenu.MenuContentProps {
   triggerKind?: "trigger" | "trigger-item";
@@ -68,6 +69,29 @@ Dropdown.Item = function DropdownItem({ children, ...rest }: Omit<ButtonProps, "
       >
         {children}
       </Button>
+    </DropdownMenu.Item>
+  );
+};
+
+Dropdown.Link = function DropdownItem({
+  children,
+  ...rest
+}: Omit<JSX.IntrinsicElements["a"], "ref"> & { href: string }) {
+  return (
+    <DropdownMenu.Item>
+      <Link href={rest.href}>
+        <a
+          className={classNames(
+            "block bg-tertiary hover:bg-secondary transition shadow-sm text-white",
+            "rounded-sm transition-all border-[1.5px] border-transparent",
+            "disabled:opacity-60 disabled:cursor-not-allowed outline-none",
+            "my-0.5 rounded-sm transition-colors w-full text-left p-[3px] px-3",
+            rest.className,
+          )}
+        >
+          {children}
+        </a>
+      </Link>
     </DropdownMenu.Item>
   );
 };

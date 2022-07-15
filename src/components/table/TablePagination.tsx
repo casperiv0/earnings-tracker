@@ -4,7 +4,7 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "react-bootstrap-icons";
-import { Button } from "components/Button";
+import { Button } from "components/ui/Button";
 import type { TablePaginationOptions } from "src/hooks/useTablePagination";
 
 interface Props {

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { classNames } from "../utils/classNames";
+import { classNames } from "../../utils/classNames";
 
 export type ButtonProps = JSX.IntrinsicElements["button"] & {
   size?: keyof typeof buttonSizes;

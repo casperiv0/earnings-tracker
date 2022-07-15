@@ -1,4 +1,4 @@
-import { Button } from "components/Button";
+import { Button } from "components/ui/Button";
 import { Dropdown } from "components/dropdown/Dropdown";
 import * as React from "react";
 import { ChevronDown, ChevronRight, Plus } from "react-bootstrap-icons";

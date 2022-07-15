@@ -1,11 +1,11 @@
 import { IncomeType, Month } from "@prisma/client";
-import { Button } from "components/Button";
+import { Button } from "components/ui/Button";
 import { Form } from "components/form/Form";
 import { FormField } from "components/form/FormField";
 import { Input } from "components/form/Input";
 import { Select } from "components/form/Select";
 import { Textarea } from "components/form/Textarea";
-import { Loader } from "components/Loader";
+import { Loader } from "components/ui/Loader";
 import { Modal } from "components/modal/Modal";
 import type { Income } from "src/pages/income";
 import { trpc } from "utils/trpc";

@@ -1,5 +1,5 @@
 import { Month } from "@prisma/client";
-import { Button } from "components/Button";
+import { Button } from "components/ui/Button";
 import { Form } from "components/form/Form";
 import { FormField } from "components/form/FormField";
 import { Input } from "components/form/Input";

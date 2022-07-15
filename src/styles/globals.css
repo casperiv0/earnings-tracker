@@ -36,8 +36,10 @@ body {
   @apply bg-primary text-white;
 }
 
-.layout-main {
-  width: calc(100vw - 288px);
+@media (min-width: 768px) {
+  .layout-main {
+    width: calc(100vw - 288px);
+  }
 }
 
 .modal-content {

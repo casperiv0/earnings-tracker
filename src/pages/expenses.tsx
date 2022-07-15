@@ -4,13 +4,14 @@ import { trpc } from "utils/trpc";
 import { useTablePagination } from "src/hooks/useTablePagination";
 import { ThreeDotsVertical } from "react-bootstrap-icons";
 import { EarningsEntryDate, Expenses, Month } from "@prisma/client";
-import { Button } from "components/Button";
+import { Button } from "components/ui/Button";
 import type { SortingState } from "@tanstack/react-table";
 import { Dropdown } from "components/dropdown/Dropdown";
 import { Modal } from "components/modal/Modal";
 import { ExpensesForm } from "components/expenses/ExpensesForm";
-import { Loader } from "components/Loader";
+import { Loader } from "components/ui/Loader";
 import type { TableFilter } from "components/table/filters/TableFilters";
+import { PageHeader } from "components/ui/PageHeader";
 
 export interface Expense extends Expenses {
   date: Pick<EarningsEntryDate, "month" | "year">;
@@ -80,16 +81,12 @@ export default function ExpensesPage() {
 
   return (
     <div className="m-8 mx-10 h-full">
-      <header className="flex flex-col lg:flex-row lg:items-center justify-between w-full mb-5 gap-y-3">
-        <div>
-          <h1 className="text-2xl md:text-3xl lg:text-4xl font-semibold font-serif">Expenses</h1>
-          <p className="mt-4 font-medium">A list of all expenses from any year starting in 2018.</p>
-        </div>
-
-        <div>
-          <Button onClick={addNewExpense}>Add new expense</Button>
-        </div>
-      </header>
+      <PageHeader
+        title="Expenses"
+        description="A list of all expenses from any year starting in 2018."
+      >
+        <Button onClick={addNewExpense}>Add new expense</Button>
+      </PageHeader>
 
       <div className="mt-5">
         {expensesQuery.isLoading ? (

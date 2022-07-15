@@ -1,5 +1,5 @@
 import type { User } from "@prisma/client";
-import { Button } from "components/Button";
+import { Button } from "components/ui/Button";
 import { Dropdown } from "components/dropdown/Dropdown";
 import { signOut } from "next-auth/react";
 import Image from "next/future/image";
@@ -10,7 +10,7 @@ interface Props {
 
 export function UserArea({ user }: Props) {
   const trigger = (
-    <Button className="text-left cursor-pointer flex items-center px-0 bg-transparent">
+    <Button className="text-left cursor-pointer flex items-center px-0 !bg-transparent">
       <div className="flex-shrink-0 h-10">
         <Image
           draggable={false}
