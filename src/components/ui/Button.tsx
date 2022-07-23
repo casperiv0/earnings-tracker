@@ -1,4 +1,5 @@
 import * as React from "react";
+import { twMerge } from "tailwind-merge";
 import { classNames } from "../../utils/classNames";
 
 export type ButtonProps = JSX.IntrinsicElements["button"] & {
@@ -24,11 +25,13 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ variant = "default", size = "sm", className = "", ...rest }, ref) => (
     <button
       className={classNames(
-        "rounded-sm transition-all border-[1.5px] border-transparent",
-        "disabled:opacity-60 disabled:cursor-not-allowed",
-        buttonSizes[size],
-        variant && buttonVariants[variant],
-        className,
+        twMerge(
+          "rounded-sm transition-all border-[1.5px] border-transparent",
+          "disabled:opacity-60 disabled:cursor-not-allowed",
+          buttonSizes[size],
+          variant && buttonVariants[variant],
+          className,
+        ),
       )}
       {...rest}
       ref={ref}

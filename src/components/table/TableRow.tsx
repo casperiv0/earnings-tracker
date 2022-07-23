@@ -27,7 +27,7 @@ export function TableRow<TData extends RowData>({ isSelected, row, idx }: Props<
           <td
             className={classNames(
               "first:px-5 m-0 text-left p-3 px-3",
-              cell.column.id === "actions" && "!w-[100px] text-end",
+              cell.column.id === "actions" && "w-[100px] text-end",
             )}
             key={cell.id}
           >

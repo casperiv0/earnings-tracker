@@ -60,13 +60,13 @@ export function TableFilterForms({
                 <h3 className="font-serif font-semibold text-lg mb-3">Number Filter</h3>
 
                 <FormField checkbox label="Equals">
-                  <Input value="equals" className="!w-10" type="radio" {...register("type")} />
+                  <Input value="equals" className="w-10" type="radio" {...register("type")} />
                 </FormField>
                 <FormField checkbox label="Less than">
-                  <Input value="lt" className="!w-10" type="radio" {...register("type")} />
+                  <Input value="lt" className="w-10" type="radio" {...register("type")} />
                 </FormField>
                 <FormField checkbox label="Greater than">
-                  <Input value="gt" className="!w-10" type="radio" {...register("type")} />
+                  <Input value="gt" className="w-10" type="radio" {...register("type")} />
                 </FormField>
 
                 <Input
@@ -82,10 +82,10 @@ export function TableFilterForms({
                 <h3 className="font-serif font-semibold text-lg mb-3">Text Filter</h3>
 
                 <FormField checkbox label="Equals">
-                  <Input value="equals" className="!w-10" type="radio" {...register("type")} />
+                  <Input value="equals" className="w-10" type="radio" {...register("type")} />
                 </FormField>
                 <FormField checkbox label="Contains">
-                  <Input value="contains" className="!w-10" type="radio" {...register("type")} />
+                  <Input value="contains" className="w-10" type="radio" {...register("type")} />
                 </FormField>
 
                 <FormField label="Content">
