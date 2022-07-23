@@ -109,6 +109,8 @@ export default function IncomePage() {
               description: income.description || "None",
               actions: (
                 <Dropdown
+                  side="left"
+                  className="flex flex-col"
                   trigger={
                     <Button size="xxs" aria-label="Row options">
                       <ThreeDotsVertical />

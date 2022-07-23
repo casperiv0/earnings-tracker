@@ -76,7 +76,7 @@ export function TableFilters({ query, filterTypes, filters, setFilters }: Props)
       <Dropdown
         alignOffset={0}
         trigger={
-          <Button variant="accent" size="xxs" className="flex items-center gap-1">
+          <Button variant="accent" size="xxs" className="min-w-fit flex items-center gap-1">
             <Plus className="w-5 h-5" /> Add Filter
           </Button>
         }
@@ -91,7 +91,7 @@ export function TableFilters({ query, filterTypes, filters, setFilters }: Props)
               key={filter.name}
               sideOffset={7}
               trigger={
-                <Dropdown.TriggerItem
+                <Dropdown.SubTrigger
                   disabled={isFilterAlreadySet}
                   className={classNames(
                     "capitalize flex items-center justify-between",
@@ -100,7 +100,7 @@ export function TableFilters({ query, filterTypes, filters, setFilters }: Props)
                 >
                   {filter.name}
                   <ChevronRight className="w-3 h-3" />
-                </Dropdown.TriggerItem>
+                </Dropdown.SubTrigger>
               }
             >
               <TableFilterForms

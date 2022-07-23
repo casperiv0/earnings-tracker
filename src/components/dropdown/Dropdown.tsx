@@ -13,15 +13,17 @@ interface Props extends DropdownMenu.MenuContentProps {
 
 export function Dropdown({ trigger, triggerKind = "trigger", children, extra, ...rest }: Props) {
   const maxWidth = extra?.maxWidth ?? 150;
-  const Trigger = triggerKind === "trigger" ? DropdownMenu.Trigger : DropdownMenu.TriggerItem;
+  const Root = triggerKind === "trigger" ? DropdownMenu.Root : DropdownMenu.Sub;
+  const Trigger = triggerKind === "trigger" ? DropdownMenu.Trigger : DropdownMenu.SubTrigger;
+  const Content = triggerKind === "trigger" ? DropdownMenu.Content : DropdownMenu.SubContent;
 
   return (
-    <DropdownMenu.Root>
+    <Root>
       <Trigger className="flex items-center gap-1 px-1.5" asChild>
         {trigger}
       </Trigger>
 
-      <DropdownMenu.Content
+      <Content
         sideOffset={3}
         alignOffset={5}
         style={{ width: maxWidth, maxWidth }}
@@ -33,14 +35,14 @@ export function Dropdown({ trigger, triggerKind = "trigger", children, extra, ..
         )}
       >
         {children}
-      </DropdownMenu.Content>
-    </DropdownMenu.Root>
+      </Content>
+    </Root>
   );
 }
 
-Dropdown.TriggerItem = React.forwardRef<HTMLDivElement, Omit<ButtonProps, "ref">>((props, ref) => {
+Dropdown.SubTrigger = React.forwardRef<HTMLDivElement, Omit<ButtonProps, "ref">>((props, ref) => {
   return (
-    <DropdownMenu.TriggerItem ref={ref} asChild>
+    <DropdownMenu.SubTrigger ref={ref} asChild>
       <Button
         {...props}
         variant="dropdown"
@@ -52,7 +54,7 @@ Dropdown.TriggerItem = React.forwardRef<HTMLDivElement, Omit<ButtonProps, "ref">
       >
         {props.children}
       </Button>
-    </DropdownMenu.TriggerItem>
+    </DropdownMenu.SubTrigger>
   );
 });
 

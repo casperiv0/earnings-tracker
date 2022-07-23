@@ -22,7 +22,6 @@ export default function Index() {
     <div className="m-8 mx-5 md:mx-10 h-full">
       <PageHeader title="Dashboard" description="Welcome Back!" />
 
-      {/* todo: allow selecting year */}
       <div className="flex flex-col gap-y-2">
         <div className="bg-secondary p-5 rounded-sm shadow-md">
           <Dropdown
