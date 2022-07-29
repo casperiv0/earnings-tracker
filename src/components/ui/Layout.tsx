@@ -2,7 +2,7 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import * as React from "react";
 import { trpc } from "utils/trpc";
-import { Loader } from "./Loader";
+// import { Loader } from "./Loader";
 import { Sidebar } from "../sidebar/Sidebar";
 
 interface LayoutProps {
@@ -18,10 +18,6 @@ export function Layout({ children }: LayoutProps) {
       router.push("/login");
     }
   }, [sessionQuery, router]);
-
-  if ((sessionQuery.isLoading || !sessionQuery.data) && router.pathname !== "/login") {
-    return <Loader fixed />;
-  }
 
   return (
     <>
