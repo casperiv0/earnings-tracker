@@ -10,6 +10,8 @@ import { PageHeader } from "components/ui/PageHeader";
 import { getTotalPerMonth, getMonths, getNettoPerMonth, sum } from "utils/chart-utils";
 import { DEFINED_YEARS } from "utils/constants";
 
+const SORTED_YEARS = [...DEFINED_YEARS].sort((a, b) => b - a);
+
 export default function Index() {
   const [year, setYear] = React.useState<number | "all-time">(() => new Date().getFullYear());
 
@@ -31,7 +33,7 @@ export default function Index() {
             <Dropdown.Item key={year} onClick={() => setYear("all-time")}>
               All Time
             </Dropdown.Item>
-            {DEFINED_YEARS.map((year) => (
+            {SORTED_YEARS.map((year) => (
               <Dropdown.Item key={year} onClick={() => setYear(year)}>
                 {year}
               </Dropdown.Item>
