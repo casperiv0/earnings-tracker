@@ -15,19 +15,23 @@ export const dashboardRouter = createRouter()
     return next();
   })
   .query("all-infinite", {
-    input: z.number().min(2018).max(2099),
+    input: z
+      .number()
+      .min(2018)
+      .max(2099)
+      .or(z.enum(["all-time"])),
     async resolve({ ctx, input }) {
       const year = input || new Date().getFullYear();
       const userId = getUserFromSession(ctx).dbUser.id;
 
       const [expenses, income] = await Promise.all([
         prisma.expenses.findMany({
-          where: { date: { year }, userId },
+          where: { date: { year: typeof year === "number" ? year : undefined }, userId },
           select: defaultEarningsSelect,
           orderBy: { createdAt: "asc" },
         }),
         prisma.income.findMany({
-          where: { date: { year }, userId },
+          where: { date: { year: typeof year === "number" ? year : undefined }, userId },
           select: incomeSelect,
           orderBy: { createdAt: "asc" },
         }),

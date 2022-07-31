@@ -89,7 +89,9 @@ export default function ExpensesPage() {
       </PageHeader>
 
       <div className="mt-5">
-        {(expensesQuery.data?.items.length ?? 0) <= 0 && filters.length <= 0 ? (
+        {expensesQuery.isLoading ? (
+          <Loader fixed />
+        ) : (expensesQuery.data?.items.length ?? 0) <= 0 && filters.length <= 0 ? (
           <p className="text-neutral-300">There are no expenses yet.</p>
         ) : (
           <Table

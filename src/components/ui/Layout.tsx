@@ -4,6 +4,7 @@ import * as React from "react";
 import { trpc } from "utils/trpc";
 // import { Loader } from "./Loader";
 import { Sidebar } from "../sidebar/Sidebar";
+import { Loader } from "./Loader";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -18,6 +19,10 @@ export function Layout({ children }: LayoutProps) {
       router.push("/login");
     }
   }, [sessionQuery, router]);
+
+  if ((sessionQuery.isLoading || !sessionQuery.data) && router.pathname !== "/login") {
+    return <Loader fixed />;
+  }
 
   return (
     <>

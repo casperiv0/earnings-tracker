@@ -1,5 +1,5 @@
 import * as React from "react";
-import Chart, { getMonths, getTotalForMonth, makeDifference, sum } from "components/chart/Chart";
+import Chart from "components/chart/Chart";
 import { trpc } from "utils/trpc";
 import type { Expense } from "./expenses";
 import type { Income } from "./income";
@@ -7,11 +7,11 @@ import { IncomeType } from "@prisma/client";
 import { Dropdown } from "components/dropdown/Dropdown";
 import { Button } from "components/ui/Button";
 import { PageHeader } from "components/ui/PageHeader";
-
-const YEARS = [2022, 2021, 2020, 2019, 2018];
+import { getTotalPerMonth, getMonths, getNettoPerMonth, sum } from "utils/chart-utils";
+import { DEFINED_YEARS } from "utils/constants";
 
 export default function Index() {
-  const [year, setYear] = React.useState(() => new Date().getFullYear());
+  const [year, setYear] = React.useState<number | "all-time">(() => new Date().getFullYear());
 
   const dashboardQuery = trpc.useQuery(["dashboard.all-infinite", year]);
 
@@ -28,7 +28,10 @@ export default function Index() {
             alignOffset={0}
             trigger={<Button className="font-semibold text-2xl mb-2 font-serif">{year}</Button>}
           >
-            {YEARS.map((year) => (
+            <Dropdown.Item key={year} onClick={() => setYear("all-time")}>
+              All Time
+            </Dropdown.Item>
+            {DEFINED_YEARS.map((year) => (
               <Dropdown.Item key={year} onClick={() => setYear(year)}>
                 {year}
               </Dropdown.Item>
@@ -36,12 +39,13 @@ export default function Index() {
           </Dropdown>
 
           <p>
+            {/* todo: Intl.NumberFormat */}
             <span className="font-semibold">Total Income:</span>{" "}
             <span className="font-mono">{getTotal(income)}</span>
           </p>
           <p>
             <span className="font-semibold">Total Salary income:</span>{" "}
-            <span className="font-mono">{getTotalSalaryThisYear(income)}</span>
+            <span className="font-mono">{getTotalSalaryThisYear(income, year)}</span>
           </p>
           <p>
             <span className="font-semibold">Total Expenses:</span>{" "}
@@ -49,11 +53,11 @@ export default function Index() {
           </p>
           <p>
             <span className="font-semibold">Total Netto:</span>{" "}
-            <span className="font-mono">{getTotalDifference(expenses, income)}</span>
+            <span className="font-mono">{getTotalDifference(expenses, income, year)}</span>
           </p>
           <p>
             <span className="font-semibold">Average income per month:</span>{" "}
-            <span className="font-mono">{getAverageIncomePerMonth(income)}</span>
+            <span className="font-mono">{getAverageIncomePerMonth(income, year)}</span>
           </p>
         </div>
 
@@ -68,20 +72,29 @@ export function getTotal(data: (Income | Expense)[]) {
   return `${total} EUR`;
 }
 
-export function getTotalDifference(expenses: Expense[], income: Income[]) {
-  const total = makeDifference(income, expenses);
+export function getTotalDifference(
+  expenses: Expense[],
+  income: Income[],
+  selectedYear: number | "all-time",
+) {
+  const months = getMonths({ data: [...income, ...expenses], selectedYear });
+  const total = getNettoPerMonth({ income, expenses, selectedYear, months });
+
   return sum(...total).toFixed(2);
 }
 
-export function getAverageIncomePerMonth(income: Income[]) {
-  const total = sum(...getTotalForMonth(income));
-  const months = getMonths([], income);
+export function getAverageIncomePerMonth(income: Income[], selectedYear: number | "all-time") {
+  const months = getMonths({ data: income, selectedYear });
+  const total = sum(...getTotalPerMonth({ data: income, months, selectedYear }));
 
   return `${(total / months.length).toFixed(2)} EUR`;
 }
 
-function getTotalSalaryThisYear(income: Income[]) {
-  const total = sum(...getTotalForMonth(income, IncomeType.Salary));
+function getTotalSalaryThisYear(income: Income[], selectedYear: number | "all-time") {
+  const months = getMonths({ data: income, selectedYear });
+  const total = sum(
+    ...getTotalPerMonth({ data: income, type: IncomeType.Salary, selectedYear, months }),
+  );
 
   return `${total.toFixed(2)} EUR`;
 }

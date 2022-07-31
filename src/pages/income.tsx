@@ -87,7 +87,9 @@ export default function IncomePage() {
       </PageHeader>
 
       <div className="mt-5">
-        {(incomeQuery.data?.items.length ?? 0) <= 0 && filters.length <= 0 ? (
+        {incomeQuery.isLoading ? (
+          <Loader fixed />
+        ) : (incomeQuery.data?.items.length ?? 0) <= 0 && filters.length <= 0 ? (
           <p className="text-neutral-300">There is no income yet.</p>
         ) : (
           <Table

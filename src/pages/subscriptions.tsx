@@ -86,7 +86,9 @@ export default function SubscriptionsPage() {
       </PageHeader>
 
       <div className="mt-5">
-        {(subscriptionsQuery.data?.items.length ?? 0) <= 0 && filters.length <= 0 ? (
+        {subscriptionsQuery.isLoading ? (
+          <Loader fixed />
+        ) : (subscriptionsQuery.data?.items.length ?? 0) <= 0 && filters.length <= 0 ? (
           <p className="text-neutral-300">There are no Subscriptions yet.</p>
         ) : (
           <Table
