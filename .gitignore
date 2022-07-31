@@ -7,3 +7,5 @@ node_modules
 test.mjs
 .vscode
 tsconfig.tsbuildinfo
+
+coverage

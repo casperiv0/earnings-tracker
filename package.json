@@ -11,7 +11,7 @@
     "lint": "eslint . --ext .ts,.js,.tsx,.jsx,",
     "test-tsc": "tsc --noEmit",
     "test": "vitest",
-    "coverage": "vitest run --coverage"
+    "coverage": "vitest watch --coverage"
   },
   "dependencies": {
     "@hookform/resolvers": "^2.9.7",
@@ -47,6 +47,7 @@
     "@types/react": "^18.0.15",
     "@types/react-dom": "^18.0.6",
     "autoprefixer": "^10.4.8",
+    "c8": "^7.12.0",
     "eslint": "^8.20.0",
     "postcss": "^8.4.14",
     "prettier": "^2.7.1",

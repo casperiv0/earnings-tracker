@@ -1,27 +1,6 @@
 import { Prisma } from "@prisma/client";
-import type { RowSelectionState } from "@tanstack/react-table";
 import type { TABLE_FILTER } from "server/routers/income";
 import type { z } from "zod";
-
-export function getSelectedRowDataIds<T extends { id: string }>(
-  selectedRows: RowSelectionState,
-  data: T[] | null | undefined,
-) {
-  const ids = [];
-
-  for (const idx in selectedRows) {
-    const item = data?.[parseInt(idx, 10)];
-    if (!item) continue;
-
-    ids.push(item.id);
-  }
-
-  return ids;
-}
-
-export function classNames(...classes: unknown[]) {
-  return classes.filter(Boolean).join(" ");
-}
 
 export function getOrderByFromInput<T extends { sorting?: { desc: boolean; id: string }[] }>(
   input: T,
@@ -40,7 +19,7 @@ export function getOrderByFromInput<T extends { sorting?: { desc: boolean; id: s
   return orderBy;
 }
 
-function createOrderByObj(sort: { desc: boolean; id: string }) {
+export function createOrderByObj(sort: { desc: boolean; id: string }) {
   if (["month", "year"].includes(sort.id)) {
     return { date: { [sort.id]: getSortingDir(sort) } };
   }
