@@ -1,11 +1,5 @@
-# Next.js + TypeScript + ESLint
+# Income & Expenses Tracker
 
-A simple Next.js app template.
+A website to track your income and expenses with a simple chart and a simple interface.
 
-## Includes
-
-- Next.js basics
-- TypeScript
-- Sass (scss modules)
-- ESLint
-- Prettier
+See the app in action at: <earnings.caspertheghost.me>
