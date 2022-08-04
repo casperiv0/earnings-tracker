@@ -37,6 +37,8 @@ export function IncomeForm({ income, onSubmit }: Props) {
     },
   });
 
+  const isLoading = editIncome.isLoading || addIncome.isLoading;
+
   const defaultValues = {
     type: income?.type ?? IncomeType.Other,
     amount: income?.amount ?? 0,
@@ -99,16 +101,12 @@ export function IncomeForm({ income, onSubmit }: Props) {
 
           <footer className="mt-5 flex justify-end gap-2">
             <Modal.Close>
-              <Button disabled={editIncome.isLoading} type="reset">
+              <Button disabled={isLoading} type="reset">
                 Cancel
               </Button>
             </Modal.Close>
-            <Button
-              className="flex items-center gap-2"
-              disabled={editIncome.isLoading}
-              type="submit"
-            >
-              {editIncome.isLoading ? <Loader size="sm" /> : null}
+            <Button className="flex items-center gap-2" disabled={isLoading} type="submit">
+              {isLoading ? <Loader size="sm" /> : null}
               {income ? "Save Changes" : "Add new income"}
             </Button>
           </footer>

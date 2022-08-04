@@ -8,6 +8,7 @@ import { Modal } from "components/modal/Modal";
 import type { Expense } from "src/pages/expenses";
 import { trpc } from "utils/trpc";
 import z from "zod";
+import { Loader } from "components/ui/Loader";
 
 const schema = z.object({
   amount: z.number().min(1),
@@ -33,6 +34,8 @@ export function ExpensesForm({ expense, onSubmit }: Props) {
       context.invalidateQueries(["expenses.all-infinite"]);
     },
   });
+
+  const isLoading = addExpenseMutation.isLoading || editExpense.isLoading;
 
   const defaultValues = {
     amount: expense?.amount ?? 0,
@@ -83,9 +86,14 @@ export function ExpensesForm({ expense, onSubmit }: Props) {
 
           <footer className="mt-5 flex justify-end gap-2">
             <Modal.Close>
-              <Button type="reset">Cancel</Button>
+              <Button disabled={isLoading} type="reset">
+                Cancel
+              </Button>
             </Modal.Close>
-            <Button type="submit">{expense ? "Save Changes" : "Add new expense"}</Button>
+            <Button className="flex items-center gap-2" disabled={isLoading} type="submit">
+              {isLoading ? <Loader size="sm" /> : null}
+              {expense ? "Save Changes" : "Add new expense"}
+            </Button>
           </footer>
         </>
       )}
