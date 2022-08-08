@@ -1,4 +1,4 @@
-import { Expenses, Month, Prisma } from "@prisma/client";
+import { Expenses, Month } from "@prisma/client";
 import { z } from "zod";
 import { createRouter } from "server/createRouter";
 import { prisma } from "utils/prisma";
@@ -8,18 +8,6 @@ import { createPrismaWhereFromFilters, getOrderByFromInput } from "utils/utils";
 import { TABLE_FILTER } from "./income";
 import { getUserFromSession } from "utils/nextauth";
 import { isProcessedExpense } from "components/expenses/ExpensesForm";
-
-export const defaultEarningsSelect = Prisma.validator<Prisma.ExpensesSelect>()({
-  id: true,
-  user: true,
-  userId: true,
-  date: { select: { month: true, year: true } },
-  dateId: true,
-  amount: true,
-  description: true,
-  createdAt: true,
-  updatedAt: true,
-});
 
 export const expensesRouter = createRouter()
   .middleware(async ({ ctx, next }) => {
@@ -55,7 +43,7 @@ export const expensesRouter = createRouter()
         prisma.expenses.findMany({
           take: MAX_ITEMS_PER_TABLE,
           skip,
-          select: defaultEarningsSelect,
+          include: { date: true },
           orderBy: getOrderByFromInput(input),
           where: input.filters
             ? createPrismaWhereFromFilters(input.filters, userId)
@@ -143,7 +131,6 @@ export const expensesRouter = createRouter()
           },
           user: { connect: { id: userId } },
         },
-        select: defaultEarningsSelect,
       });
       return createdExpense;
     },
@@ -174,7 +161,7 @@ export const expensesRouter = createRouter()
           description: input.description,
           date: { update: { month: input.month, year: input.year } },
         },
-        select: defaultEarningsSelect,
+        include: { date: true },
       });
       return updatedExpense;
     },

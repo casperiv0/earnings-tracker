@@ -2,7 +2,7 @@ import * as React from "react";
 import { Table } from "components/table/Table";
 import { trpc } from "utils/trpc";
 import { useTablePagination } from "src/hooks/useTablePagination";
-import { ArrowRight, ArrowsExpand, ThreeDotsVertical } from "react-bootstrap-icons";
+import { ArrowsExpand, ThreeDotsVertical } from "react-bootstrap-icons";
 import { EarningsEntryDate, Expenses, Month, ProcessedExpense } from "@prisma/client";
 import { Button } from "components/ui/Button";
 import type { ExpandedState, SortingState } from "@tanstack/react-table";
@@ -108,7 +108,7 @@ export default function ExpensesPage() {
             ]}
             data={(expensesQuery.data?.items ?? []).map((expense, idx) => ({
               subRows: isProcessedExpense(expense)
-                ? expense.expenses?.map((expense) => ({
+                ? expense.expenses.map((expense) => ({
                     amount: <span className="font-mono">{expense.amount}</span>,
                     month: isProcessedExpense(expense) ? "—" : expense.date.month,
                     year: isProcessedExpense(expense) ? "—" : expense.date.year,
