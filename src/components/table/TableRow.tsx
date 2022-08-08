@@ -31,7 +31,9 @@ export function TableRow<TData extends RowData>({ isSelected, row, idx }: Props<
             )}
             key={cell.id}
           >
-            {flexRender(cellValue, cell.getContext())}
+            <div style={{ paddingLeft: `${row.depth * 2}rem` }}>
+              {flexRender(cellValue, cell.getContext())}
+            </div>
           </td>
         );
       })}

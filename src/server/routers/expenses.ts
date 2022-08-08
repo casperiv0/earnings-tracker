@@ -1,4 +1,4 @@
-import { Month, Prisma } from "@prisma/client";
+import { Expenses, Month, Prisma } from "@prisma/client";
 import { z } from "zod";
 import { createRouter } from "server/createRouter";
 import { prisma } from "utils/prisma";
@@ -7,6 +7,7 @@ import { MAX_ITEMS_PER_TABLE } from "utils/constants";
 import { createPrismaWhereFromFilters, getOrderByFromInput } from "utils/utils";
 import { TABLE_FILTER } from "./income";
 import { getUserFromSession } from "utils/nextauth";
+import { isProcessedExpense } from "components/expenses/ExpensesForm";
 
 export const defaultEarningsSelect = Prisma.validator<Prisma.ExpensesSelect>()({
   id: true,
@@ -38,18 +39,31 @@ export const expensesRouter = createRouter()
       const skip = input.page * MAX_ITEMS_PER_TABLE;
       const userId = getUserFromSession(ctx).dbUser.id;
 
-      const [totalCount, items] = await Promise.all([
+      const [totalCount, processedExpenses, expenses] = await Promise.all([
         prisma.expenses.count({
-          where: input.filters ? createPrismaWhereFromFilters(input.filters, userId) : { userId },
+          where: input.filters
+            ? createPrismaWhereFromFilters(input.filters, userId)
+            : { userId, processedExpense: { is: null } },
+        }),
+        prisma.processedExpense.findMany({
+          take: MAX_ITEMS_PER_TABLE,
+          skip,
+          // orderBy: getOrderByFromInput(input),
+          where: { userId },
+          include: { expenses: { include: { date: true } } },
         }),
         prisma.expenses.findMany({
           take: MAX_ITEMS_PER_TABLE,
           skip,
           select: defaultEarningsSelect,
           orderBy: getOrderByFromInput(input),
-          where: input.filters ? createPrismaWhereFromFilters(input.filters, userId) : { userId },
+          where: input.filters
+            ? createPrismaWhereFromFilters(input.filters, userId)
+            : { userId, processedExpense: { is: null } },
         }),
       ]);
+
+      const items = [...processedExpenses, ...expenses];
 
       return { maxPages: Math.floor(totalCount / MAX_ITEMS_PER_TABLE), items };
     },
@@ -60,9 +74,65 @@ export const expensesRouter = createRouter()
       year: z.number(),
       description: z.string().nullable().optional(),
       month: z.nativeEnum(Month),
+      processOverXDays: z
+        .object({ dailyAmount: z.number().min(1), enabled: z.boolean() })
+        .optional()
+        .nullable(),
     }),
     async resolve({ ctx, input }) {
       const userId = getUserFromSession(ctx).dbUser.id;
+
+      if (input.processOverXDays?.enabled) {
+        const processedExpense = await prisma.processedExpense.create({
+          data: {
+            totalAmount: input.amount,
+            amountPerDay: input.processOverXDays.dailyAmount,
+            description: input.description,
+            userId,
+          },
+        });
+
+        const amountOfDays = input.amount / input.processOverXDays.dailyAmount; // can be a decimal number
+        const amountOfFullDays = Math.floor(amountOfDays); // remove the decimals
+        const extraAmount = parseFloat((amountOfDays - Math.floor(amountOfDays)).toFixed(2)); // get the decimals
+
+        const expenses: Expenses[] = [];
+
+        const description = `Processed over ${amountOfFullDays} days. (Parent: ${processedExpense.id})`;
+
+        for (let i = 0; i < amountOfFullDays; i++) {
+          const expense = await prisma.expenses.create({
+            data: {
+              amount: input.processOverXDays.dailyAmount,
+              description,
+              date: {
+                // todo: check if nearing end of month/year and set accordingly
+                create: { month: input.month, year: input.year },
+              },
+              processedExpense: { connect: { id: processedExpense.id } },
+              user: { connect: { id: userId } },
+            },
+          });
+
+          expenses.push(expense);
+        }
+
+        if (extraAmount > 0) {
+          const lastExpense = await prisma.expenses.create({
+            data: {
+              amount: input.processOverXDays.dailyAmount * extraAmount,
+              description,
+              date: { create: { month: input.month, year: input.year } },
+              processedExpense: { connect: { id: processedExpense.id } },
+              user: { connect: { id: userId } },
+            },
+          });
+
+          expenses.push(lastExpense);
+        }
+
+        return { ...processedExpense, expenses };
+      }
 
       const createdExpense = await prisma.expenses.create({
         data: {
@@ -85,6 +155,10 @@ export const expensesRouter = createRouter()
       year: z.number(),
       description: z.string().nullable().optional(),
       month: z.nativeEnum(Month),
+      processOverXDays: z
+        .object({ dailyAmount: z.number().min(1), enabled: z.boolean() })
+        .optional()
+        .nullable(),
     }),
     async resolve({ ctx, input }) {
       const userId = getUserFromSession(ctx).dbUser.id;
@@ -112,10 +186,24 @@ export const expensesRouter = createRouter()
     async resolve({ ctx, input }) {
       const userId = getUserFromSession(ctx).dbUser.id;
 
-      await prisma.expenses.findFirstOrThrow({
-        where: { userId, id: input.id },
-      });
+      const expense =
+        (await prisma.expenses.findFirst({
+          where: { userId, id: input.id },
+        })) ||
+        (await prisma.processedExpense.findFirst({
+          where: { userId, id: input.id },
+        }));
 
-      await prisma.expenses.delete({ where: { id: input.id } });
+      if (!expense) {
+        throw new TRPCError({ code: "NOT_FOUND" });
+      }
+
+      if (isProcessedExpense(expense)) {
+        await prisma.processedExpense.delete({
+          where: { id: expense.id },
+        });
+      } else {
+        await prisma.expenses.delete({ where: { id: input.id } });
+      }
     },
   });

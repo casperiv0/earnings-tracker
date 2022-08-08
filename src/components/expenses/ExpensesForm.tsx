@@ -1,4 +1,4 @@
-import { Month } from "@prisma/client";
+import { Month, ProcessedExpense } from "@prisma/client";
 import { Button } from "components/ui/Button";
 import { Form } from "components/form/Form";
 import { FormField } from "components/form/FormField";
@@ -9,15 +9,20 @@ import type { Expense } from "src/pages/expenses";
 import { trpc } from "utils/trpc";
 import z from "zod";
 import { Loader } from "components/ui/Loader";
+import { Toggle } from "components/form/Toggle";
 
 const schema = z.object({
   amount: z.number().min(1),
   date: z.date(),
   description: z.string().nullable().optional(),
+  processOverXDays: z
+    .object({ dailyAmount: z.number().min(2), enabled: z.boolean() })
+    .optional()
+    .nullable(),
 });
 
 interface Props {
-  expense?: Expense | null;
+  expense?: Expense | ProcessedExpense | null;
   onSubmit?(): void;
 }
 
@@ -36,11 +41,18 @@ export function ExpensesForm({ expense, onSubmit }: Props) {
   });
 
   const isLoading = addExpenseMutation.isLoading || editExpense.isLoading;
+  const isProcessed = isProcessedExpense(expense);
 
   const defaultValues = {
-    amount: expense?.amount ?? 0,
-    date: expense ? `${expense.date.year}-${getIdxFromMonth(expense.date.month)}-01` : "",
+    amount: isProcessedExpense(expense) ? expense.totalAmount : expense?.amount ?? 0,
+    date:
+      expense && !isProcessed
+        ? `${expense.date.year}-${getIdxFromMonth(expense.date.month)}-01`
+        : "",
     description: expense?.description ?? "",
+    processOverXDays: isProcessed
+      ? { enabled: true, dailyAmount: expense.amountPerDay }
+      : { enabled: false, dailyAmount: 0 },
   };
 
   async function handleSubmit(data: typeof defaultValues) {
@@ -53,6 +65,7 @@ export function ExpensesForm({ expense, onSubmit }: Props) {
         month: getMonthFromIdx(date.getMonth()),
         year: date.getFullYear(),
         description: data.description,
+        processOverXDays: data.processOverXDays,
       });
 
       onSubmit?.();
@@ -62,6 +75,7 @@ export function ExpensesForm({ expense, onSubmit }: Props) {
         month: getMonthFromIdx(date.getMonth()),
         year: date.getFullYear(),
         description: data.description,
+        processOverXDays: data.processOverXDays,
       });
 
       onSubmit?.();
@@ -70,33 +84,63 @@ export function ExpensesForm({ expense, onSubmit }: Props) {
 
   return (
     <Form schema={schema} onSubmit={handleSubmit} defaultValues={defaultValues}>
-      {({ register, errors }) => (
-        <>
-          <FormField errorMessage={errors.amount} label="Amount">
-            <Input className="font-mono" {...register("amount", { valueAsNumber: true })} />
-          </FormField>
+      {({ register, errors, watch }) => {
+        const isToggled = watch("processOverXDays").enabled;
 
-          <FormField errorMessage={errors.date} label="Date">
-            <Input type="date" {...register("date", { valueAsDate: true })} />
-          </FormField>
+        console.log({ errors });
 
-          <FormField errorMessage={errors.description} label="Description">
-            <Textarea {...register("description")} />
-          </FormField>
+        return (
+          <>
+            <FormField errorMessage={errors.amount} label="Amount">
+              <Input className="font-mono" {...register("amount", { valueAsNumber: true })} />
+            </FormField>
 
-          <footer className="mt-5 flex justify-end gap-2">
-            <Modal.Close>
-              <Button disabled={isLoading} type="reset">
-                Cancel
+            <FormField errorMessage={errors.date} label="Date">
+              <Input type="date" {...register("date", { valueAsDate: true })} />
+            </FormField>
+
+            <FormField errorMessage={errors.description} label="Description">
+              <Textarea {...register("description")} />
+            </FormField>
+
+            <FormField
+              errorMessage={errors.processOverXDays as any}
+              label="Process payment of multiple days"
+            >
+              <Toggle
+                value={isToggled}
+                {...register("processOverXDays.enabled", {
+                  setValueAs(value) {
+                    return Boolean(value);
+                  },
+                })}
+              />
+
+              {isToggled ? (
+                <FormField className="mt-2 ml-2" label="Amount per day">
+                  <Input
+                    className="font-mono"
+                    type="number"
+                    {...register("processOverXDays.dailyAmount", { valueAsNumber: true })}
+                  />
+                </FormField>
+              ) : null}
+            </FormField>
+
+            <footer className="mt-5 flex justify-end gap-2">
+              <Modal.Close>
+                <Button disabled={isLoading} type="reset">
+                  Cancel
+                </Button>
+              </Modal.Close>
+              <Button className="flex items-center gap-2" disabled={isLoading} type="submit">
+                {isLoading ? <Loader size="sm" /> : null}
+                {expense ? "Save Changes" : "Add new expense"}
               </Button>
-            </Modal.Close>
-            <Button className="flex items-center gap-2" disabled={isLoading} type="submit">
-              {isLoading ? <Loader size="sm" /> : null}
-              {expense ? "Save Changes" : "Add new expense"}
-            </Button>
-          </footer>
-        </>
-      )}
+            </footer>
+          </>
+        );
+      }}
     </Form>
   );
 }
@@ -116,4 +160,10 @@ function getIdxFromMonth(month: Month) {
   }
 
   return idx.toString();
+}
+
+export function isProcessedExpense(
+  expense: Pick<Expense, "id"> | ProcessedExpense | null | undefined,
+): expense is ProcessedExpense {
+  return Boolean(expense && "amountPerDay" in expense);
 }

@@ -17,5 +17,8 @@
     "ecmaFeatures": {
       "jsx": true
     }
+  },
+  "rules": {
+    "@typescript-eslint/no-redundant-type-constituents": "off"
   }
 }
