@@ -110,6 +110,7 @@ export default function ExpensesPage() {
             pagination={pagination}
             query={expensesQuery}
             filterTypes={[
+              { name: "id", filterType: "id" },
               { name: "amount", filterType: "number" },
               { name: "month", filterType: "enum", options: Object.values(Month) },
               { name: "year", filterType: "number" },

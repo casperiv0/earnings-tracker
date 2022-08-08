@@ -77,6 +77,18 @@ export function TableFilterForms({
               </div>
             ) : null}
 
+            {filterType === "id" ? (
+              <div className="mb-3">
+                <h3 className="font-serif font-semibold text-lg mb-3">ID Filter</h3>
+
+                <Input
+                  className="font-mono"
+                  placeholder="0"
+                  {...register("content", { required: true })}
+                />
+              </div>
+            ) : null}
+
             {filterType === "string" ? (
               <div className="mb-3">
                 <h3 className="font-serif font-semibold text-lg mb-3">Text Filter</h3>

@@ -21,7 +21,7 @@ export interface TableFilter<FilterType extends TableFilterType = TableFilterTyp
 }
 
 export type TableFilterFilterType = "equals" | "contains" | "lt" | "gt";
-export type TableFilterType = "string" | "date" | "number" | "enum";
+export type TableFilterType = "id" | "string" | "date" | "number" | "enum";
 
 export function TableFilters({ query, filterTypes, filters, setFilters }: Props) {
   const isLoading = query?.isLoading || query?.isRefetching || query?.isFetching;

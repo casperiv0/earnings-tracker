@@ -22,7 +22,7 @@ export const incomeSelect = Prisma.validator<Prisma.IncomeSelect>()({
 
 export const TABLE_FILTER = z.object({
   name: z.string(),
-  filterType: z.enum(["string", "date", "number", "enum"]),
+  filterType: z.enum(["id", "string", "date", "number", "enum"]),
   content: z.string().or(z.number()).optional(),
   type: z.enum(["equals", "contains", "lt", "gt"]).optional(),
   options: z.array(z.string()).optional(),
