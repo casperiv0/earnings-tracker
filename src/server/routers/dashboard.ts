@@ -3,7 +3,6 @@ import { createRouter } from "server/createRouter";
 import { getUserFromSession } from "utils/nextauth";
 import { prisma } from "utils/prisma";
 import { z } from "zod";
-import { defaultEarningsSelect } from "./expenses";
 import { incomeSelect } from "./income";
 
 export const dashboardRouter = createRouter()
@@ -27,8 +26,8 @@ export const dashboardRouter = createRouter()
       const [expenses, income] = await Promise.all([
         prisma.expenses.findMany({
           where: { date: { year: typeof year === "number" ? year : undefined }, userId },
-          select: defaultEarningsSelect,
           orderBy: { createdAt: "asc" },
+          include: { date: true },
         }),
         prisma.income.findMany({
           where: { date: { year: typeof year === "number" ? year : undefined }, userId },

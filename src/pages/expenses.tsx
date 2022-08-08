@@ -2,18 +2,28 @@ import * as React from "react";
 import { Table } from "components/table/Table";
 import { trpc } from "utils/trpc";
 import { useTablePagination } from "src/hooks/useTablePagination";
-import { ThreeDotsVertical } from "react-bootstrap-icons";
-import { EarningsEntryDate, Expenses, Month } from "@prisma/client";
+import { ArrowsExpand, ThreeDotsVertical } from "react-bootstrap-icons";
+import {
+  EarningsEntryDate,
+  Expenses,
+  Month,
+  ProcessedExpense as _ProcessedExpense,
+} from "@prisma/client";
 import { Button } from "components/ui/Button";
-import type { SortingState } from "@tanstack/react-table";
+import type { ExpandedState, SortingState } from "@tanstack/react-table";
 import { Dropdown } from "components/dropdown/Dropdown";
 import { Modal } from "components/modal/Modal";
-import { ExpensesForm } from "components/expenses/ExpensesForm";
+import { ExpensesForm, isProcessedExpense } from "components/expenses/ExpensesForm";
 import { Loader } from "components/ui/Loader";
 import type { TableFilter } from "components/table/filters/TableFilters";
 import { PageHeader } from "components/ui/PageHeader";
+import { classNames } from "utils/classNames";
 
 export interface Expense extends Expenses {
+  date: Pick<EarningsEntryDate, "month" | "year">;
+}
+
+export interface ProcessedExpense extends _ProcessedExpense {
   date: Pick<EarningsEntryDate, "month" | "year">;
 }
 
@@ -21,10 +31,11 @@ export default function ExpensesPage() {
   const [page, setPage] = React.useState<number>(0);
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [filters, setFilters] = React.useState<TableFilter[]>([]);
+  const [expanded, setExpanded] = React.useState<ExpandedState>({});
 
   const [isOpen, setIsOpen] = React.useState(false);
   const [isDeleteOpen, setDeleteOpen] = React.useState(false);
-  const [tempExpense, setTempExpense] = React.useState<Expense | null>(null);
+  const [tempExpense, setTempExpense] = React.useState<Expense | ProcessedExpense | null>(null);
 
   const context = trpc.useContext();
   const expensesQuery = trpc.useQuery(["expenses.all-infinite", { page, sorting, filters }], {
@@ -56,12 +67,12 @@ export default function ExpensesPage() {
     setDeleteOpen(false);
   }
 
-  function handleEditExpense(expense: Expense) {
+  function handleEditExpense(expense: Expense | ProcessedExpense) {
     setIsOpen(true);
     setTempExpense(expense);
   }
 
-  function handleDeleteExpenseClick(expense: Expense) {
+  function handleDeleteExpenseClick(expense: Expense | ProcessedExpense) {
     setDeleteOpen(true);
     setTempExpense(expense);
   }
@@ -95,7 +106,7 @@ export default function ExpensesPage() {
           <p className="text-neutral-300">There are no expenses yet.</p>
         ) : (
           <Table
-            options={{ sorting, setSorting, filters, setFilters }}
+            options={{ sorting, setSorting, filters, setFilters, expanded, setExpanded }}
             pagination={pagination}
             query={expensesQuery}
             filterTypes={[
@@ -104,8 +115,44 @@ export default function ExpensesPage() {
               { name: "year", filterType: "number" },
               { name: "description", filterType: "string" },
             ]}
-            data={(expensesQuery.data?.items ?? []).map((expense) => ({
-              amount: <span className="font-mono">&euro;{expense.amount}</span>,
+            data={(expensesQuery.data?.items ?? []).map((expense, idx) => ({
+              subRows: isProcessedExpense(expense)
+                ? expense.expenses.map((expense) => ({
+                    amount: <span className="font-mono">{expense.amount}</span>,
+                    month: isProcessedExpense(expense) ? "—" : expense.date.month,
+                    year: isProcessedExpense(expense) ? "—" : expense.date.year,
+                    description: expense.description || "None",
+                  }))
+                : [],
+              amount: (
+                <span
+                  className={classNames(
+                    "font-mono",
+                    isProcessedExpense(expense) && "flex gap-2 items-center",
+                  )}
+                >
+                  &euro;{isProcessedExpense(expense) ? expense.totalAmount : expense.amount}
+                  {isProcessedExpense(expense) && (
+                    <Button
+                      onClick={() => {
+                        setExpanded((p) => {
+                          if (typeof p === "object") {
+                            return { ...p, [idx]: !p[idx] };
+                          }
+
+                          return { [idx]: true };
+                        });
+                      }}
+                      type="button"
+                      size="xxs"
+                      variant="default"
+                      title="View individual expenses for this processed expense"
+                    >
+                      <ArrowsExpand aria-label="Expand Rows" />
+                    </Button>
+                  )}
+                </span>
+              ),
               month: expense.date.month,
               year: expense.date.year,
               description: expense.description || "None",

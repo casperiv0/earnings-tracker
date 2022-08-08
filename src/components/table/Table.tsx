@@ -1,7 +1,9 @@
 import * as React from "react";
 import {
   ColumnDef,
+  ExpandedState,
   getCoreRowModel,
+  getExpandedRowModel,
   getSortedRowModel,
   OnChangeFn,
   RowData,
@@ -36,6 +38,8 @@ interface Props<TData extends RowData> {
     setRowSelection?: OnChangeFn<RowSelectionState>;
     filters?: TableFilter[];
     setFilters?: React.Dispatch<React.SetStateAction<TableFilter[]>>;
+    expanded?: ExpandedState;
+    setExpanded?: OnChangeFn<ExpandedState>;
   };
 }
 
@@ -62,13 +66,18 @@ export function Table<TData extends RowData>({
     columns: tableColumns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
+    // @ts-expect-error subRows can exist on the row.
+    getSubRows: (row) => row.subRows,
+    getExpandedRowModel: getExpandedRowModel(),
     onRowSelectionChange: options.setRowSelection,
+    onSortingChange: options.setSorting,
+    onExpandedChange: options.setExpanded,
     enableRowSelection: true,
     enableSorting: true,
-    onSortingChange: options.setSorting,
     pageCount: pagination?.totalPageCount,
     manualSorting: true,
     state: {
+      expanded: options.expanded,
       rowSelection: options.rowSelection,
       sorting: options.sorting,
     },

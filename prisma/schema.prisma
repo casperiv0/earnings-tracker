@@ -19,8 +19,9 @@ model User {
   Income        Income[]
   Subscriptions Subscription[]
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  ProcessedExpense ProcessedExpense[]
 }
 
 model Subscription {
@@ -45,6 +46,23 @@ model Expenses {
   dateId      String            @unique @db.ObjectId
   createdAt   DateTime          @default(now())
   updatedAt   DateTime          @updatedAt
+
+  processedExpense   ProcessedExpense? @relation(fields: [processedExpenseId], references: [id], onDelete: Cascade)
+  processedExpenseId String?           @db.ObjectId
+}
+
+model ProcessedExpense {
+  id           String            @id @default(auto()) @map("_id") @db.ObjectId
+  totalAmount  Float
+  amountPerDay Int
+  description  String?
+  date         EarningsEntryDate @relation(fields: [dateId], references: [id])
+  dateId       String            @unique @db.ObjectId
+  user         User              @relation(fields: [userId], references: [id])
+  userId       String            @db.ObjectId
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+  expenses     Expenses[]
 }
 
 model Income {
@@ -61,11 +79,12 @@ model Income {
 }
 
 model EarningsEntryDate {
-  id       String     @id @default(auto()) @map("_id") @db.ObjectId
-  month    Month
-  year     Int
-  Expenses Expenses[]
-  Income   Income[]
+  id               String            @id @default(auto()) @map("_id") @db.ObjectId
+  month            Month
+  year             Int
+  Expenses         Expenses[]
+  Income           Income[]
+  ProcessedExpense ProcessedExpense?
 }
 
 enum Month {

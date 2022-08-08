@@ -36,7 +36,7 @@ export function createPrismaWhereFromFilters(
   filters: z.infer<typeof TABLE_FILTER>[],
   userId: string,
 ): any {
-  const andClause: any[] = [{ userId }];
+  const andClause: any[] = [{ userId, processedExpense: { is: null } }];
 
   for (const filter of filters) {
     if (!filter.type || !filter.content) continue;
