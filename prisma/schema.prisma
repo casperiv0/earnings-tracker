@@ -53,7 +53,7 @@ model Expenses {
 
 model ProcessedExpense {
   id           String     @id @default(auto()) @map("_id") @db.ObjectId
-  totalAmount  Int
+  totalAmount  Float
   amountPerDay Int
   description  String?
   expenses     Expenses[]

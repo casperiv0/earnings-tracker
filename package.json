@@ -5,7 +5,7 @@
   "description": "Next.js with TypeScript template",
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "prisma generate && next build",
     "start": "next start",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,md,css,json}\" --ignore-path .gitignore",
     "lint": "eslint . --ext .ts,.js,.tsx,.jsx,",
