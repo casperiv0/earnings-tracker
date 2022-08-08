@@ -1,11 +1,11 @@
-import { Month, ProcessedExpense } from "@prisma/client";
+import { Month } from "@prisma/client";
 import { Button } from "components/ui/Button";
 import { Form } from "components/form/Form";
 import { FormField } from "components/form/FormField";
 import { Input } from "components/form/Input";
 import { Textarea } from "components/form/Textarea";
 import { Modal } from "components/modal/Modal";
-import type { Expense } from "src/pages/expenses";
+import type { Expense, ProcessedExpense } from "src/pages/expenses";
 import { trpc } from "utils/trpc";
 import z from "zod";
 import { Loader } from "components/ui/Loader";
@@ -45,10 +45,7 @@ export function ExpensesForm({ expense, onSubmit }: Props) {
 
   const defaultValues = {
     amount: isProcessedExpense(expense) ? expense.totalAmount : expense?.amount ?? 0,
-    date:
-      expense && !isProcessed
-        ? `${expense.date.year}-${getIdxFromMonth(expense.date.month)}-01`
-        : "",
+    date: expense ? `${expense.date.year}-${getIdxFromMonth(expense.date.month)}-01` : "",
     description: expense?.description ?? "",
     processOverXDays: isProcessed
       ? { enabled: true, dailyAmount: expense.amountPerDay }

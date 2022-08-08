@@ -3,7 +3,12 @@ import { Table } from "components/table/Table";
 import { trpc } from "utils/trpc";
 import { useTablePagination } from "src/hooks/useTablePagination";
 import { ArrowsExpand, ThreeDotsVertical } from "react-bootstrap-icons";
-import { EarningsEntryDate, Expenses, Month, ProcessedExpense } from "@prisma/client";
+import {
+  EarningsEntryDate,
+  Expenses,
+  Month,
+  ProcessedExpense as _ProcessedExpense,
+} from "@prisma/client";
 import { Button } from "components/ui/Button";
 import type { ExpandedState, SortingState } from "@tanstack/react-table";
 import { Dropdown } from "components/dropdown/Dropdown";
@@ -15,6 +20,10 @@ import { PageHeader } from "components/ui/PageHeader";
 import { classNames } from "utils/classNames";
 
 export interface Expense extends Expenses {
+  date: Pick<EarningsEntryDate, "month" | "year">;
+}
+
+export interface ProcessedExpense extends _ProcessedExpense {
   date: Pick<EarningsEntryDate, "month" | "year">;
 }
 
@@ -144,8 +153,8 @@ export default function ExpensesPage() {
                   )}
                 </span>
               ),
-              month: isProcessedExpense(expense) ? "—" : expense.date.month,
-              year: isProcessedExpense(expense) ? "—" : expense.date.year,
+              month: expense.date.month,
+              year: expense.date.year,
               description: expense.description || "None",
               actions: (
                 <Dropdown

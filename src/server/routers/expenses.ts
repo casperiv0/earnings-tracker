@@ -38,7 +38,7 @@ export const expensesRouter = createRouter()
           skip,
           // orderBy: getOrderByFromInput(input),
           where: { userId },
-          include: { expenses: { include: { date: true } } },
+          include: { date: true, expenses: { include: { date: true } } },
         }),
         prisma.expenses.findMany({
           take: MAX_ITEMS_PER_TABLE,
@@ -76,7 +76,8 @@ export const expensesRouter = createRouter()
             totalAmount: input.amount,
             amountPerDay: input.processOverXDays.dailyAmount,
             description: input.description,
-            userId,
+            user: { connect: { id: userId } },
+            date: { create: { month: input.month, year: input.year } },
           },
         });
 
