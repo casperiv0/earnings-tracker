@@ -49,11 +49,13 @@ export function ExpensesForm({ expense, onSubmit }: Props) {
     description: expense?.description ?? "",
     processOverXDays: isProcessed
       ? { enabled: true, dailyAmount: expense.amountPerDay }
-      : { enabled: false, dailyAmount: 0 },
+      : { enabled: false, dailyAmount: 2 },
   };
 
   async function handleSubmit(data: typeof defaultValues) {
     const date = new Date(data.date);
+
+    console.log({ data });
 
     if (expense) {
       await editExpense.mutateAsync({
@@ -83,6 +85,8 @@ export function ExpensesForm({ expense, onSubmit }: Props) {
     <Form schema={schema} onSubmit={handleSubmit} defaultValues={defaultValues}>
       {({ register, errors, watch }) => {
         const isToggled = watch("processOverXDays").enabled;
+
+        console.log({ errors });
 
         return (
           <>
@@ -116,6 +120,7 @@ export function ExpensesForm({ expense, onSubmit }: Props) {
                   <Input
                     className="font-mono"
                     type="number"
+                    min={2}
                     {...register("processOverXDays.dailyAmount", { valueAsNumber: true })}
                   />
                 </FormField>

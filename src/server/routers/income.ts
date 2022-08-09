@@ -48,14 +48,18 @@ export const incomeRouter = createRouter()
 
       const [totalCount, items] = await Promise.all([
         prisma.income.count({
-          where: input.filters ? createPrismaWhereFromFilters(input.filters, userId) : undefined,
+          where: input.filters
+            ? createPrismaWhereFromFilters(input.filters, { userId })
+            : undefined,
         }),
         prisma.income.findMany({
           take: MAX_ITEMS_PER_TABLE,
           skip,
           select: incomeSelect,
           orderBy: getOrderByFromInput(input),
-          where: input.filters ? createPrismaWhereFromFilters(input.filters, userId) : undefined,
+          where: input.filters
+            ? createPrismaWhereFromFilters(input.filters, { userId })
+            : undefined,
         }),
       ]);
 

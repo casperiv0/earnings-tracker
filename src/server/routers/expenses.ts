@@ -42,7 +42,10 @@ export const expensesRouter = createRouter()
       const [totalCount, processedExpenses, expenses] = await Promise.all([
         prisma.expenses.count({
           where: input.filters
-            ? createPrismaWhereFromFilters(input.filters, userId)
+            ? createPrismaWhereFromFilters(input.filters, {
+                userId,
+                processedExpense: { is: null },
+              })
             : { userId, processedExpense: { is: null } },
         }),
         prisma.processedExpense.findMany({
@@ -58,7 +61,10 @@ export const expensesRouter = createRouter()
           include: { date: true },
           orderBy: getOrderByFromInput(input),
           where: input.filters
-            ? createPrismaWhereFromFilters(input.filters, userId)
+            ? createPrismaWhereFromFilters(input.filters, {
+                userId,
+                processedExpense: { is: null },
+              })
             : { userId, processedExpense: { is: null } },
         }),
       ]);
