@@ -40,14 +40,18 @@ export const subscriptionsRouter = createRouter()
 
       const [totalCount, items] = await Promise.all([
         prisma.subscription.count({
-          where: input.filters ? createPrismaWhereFromFilters(input.filters, userId) : undefined,
+          where: input.filters
+            ? createPrismaWhereFromFilters(input.filters, { userId })
+            : undefined,
         }),
         prisma.subscription.findMany({
           take: MAX_ITEMS_PER_TABLE,
           skip,
           select: subscriptionSelect,
           orderBy: getOrderByFromInput(input),
-          where: input.filters ? createPrismaWhereFromFilters(input.filters, userId) : undefined,
+          where: input.filters
+            ? createPrismaWhereFromFilters(input.filters, { userId })
+            : undefined,
         }),
       ]);
 
