@@ -15,7 +15,6 @@ export function PageHeader({ title, children, description }: Props) {
         <div className="flex items-center gap-4">
           <Dropdown
             className="md:hidden"
-            sideOffset={-25}
             alignOffset={0}
             trigger={
               <Button className="md:hidden" size="xxs">
