@@ -26,6 +26,8 @@ export default function IncomePage() {
   const [isDeleteOpen, setDeleteOpen] = React.useState(false);
   const [tempIncome, setTempIncome] = React.useState<Income | null>(null);
 
+  const NUMBER_FORMATTER = new Intl.NumberFormat("be-NL", { compactDisplay: "short" });
+
   const incomeQuery = trpc.useQuery(["income.all-infinite", { page, sorting, filters }], {
     keepPreviousData: true,
   });
@@ -103,7 +105,9 @@ export default function IncomePage() {
             pagination={pagination}
             data={(incomeQuery.data?.items ?? []).map((income) => ({
               type: income.type,
-              amount: <span className="font-mono">&euro;{income.amount}</span>,
+              amount: (
+                <span className="font-mono">&euro;{NUMBER_FORMATTER.format(income.amount)}</span>
+              ),
               month: income.date.month,
               year: income.date.year,
               description: income.description || "None",

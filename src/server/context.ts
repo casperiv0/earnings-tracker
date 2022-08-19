@@ -14,6 +14,7 @@ export async function createContext(options: trpcNext.CreateNextContextOptions) 
   }
 
   return {
+    req: options.req,
     session,
     dbUser,
   };

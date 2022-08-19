@@ -37,6 +37,8 @@ export default function ExpensesPage() {
   const [isDeleteOpen, setDeleteOpen] = React.useState(false);
   const [tempExpense, setTempExpense] = React.useState<Expense | ProcessedExpense | null>(null);
 
+  const NUMBER_FORMATTER = new Intl.NumberFormat("be-NL", { compactDisplay: "short" });
+
   const context = trpc.useContext();
   const expensesQuery = trpc.useQuery(["expenses.all-infinite", { page, sorting, filters }], {
     keepPreviousData: true,
@@ -119,7 +121,9 @@ export default function ExpensesPage() {
             data={(expensesQuery.data?.items ?? []).map((expense, idx) => ({
               subRows: isProcessedExpense(expense)
                 ? expense.expenses.map((expense) => ({
-                    amount: <span className="font-mono">{expense.amount}</span>,
+                    amount: (
+                      <span className="font-mono">{NUMBER_FORMATTER.format(expense.amount)}</span>
+                    ),
                     month: isProcessedExpense(expense) ? "—" : expense.date.month,
                     year: isProcessedExpense(expense) ? "—" : expense.date.year,
                     description: expense.description || "None",
@@ -132,7 +136,10 @@ export default function ExpensesPage() {
                     isProcessedExpense(expense) && "flex gap-2 items-center",
                   )}
                 >
-                  &euro;{isProcessedExpense(expense) ? expense.totalAmount : expense.amount}
+                  &euro;
+                  {NUMBER_FORMATTER.format(
+                    isProcessedExpense(expense) ? expense.totalAmount : expense.amount,
+                  )}
                   {isProcessedExpense(expense) && (
                     <Button
                       onClick={() => {

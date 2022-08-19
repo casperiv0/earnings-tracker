@@ -43,6 +43,7 @@ export default withTRPC<AppRouter>({
       headers() {
         return {
           cookie: ctx?.req?.headers.cookie,
+          "accept-language": ctx?.req?.headers["accept-language"],
           ssr: "true",
         };
       },
