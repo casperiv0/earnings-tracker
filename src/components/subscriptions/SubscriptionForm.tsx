@@ -8,6 +8,7 @@ import { Textarea } from "components/form/Textarea";
 import { Modal } from "components/modal/Modal";
 import { trpc } from "utils/trpc";
 import z from "zod";
+import { Loader } from "components/ui/Loader";
 
 const schema = z.object({
   type: z.nativeEnum(SubscriptionType),
@@ -23,17 +24,18 @@ interface Props {
 
 export function SubscriptionForm({ subscription, onSubmit }: Props) {
   const context = trpc.useContext();
-  const addExpenseMutation = trpc.useMutation("subscriptions.add-subscription", {
+  const addSubscription = trpc.useMutation("subscriptions.add-subscription", {
     onSuccess: () => {
       context.invalidateQueries(["subscriptions.all-infinite"]);
     },
   });
 
-  const editExpense = trpc.useMutation("subscriptions.edit-subscription", {
+  const editSubscription = trpc.useMutation("subscriptions.edit-subscription", {
     onSuccess: () => {
       context.invalidateQueries(["subscriptions.all-infinite"]);
     },
   });
+  const isLoading = addSubscription.isLoading || editSubscription.isLoading;
 
   const defaultValues = {
     type: subscription?.type ?? "Monthly",
@@ -44,7 +46,7 @@ export function SubscriptionForm({ subscription, onSubmit }: Props) {
 
   async function handleSubmit(data: typeof defaultValues) {
     if (subscription) {
-      await editExpense.mutateAsync({
+      await editSubscription.mutateAsync({
         id: subscription.id,
         price: data.price,
         name: data.name,
@@ -54,7 +56,7 @@ export function SubscriptionForm({ subscription, onSubmit }: Props) {
 
       onSubmit?.();
     } else {
-      await addExpenseMutation.mutateAsync({
+      await addSubscription.mutateAsync({
         price: data.price,
         description: data.description,
         name: data.name,
@@ -93,9 +95,14 @@ export function SubscriptionForm({ subscription, onSubmit }: Props) {
 
           <footer className="mt-5 flex justify-end gap-2">
             <Modal.Close>
-              <Button type="reset">Cancel</Button>
+              <Button disabled={isLoading} type="reset">
+                Cancel
+              </Button>
             </Modal.Close>
-            <Button type="submit">{subscription ? "Save Changes" : "Add new expense"}</Button>
+            <Button className="flex items-center gap-2" disabled={isLoading} type="submit">
+              {isLoading ? <Loader size="sm" /> : null}
+              {subscription ? "Save Changes" : "Add new subscription"}
+            </Button>
           </footer>
         </>
       )}
