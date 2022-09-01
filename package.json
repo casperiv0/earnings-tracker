@@ -24,7 +24,7 @@
     "@trpc/client": "^9.27.0",
     "@trpc/next": "^9.27.0",
     "@trpc/react": "^9.27.0",
-    "@trpc/server": "^9.27.0",
+    "@trpc/server": "^9.27.2",
     "accept-language-parser": "^1.5.0",
     "chart.js": "^3.9.1",
     "next": "^12.2.5",
@@ -44,7 +44,7 @@
   "devDependencies": {
     "@casper124578/eslint-config": "^4.4.0",
     "@casper124578/eslint-config-next": "^4.4.0",
-    "@casper124578/eslint-config-react": "^4.4.0",
+    "@casper124578/eslint-config-react": "^5.0.0",
     "@types/accept-language-parser": "^1.5.3",
     "@types/node": "^18.7.6",
     "@types/react": "^18.0.17",
