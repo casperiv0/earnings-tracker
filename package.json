@@ -44,7 +44,7 @@
   "devDependencies": {
     "@casper124578/eslint-config": "^4.4.0",
     "@casper124578/eslint-config-next": "^4.4.0",
-    "@casper124578/eslint-config-react": "^4.4.0",
+    "@casper124578/eslint-config-react": "^5.0.0",
     "@types/accept-language-parser": "^1.5.3",
     "@types/node": "^18.7.6",
     "@types/react": "^18.0.17",
