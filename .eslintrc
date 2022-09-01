@@ -19,6 +19,7 @@
     }
   },
   "rules": {
-    "@typescript-eslint/no-redundant-type-constituents": "off"
+    "@typescript-eslint/no-redundant-type-constituents": "off",
+    "@next/next/no-server-import-in-page": "off"
   }
 }
