@@ -28,15 +28,15 @@ interface Props {
 
 export function ExpensesForm({ expense, onSubmit }: Props) {
   const context = trpc.useContext();
-  const addExpenseMutation = trpc.useMutation("expenses.add-expense", {
+  const addExpenseMutation = trpc.expenses.addExpense.useMutation({
     onSuccess: () => {
-      context.invalidateQueries(["expenses.all-infinite"]);
+      context.expenses.getInfinitelyScrollableExpenses.invalidate();
     },
   });
 
-  const editExpense = trpc.useMutation("expenses.edit-expense", {
+  const editExpense = trpc.expenses.editExpense.useMutation({
     onSuccess: () => {
-      context.invalidateQueries(["expenses.all-infinite"]);
+      context.expenses.getInfinitelyScrollableExpenses.invalidate();
     },
   });
 
@@ -54,8 +54,6 @@ export function ExpensesForm({ expense, onSubmit }: Props) {
 
   async function handleSubmit(data: typeof defaultValues) {
     const date = new Date(data.date);
-
-    console.log({ data });
 
     if (expense) {
       await editExpense.mutateAsync({

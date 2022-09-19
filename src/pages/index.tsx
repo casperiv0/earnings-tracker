@@ -15,7 +15,7 @@ const SORTED_YEARS = [...DEFINED_YEARS].sort((a, b) => b - a);
 export default function Index() {
   const [year, setYear] = React.useState<number | "all-time">(() => new Date().getFullYear());
 
-  const dashboardQuery = trpc.useQuery(["dashboard.all-infinite", year]);
+  const dashboardQuery = trpc.dashboard.getDashboardData.useQuery(year);
   const NUMBER_FORMATTER = new Intl.NumberFormat("be-NL", { compactDisplay: "short" });
 
   const income = dashboardQuery.data?.income ?? [];

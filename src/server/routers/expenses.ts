@@ -23,7 +23,7 @@ export const ADD_EXPENSE_INPUT = z.object({
 });
 
 export const EDIT_EXPENSE_INPUT = ADD_EXPENSE_INPUT.extend({
-  id: z.string(),
+  id: z.string().min(2),
 });
 
 export const expensesRouter = t.router({

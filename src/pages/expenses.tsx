@@ -40,13 +40,15 @@ export default function ExpensesPage() {
   const NUMBER_FORMATTER = new Intl.NumberFormat("be-NL", { compactDisplay: "short" });
 
   const context = trpc.useContext();
-  const expensesQuery = trpc.useQuery(["expenses.all-infinite", { page, sorting, filters }], {
-    keepPreviousData: true,
-  });
 
-  const deleteExpense = trpc.useMutation("expenses.delete-expense", {
+  const expensesQuery = trpc.expenses.getInfinitelyScrollableExpenses.useQuery(
+    { page, sorting, filters },
+    { keepPreviousData: true },
+  );
+
+  const deleteExpense = trpc.expenses.deleteExpense.useMutation({
     onSuccess: () => {
-      context.invalidateQueries(["expenses.all-infinite"]);
+      context.expenses.getInfinitelyScrollableExpenses.invalidate();
     },
   });
 
