@@ -11,7 +11,7 @@ import { processOverXDaysHandler } from "utils/expenses/processOverXDaysHandler"
 import { t } from "server/trpc";
 import { isAuth } from "utils/trpc";
 
-export const EDIT_EXPENSE_INPUT = z.object({
+export const ADD_EXPENSE_INPUT = z.object({
   amount: z.number().min(1),
   year: z.number(),
   description: z.string().nullable().optional(),
@@ -20,6 +20,10 @@ export const EDIT_EXPENSE_INPUT = z.object({
     .object({ dailyAmount: z.number().min(1), enabled: z.boolean() })
     .optional()
     .nullable(),
+});
+
+export const EDIT_EXPENSE_INPUT = ADD_EXPENSE_INPUT.extend({
+  id: z.string(),
 });
 
 export const expensesRouter = t.router({
@@ -69,7 +73,7 @@ export const expensesRouter = t.router({
 
       return { maxPages: Math.floor(totalCount / MAX_ITEMS_PER_TABLE), items };
     }),
-  addExpense: isAuth.input(EDIT_EXPENSE_INPUT).mutation(async ({ ctx, input }) => {
+  addExpense: isAuth.input(ADD_EXPENSE_INPUT).mutation(async ({ ctx, input }) => {
     const userId = getUserFromSession(ctx).dbUser.id;
 
     if (input.processOverXDays?.enabled) {
@@ -88,54 +92,40 @@ export const expensesRouter = t.router({
     });
     return createdExpense;
   }),
-  editExpense: isAuth
-    .input(
-      z.object({
-        id: z.string(),
-        amount: z.number().min(1),
-        year: z.number(),
-        description: z.string().nullable().optional(),
-        month: z.nativeEnum(Month),
-        processOverXDays: z
-          .object({ dailyAmount: z.number().min(1), enabled: z.boolean() })
-          .optional()
-          .nullable(),
-      }),
-    )
-    .mutation(async ({ ctx, input }) => {
-      const userId = getUserFromSession(ctx).dbUser.id;
+  editExpense: isAuth.input(EDIT_EXPENSE_INPUT).mutation(async ({ ctx, input }) => {
+    const userId = getUserFromSession(ctx).dbUser.id;
 
-      const expense =
-        (await prisma.expenses.findFirst({
-          where: { userId, id: input.id },
-        })) ||
-        (await prisma.processedExpense.findFirst({
-          where: { userId, id: input.id },
-        }));
+    const expense =
+      (await prisma.expenses.findFirst({
+        where: { userId, id: input.id },
+      })) ||
+      (await prisma.processedExpense.findFirst({
+        where: { userId, id: input.id },
+      }));
 
-      if (!expense) {
-        throw new TRPCError({ code: "NOT_FOUND" });
-      }
+    if (!expense) {
+      throw new TRPCError({ code: "NOT_FOUND" });
+    }
 
-      if (isProcessedExpense(expense)) {
-        await prisma.processedExpense.delete({
-          where: { id: expense.id },
-        });
-
-        return processOverXDaysHandler({ input, userId });
-      }
-
-      const updatedExpense = await prisma.expenses.update({
-        where: { id: input.id },
-        data: {
-          amount: input.amount,
-          description: input.description,
-          date: { update: { month: input.month, year: input.year } },
-        },
-        include: { date: true },
+    if (isProcessedExpense(expense)) {
+      await prisma.processedExpense.delete({
+        where: { id: expense.id },
       });
-      return updatedExpense;
-    }),
+
+      return processOverXDaysHandler({ input, userId });
+    }
+
+    const updatedExpense = await prisma.expenses.update({
+      where: { id: input.id },
+      data: {
+        amount: input.amount,
+        description: input.description,
+        date: { update: { month: input.month, year: input.year } },
+      },
+      include: { date: true },
+    });
+    return updatedExpense;
+  }),
   deleteExpense: isAuth
     .input(
       z.object({
