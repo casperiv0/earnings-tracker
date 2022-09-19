@@ -12,8 +12,8 @@ import { PageHeader } from "components/ui/PageHeader";
 export default function SettingsPage() {
   const [isOpen, setIsOpen] = React.useState(false);
 
-  const sessionQuery = trpc.useQuery(["user.getSession"]);
-  const deleteUserMutation = trpc.useMutation("user.delete-user");
+  const sessionQuery = trpc.user.getSession.useQuery();
+  const deleteUserMutation = trpc.user.deleteUser.useMutation();
   const user = sessionQuery.data?.user;
 
   function handleLogout() {

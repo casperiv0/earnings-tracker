@@ -25,15 +25,16 @@ interface Props {
 
 export function IncomeForm({ income, onSubmit }: Props) {
   const context = trpc.useContext();
-  const addIncome = trpc.useMutation("income.add-income", {
+
+  const addIncome = trpc.income.addIncome.useMutation({
     onSuccess: () => {
-      context.invalidateQueries(["income.all-infinite"]);
+      context.income.getInfiniteScrollableIncome.invalidate();
     },
   });
 
-  const editIncome = trpc.useMutation("income.edit-income", {
+  const editIncome = trpc.income.editIncome.useMutation({
     onSuccess: () => {
-      context.invalidateQueries(["income.all-infinite"]);
+      context.income.getInfiniteScrollableIncome.invalidate();
     },
   });
 

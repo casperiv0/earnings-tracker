@@ -24,17 +24,19 @@ interface Props {
 
 export function SubscriptionForm({ subscription, onSubmit }: Props) {
   const context = trpc.useContext();
-  const addSubscription = trpc.useMutation("subscriptions.add-subscription", {
+
+  const addSubscription = trpc.subscriptions.addSubscription.useMutation({
     onSuccess: () => {
-      context.invalidateQueries(["subscriptions.all-infinite"]);
+      context.subscriptions.getInfiniteScrollableSubscriptions.invalidate();
     },
   });
 
-  const editSubscription = trpc.useMutation("subscriptions.edit-subscription", {
+  const editSubscription = trpc.subscriptions.editSubscription.useMutation({
     onSuccess: () => {
-      context.invalidateQueries(["subscriptions.all-infinite"]);
+      context.subscriptions.getInfiniteScrollableSubscriptions.invalidate();
     },
   });
+
   const isLoading = addSubscription.isLoading || editSubscription.isLoading;
 
   const defaultValues = {

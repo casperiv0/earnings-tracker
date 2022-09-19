@@ -1,12 +1,12 @@
 import { Prisma, SubscriptionType } from "@prisma/client";
 import { z } from "zod";
-import { createRouter } from "server/createRouter";
 import { prisma } from "utils/prisma";
-import { TRPCError } from "@trpc/server";
 import { MAX_ITEMS_PER_TABLE } from "utils/constants";
 import { TABLE_FILTER } from "./income";
 import { createPrismaWhereFromFilters, getOrderByFromInput } from "utils/utils";
 import { getUserFromSession } from "utils/nextauth";
+import { t } from "server/trpc";
+import { isAuth } from "utils/trpc";
 
 const subscriptionSelect = Prisma.validator<Prisma.SubscriptionSelect>()({
   id: true,
@@ -20,21 +20,16 @@ const subscriptionSelect = Prisma.validator<Prisma.SubscriptionSelect>()({
   updatedAt: true,
 });
 
-export const subscriptionsRouter = createRouter()
-  .middleware(async ({ ctx, next }) => {
-    if (!ctx.session || !ctx.dbUser) {
-      throw new TRPCError({ code: "UNAUTHORIZED" });
-    }
-
-    return next();
-  })
-  .query("all-infinite", {
-    input: z.object({
-      page: z.number(),
-      sorting: z.array(z.object({ id: z.string(), desc: z.boolean() })).optional(),
-      filters: z.array(TABLE_FILTER).optional(),
-    }),
-    async resolve({ ctx, input }) {
+export const subscriptionsRouter = t.router({
+  getInfiniteScrollableSubscriptions: isAuth
+    .input(
+      z.object({
+        page: z.number(),
+        sorting: z.array(z.object({ id: z.string(), desc: z.boolean() })).optional(),
+        filters: z.array(TABLE_FILTER).optional(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
       const skip = input.page * MAX_ITEMS_PER_TABLE;
       const userId = getUserFromSession(ctx).dbUser.id;
 
@@ -56,16 +51,17 @@ export const subscriptionsRouter = createRouter()
       ]);
 
       return { maxPages: Math.floor(totalCount / MAX_ITEMS_PER_TABLE), items };
-    },
-  })
-  .mutation("add-subscription", {
-    input: z.object({
-      price: z.number().min(1),
-      name: z.string(),
-      type: z.nativeEnum(SubscriptionType),
-      description: z.string().nullable().optional(),
     }),
-    async resolve({ ctx, input }) {
+  addSubscription: isAuth
+    .input(
+      z.object({
+        price: z.number().min(1),
+        name: z.string(),
+        type: z.nativeEnum(SubscriptionType),
+        description: z.string().nullable().optional(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
       const userId = getUserFromSession(ctx).dbUser.id;
 
       const subscription = await prisma.subscription.create({
@@ -80,17 +76,18 @@ export const subscriptionsRouter = createRouter()
       });
 
       return subscription;
-    },
-  })
-  .mutation("edit-subscription", {
-    input: z.object({
-      id: z.string(),
-      price: z.number().min(1),
-      name: z.string(),
-      type: z.nativeEnum(SubscriptionType),
-      description: z.string().nullable().optional(),
     }),
-    async resolve({ ctx, input }) {
+  editSubscription: isAuth
+    .input(
+      z.object({
+        id: z.string(),
+        price: z.number().min(1),
+        name: z.string(),
+        type: z.nativeEnum(SubscriptionType),
+        description: z.string().nullable().optional(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
       const userId = getUserFromSession(ctx).dbUser.id;
 
       await prisma.subscription.findFirstOrThrow({
@@ -108,13 +105,14 @@ export const subscriptionsRouter = createRouter()
         select: subscriptionSelect,
       });
       return subscription;
-    },
-  })
-  .mutation("delete-subscription", {
-    input: z.object({
-      id: z.string(),
     }),
-    async resolve({ ctx, input }) {
+  deleteSubscription: isAuth
+    .input(
+      z.object({
+        id: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
       const userId = getUserFromSession(ctx).dbUser.id;
 
       await prisma.subscription.findFirstOrThrow({
@@ -122,5 +120,5 @@ export const subscriptionsRouter = createRouter()
       });
 
       await prisma.subscription.delete({ where: { id: input.id } });
-    },
-  });
+    }),
+});

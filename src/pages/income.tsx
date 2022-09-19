@@ -28,9 +28,10 @@ export default function IncomePage() {
 
   const NUMBER_FORMATTER = new Intl.NumberFormat("be-NL", { compactDisplay: "short" });
 
-  const incomeQuery = trpc.useQuery(["income.all-infinite", { page, sorting, filters }], {
-    keepPreviousData: true,
-  });
+  const incomeQuery = trpc.income.getInfiniteScrollableIncome.useQuery(
+    { page, sorting, filters },
+    { keepPreviousData: true },
+  );
 
   const pagination = useTablePagination({
     isLoading: incomeQuery.isRefetching || incomeQuery.isLoading,
@@ -40,9 +41,9 @@ export default function IncomePage() {
   });
   const context = trpc.useContext();
 
-  const deleteIncome = trpc.useMutation("income.delete-income", {
+  const deleteIncome = trpc.income.deleteIncome.useMutation({
     onSuccess: () => {
-      context.invalidateQueries(["income.all-infinite"]);
+      context.income.getInfiniteScrollableIncome.invalidate();
     },
   });
 

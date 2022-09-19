@@ -1,25 +1,20 @@
-import { TRPCError } from "@trpc/server";
-import { createRouter } from "server/createRouter";
+import { t } from "server/trpc";
 import { getUserFromSession } from "utils/nextauth";
 import { prisma } from "utils/prisma";
+import { isAuth } from "utils/trpc";
 import { z } from "zod";
 import { incomeSelect } from "./income";
 
-export const dashboardRouter = createRouter()
-  .middleware(async ({ ctx, next }) => {
-    if (!ctx.session) {
-      throw new TRPCError({ code: "UNAUTHORIZED" });
-    }
-
-    return next();
-  })
-  .query("all-infinite", {
-    input: z
-      .number()
-      .min(2018)
-      .max(2099)
-      .or(z.enum(["all-time"])),
-    async resolve({ ctx, input }) {
+export const dashboardRouter = t.router({
+  getDashboardData: isAuth
+    .input(
+      z
+        .number()
+        .min(2018)
+        .max(2099)
+        .or(z.enum(["all-time"])),
+    )
+    .query(async ({ ctx, input }) => {
       const year = input || new Date().getFullYear();
       const userId = getUserFromSession(ctx).dbUser.id;
 
@@ -37,5 +32,5 @@ export const dashboardRouter = createRouter()
       ]);
 
       return { expenses, income };
-    },
-  });
+    }),
+});

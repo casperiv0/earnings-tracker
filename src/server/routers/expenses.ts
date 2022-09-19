@@ -1,6 +1,5 @@
 import { Month } from "@prisma/client";
 import { z } from "zod";
-import { createRouter } from "server/createRouter";
 import { prisma } from "utils/prisma";
 import { TRPCError } from "@trpc/server";
 import { MAX_ITEMS_PER_TABLE } from "utils/constants";
@@ -9,8 +8,10 @@ import { TABLE_FILTER } from "./income";
 import { getUserFromSession } from "utils/nextauth";
 import { isProcessedExpense } from "components/expenses/ExpensesForm";
 import { processOverXDaysHandler } from "utils/expenses/processOverXDaysHandler";
+import { t } from "server/trpc";
+import { isAuth } from "utils/trpc";
 
-export const EDIT_EXPENSE_INPUT = z.object({
+export const ADD_EXPENSE_INPUT = z.object({
   amount: z.number().min(1),
   year: z.number(),
   description: z.string().nullable().optional(),
@@ -21,21 +22,20 @@ export const EDIT_EXPENSE_INPUT = z.object({
     .nullable(),
 });
 
-export const expensesRouter = createRouter()
-  .middleware(async ({ ctx, next }) => {
-    if (!ctx.session || !ctx.dbUser) {
-      throw new TRPCError({ code: "UNAUTHORIZED" });
-    }
+export const EDIT_EXPENSE_INPUT = ADD_EXPENSE_INPUT.extend({
+  id: z.string().min(2),
+});
 
-    return next();
-  })
-  .query("all-infinite", {
-    input: z.object({
-      page: z.number(),
-      sorting: z.array(z.object({ id: z.string(), desc: z.boolean() })).optional(),
-      filters: z.array(TABLE_FILTER).optional(),
-    }),
-    async resolve({ ctx, input }) {
+export const expensesRouter = t.router({
+  getInfinitelyScrollableExpenses: isAuth
+    .input(
+      z.object({
+        page: z.number(),
+        sorting: z.array(z.object({ id: z.string(), desc: z.boolean() })).optional(),
+        filters: z.array(TABLE_FILTER).optional(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
       const skip = input.page * MAX_ITEMS_PER_TABLE;
       const userId = getUserFromSession(ctx).dbUser.id;
 
@@ -72,82 +72,67 @@ export const expensesRouter = createRouter()
       const items = [...processedExpenses, ...expenses];
 
       return { maxPages: Math.floor(totalCount / MAX_ITEMS_PER_TABLE), items };
-    },
-  })
-  .mutation("add-expense", {
-    input: EDIT_EXPENSE_INPUT,
-    async resolve({ ctx, input }) {
-      const userId = getUserFromSession(ctx).dbUser.id;
-
-      if (input.processOverXDays?.enabled) {
-        return processOverXDaysHandler({ input, userId });
-      }
-
-      const createdExpense = await prisma.expenses.create({
-        data: {
-          amount: input.amount,
-          description: input.description,
-          date: {
-            create: { month: input.month, year: input.year },
-          },
-          user: { connect: { id: userId } },
-        },
-      });
-      return createdExpense;
-    },
-  })
-  .mutation("edit-expense", {
-    input: z.object({
-      id: z.string(),
-      amount: z.number().min(1),
-      year: z.number(),
-      description: z.string().nullable().optional(),
-      month: z.nativeEnum(Month),
-      processOverXDays: z
-        .object({ dailyAmount: z.number().min(1), enabled: z.boolean() })
-        .optional()
-        .nullable(),
     }),
-    async resolve({ ctx, input }) {
-      const userId = getUserFromSession(ctx).dbUser.id;
+  addExpense: isAuth.input(ADD_EXPENSE_INPUT).mutation(async ({ ctx, input }) => {
+    const userId = getUserFromSession(ctx).dbUser.id;
 
-      const expense =
-        (await prisma.expenses.findFirst({
-          where: { userId, id: input.id },
-        })) ||
-        (await prisma.processedExpense.findFirst({
-          where: { userId, id: input.id },
-        }));
+    if (input.processOverXDays?.enabled) {
+      return processOverXDaysHandler({ input, userId });
+    }
 
-      if (!expense) {
-        throw new TRPCError({ code: "NOT_FOUND" });
-      }
-
-      if (isProcessedExpense(expense)) {
-        await prisma.processedExpense.delete({
-          where: { id: expense.id },
-        });
-
-        return processOverXDaysHandler({ input, userId });
-      }
-
-      const updatedExpense = await prisma.expenses.update({
-        where: { id: input.id },
-        data: {
-          amount: input.amount,
-          description: input.description,
-          date: { update: { month: input.month, year: input.year } },
+    const createdExpense = await prisma.expenses.create({
+      data: {
+        amount: input.amount,
+        description: input.description,
+        date: {
+          create: { month: input.month, year: input.year },
         },
-        include: { date: true },
+        user: { connect: { id: userId } },
+      },
+    });
+    return createdExpense;
+  }),
+  editExpense: isAuth.input(EDIT_EXPENSE_INPUT).mutation(async ({ ctx, input }) => {
+    const userId = getUserFromSession(ctx).dbUser.id;
+
+    const expense =
+      (await prisma.expenses.findFirst({
+        where: { userId, id: input.id },
+      })) ||
+      (await prisma.processedExpense.findFirst({
+        where: { userId, id: input.id },
+      }));
+
+    if (!expense) {
+      throw new TRPCError({ code: "NOT_FOUND" });
+    }
+
+    if (isProcessedExpense(expense)) {
+      await prisma.processedExpense.delete({
+        where: { id: expense.id },
       });
-      return updatedExpense;
-    },
-  })
-  .mutation("delete-expense", {
-    input: z.object({
-      id: z.string(),
-    }),
-    async resolve({ ctx, input }) {
+
+      return processOverXDaysHandler({ input, userId });
+    }
+
+    const updatedExpense = await prisma.expenses.update({
+      where: { id: input.id },
+      data: {
+        amount: input.amount,
+        description: input.description,
+        date: { update: { month: input.month, year: input.year } },
+      },
+      include: { date: true },
+    });
+    return updatedExpense;
+  }),
+  deleteExpense: isAuth
+    .input(
+      z.object({
+        id: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
       const userId = getUserFromSession(ctx).dbUser.id;
 
       const expense =
@@ -169,5 +154,5 @@ export const expensesRouter = createRouter()
       } else {
         await prisma.expenses.delete({ where: { id: input.id } });
       }
-    },
-  });
+    }),
+});

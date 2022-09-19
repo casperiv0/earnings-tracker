@@ -22,11 +22,9 @@ export default function SubscriptionsPage() {
   const [isDeleteOpen, setDeleteOpen] = React.useState(false);
   const [tempSubscription, setTempSubscription] = React.useState<Subscription | null>(null);
 
-  const subscriptionsQuery = trpc.useQuery(
-    ["subscriptions.all-infinite", { page, sorting, filters }],
-    {
-      keepPreviousData: true,
-    },
+  const subscriptionsQuery = trpc.subscriptions.getInfiniteScrollableSubscriptions.useQuery(
+    { page, sorting, filters },
+    { keepPreviousData: true },
   );
 
   const pagination = useTablePagination({
@@ -37,9 +35,9 @@ export default function SubscriptionsPage() {
   });
   const context = trpc.useContext();
 
-  const deleteSubscription = trpc.useMutation("subscriptions.delete-subscription", {
+  const deleteSubscription = trpc.subscriptions.deleteSubscription.useMutation({
     onSuccess: () => {
-      context.invalidateQueries(["subscriptions.all-infinite"]);
+      context.subscriptions.getInfiniteScrollableSubscriptions.invalidate();
     },
   });
 

@@ -1,10 +1,10 @@
 import type { Expenses } from "@prisma/client";
-import type { EDIT_EXPENSE_INPUT } from "server/routers/expenses";
+import type { ADD_EXPENSE_INPUT } from "server/routers/expenses";
 import { prisma } from "utils/prisma";
 import type { z } from "zod";
 
 interface Options {
-  input: z.infer<typeof EDIT_EXPENSE_INPUT>;
+  input: z.infer<typeof ADD_EXPENSE_INPUT>;
   userId: string;
 }
 

@@ -16,6 +16,5 @@ module.exports = {
   experimental: {
     browsersListForSwc: true,
     legacyBrowsers: false,
-    images: { allowFutureImage: true },
   },
 };

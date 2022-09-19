@@ -1,11 +1,11 @@
 import { IncomeType, Month, Prisma } from "@prisma/client";
 import { z } from "zod";
-import { createRouter } from "server/createRouter";
 import { prisma } from "utils/prisma";
-import { TRPCError } from "@trpc/server";
 import { MAX_ITEMS_PER_TABLE } from "utils/constants";
 import { createPrismaWhereFromFilters, getOrderByFromInput } from "utils/utils";
 import { getUserFromSession } from "utils/nextauth";
+import { t } from "server/trpc";
+import { isAuth } from "utils/trpc";
 
 export const incomeSelect = Prisma.validator<Prisma.IncomeSelect>()({
   id: true,
@@ -28,21 +28,16 @@ export const TABLE_FILTER = z.object({
   options: z.array(z.string()).optional(),
 });
 
-export const incomeRouter = createRouter()
-  .middleware(async ({ ctx, next }) => {
-    if (!ctx.session || !ctx.dbUser) {
-      throw new TRPCError({ code: "UNAUTHORIZED" });
-    }
-
-    return next();
-  })
-  .query("all-infinite", {
-    input: z.object({
-      page: z.number(),
-      sorting: z.array(z.object({ id: z.string(), desc: z.boolean() })).optional(),
-      filters: z.array(TABLE_FILTER).optional(),
-    }),
-    async resolve({ ctx, input }) {
+export const incomeRouter = t.router({
+  getInfiniteScrollableIncome: isAuth
+    .input(
+      z.object({
+        page: z.number(),
+        sorting: z.array(z.object({ id: z.string(), desc: z.boolean() })).optional(),
+        filters: z.array(TABLE_FILTER).optional(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
       const skip = input.page * MAX_ITEMS_PER_TABLE;
       const userId = getUserFromSession(ctx).dbUser.id;
 
@@ -64,17 +59,18 @@ export const incomeRouter = createRouter()
       ]);
 
       return { maxPages: Math.floor(totalCount / MAX_ITEMS_PER_TABLE), items };
-    },
-  })
-  .mutation("add-income", {
-    input: z.object({
-      type: z.nativeEnum(IncomeType),
-      amount: z.number().min(1),
-      year: z.number(),
-      description: z.string().nullable().optional(),
-      month: z.nativeEnum(Month),
     }),
-    async resolve({ ctx, input }) {
+  addIncome: isAuth
+    .input(
+      z.object({
+        type: z.nativeEnum(IncomeType),
+        amount: z.number().min(1),
+        year: z.number(),
+        description: z.string().nullable().optional(),
+        month: z.nativeEnum(Month),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
       const userId = getUserFromSession(ctx).dbUser.id;
 
       const createdIncome = await prisma.income.create({
@@ -91,18 +87,19 @@ export const incomeRouter = createRouter()
       });
 
       return createdIncome;
-    },
-  })
-  .mutation("edit-income", {
-    input: z.object({
-      id: z.string(),
-      type: z.nativeEnum(IncomeType),
-      amount: z.number().min(1),
-      year: z.number(),
-      description: z.string().nullable().optional(),
-      month: z.nativeEnum(Month),
     }),
-    async resolve({ ctx, input }) {
+  editIncome: isAuth
+    .input(
+      z.object({
+        id: z.string(),
+        type: z.nativeEnum(IncomeType),
+        amount: z.number().min(1),
+        year: z.number(),
+        description: z.string().nullable().optional(),
+        month: z.nativeEnum(Month),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
       const userId = getUserFromSession(ctx).dbUser.id;
 
       await prisma.income.findFirstOrThrow({
@@ -121,17 +118,14 @@ export const incomeRouter = createRouter()
       });
 
       return updatedIncome;
-    },
-  })
-  .mutation("delete-income", {
-    input: z.object({ id: z.string() }),
-    async resolve({ ctx, input }) {
-      const userId = getUserFromSession(ctx).dbUser.id;
+    }),
+  deleteIncome: isAuth.input(z.object({ id: z.string() })).mutation(async ({ ctx, input }) => {
+    const userId = getUserFromSession(ctx).dbUser.id;
 
-      await prisma.income.findFirstOrThrow({
-        where: { userId, id: input.id },
-      });
+    await prisma.income.findFirstOrThrow({
+      where: { userId, id: input.id },
+    });
 
-      await prisma.income.delete({ where: { id: input.id } });
-    },
-  });
+    await prisma.income.delete({ where: { id: input.id } });
+  }),
+});
