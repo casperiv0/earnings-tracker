@@ -5,7 +5,7 @@ import { MAX_ITEMS_PER_TABLE } from "utils/constants";
 import { createPrismaWhereFromFilters, getOrderByFromInput } from "utils/utils";
 import { getUserFromSession } from "utils/nextauth";
 import { t } from "server/trpc";
-import { isAuth } from "utils/trpc";
+import { isAuth } from "utils/middlewares";
 
 export const incomeSelect = Prisma.validator<Prisma.IncomeSelect>()({
   id: true,

@@ -1,7 +1,7 @@
 import { t } from "server/trpc";
 import { getUserFromSession } from "utils/nextauth";
 import { prisma } from "utils/prisma";
-import { isAuth } from "utils/trpc";
+import { isAuth } from "utils/middlewares";
 import { z } from "zod";
 import { incomeSelect } from "./income";
 

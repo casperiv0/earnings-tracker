@@ -9,7 +9,7 @@ import { getUserFromSession } from "utils/nextauth";
 import { isProcessedExpense } from "components/expenses/ExpensesForm";
 import { processOverXDaysHandler } from "utils/expenses/processOverXDaysHandler";
 import { t } from "server/trpc";
-import { isAuth } from "utils/trpc";
+import { isAuth } from "utils/middlewares";
 
 export const ADD_EXPENSE_INPUT = z.object({
   amount: z.number().min(1),

@@ -6,7 +6,7 @@ import { TABLE_FILTER } from "./income";
 import { createPrismaWhereFromFilters, getOrderByFromInput } from "utils/utils";
 import { getUserFromSession } from "utils/nextauth";
 import { t } from "server/trpc";
-import { isAuth } from "utils/trpc";
+import { isAuth } from "utils/middlewares";
 
 const subscriptionSelect = Prisma.validator<Prisma.SubscriptionSelect>()({
   id: true,

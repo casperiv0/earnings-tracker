@@ -1,7 +1,5 @@
 import { createTRPCNext } from "@trpc/next";
 import superjson from "superjson";
-import { TRPCError } from "@trpc/server";
-import { t } from "server/trpc";
 import { httpBatchLink, loggerLink } from "@trpc/client";
 import type { AppRouter } from "server/routers/_app";
 
@@ -51,13 +49,3 @@ function getBaseUrl() {
   // assume localhost
   return `http://localhost:${process.env.PORT ?? 3000}`;
 }
-
-export const isAuth = t.procedure.use(
-  t.middleware(({ next, ctx }) => {
-    if (!ctx.session || !ctx.dbUser) {
-      throw new TRPCError({ code: "UNAUTHORIZED" });
-    }
-
-    return next();
-  }),
-);
