@@ -44,6 +44,7 @@ export function ExpensesForm({ expense, onSubmit }: Props) {
   const isProcessed = isProcessedExpense(expense);
 
   const defaultValues = {
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     amount: isProcessedExpense(expense) ? expense.totalAmount : expense?.amount ?? 0,
     date: expense ? `${expense.date.year}-${getIdxFromMonth(expense.date.month)}-01` : "",
     description: expense?.description ?? "",
