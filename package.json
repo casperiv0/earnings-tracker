@@ -24,7 +24,7 @@
     "@tanstack/react-table": "^8.5.22",
     "@trpc/client": "^10.0.0-proxy-beta.26",
     "@trpc/next": "^10.0.0-proxy-beta.26",
-    "@trpc/react": "^10.0.0-proxy-beta.0",
+    "@trpc/react": "^10.0.0-proxy-beta.20",
     "@trpc/react-query": "^10.0.0-proxy-beta.26",
     "@trpc/server": "^10.0.0-proxy-beta.26",
     "accept-language-parser": "^1.5.0",
