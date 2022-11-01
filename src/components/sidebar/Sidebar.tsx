@@ -44,10 +44,9 @@ export function Sidebar() {
                     isCurrent
                       ? "bg-tertiary font-semibold text-white"
                       : "border-transparent text-gray-200",
-                  )}>
-
+                  )}
+                >
                   <span className="capitalize">{item.name}</span>
-
                 </Link>
               </li>
             );

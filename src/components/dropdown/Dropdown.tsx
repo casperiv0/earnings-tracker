@@ -89,10 +89,9 @@ Dropdown.Link = function DropdownItem({
           "disabled:opacity-60 disabled:cursor-not-allowed outline-none",
           "my-0.5 rounded-sm transition-colors w-full text-left p-[3px] px-3",
           rest.className,
-        )}>
-
+        )}
+      >
         {children}
-
       </Link>
     </DropdownMenu.Item>
   );
