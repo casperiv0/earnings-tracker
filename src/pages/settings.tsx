@@ -6,7 +6,7 @@ import { Input } from "components/form/Input";
 import { trpc } from "utils/trpc";
 import { Modal } from "components/modal/Modal";
 import { signOut } from "next-auth/react";
-import Image from "next/future/image";
+import Image from "next/image";
 import { PageHeader } from "components/ui/PageHeader";
 
 export default function SettingsPage() {

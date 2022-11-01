@@ -2,7 +2,7 @@ import type { User } from "@prisma/client";
 import { Button } from "components/ui/Button";
 import { Dropdown } from "components/dropdown/Dropdown";
 import { signOut } from "next-auth/react";
-import Image from "next/future/image";
+import Image from "next/image";
 
 interface Props {
   user: Pick<User, "id" | "email" | "imageUrl" | "name">;
