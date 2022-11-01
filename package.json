@@ -26,7 +26,7 @@
     "@trpc/next": "^10.0.0-proxy-beta.26",
     "@trpc/react": "^10.0.0-proxy-beta.0",
     "@trpc/react-query": "^10.0.0-proxy-beta.26",
-    "@trpc/server": "^10.0.0-proxy-beta.26",
+    "@trpc/server": "^10.0.0-rc.3",
     "accept-language-parser": "^1.5.0",
     "chart.js": "^3.9.1",
     "next": "^13.0.1",
