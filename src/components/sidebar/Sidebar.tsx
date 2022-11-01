@@ -36,18 +36,18 @@ export function Sidebar() {
 
             return (
               <li key={item.name}>
-                <Link href={item.href}>
-                  <a
-                    aria-current={isCurrent ? "page" : undefined}
-                    className={classNames(
-                      "text-base transition-colors my-0.5 flex items-center gap-2 py-1.5 px-4 rounded-sm hover:bg-tertiary hover:text-white",
-                      isCurrent
-                        ? "bg-tertiary font-semibold text-white"
-                        : "border-transparent text-gray-200",
-                    )}
-                  >
-                    <span className="capitalize">{item.name}</span>
-                  </a>
+                <Link
+                  href={item.href}
+                  aria-current={isCurrent ? "page" : undefined}
+                  className={classNames(
+                    "text-base transition-colors my-0.5 flex items-center gap-2 py-1.5 px-4 rounded-sm hover:bg-tertiary hover:text-white",
+                    isCurrent
+                      ? "bg-tertiary font-semibold text-white"
+                      : "border-transparent text-gray-200",
+                  )}>
+
+                  <span className="capitalize">{item.name}</span>
+
                 </Link>
               </li>
             );

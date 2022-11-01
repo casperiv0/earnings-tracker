@@ -81,18 +81,18 @@ Dropdown.Link = function DropdownItem({
 }: Omit<JSX.IntrinsicElements["a"], "ref"> & { href: string }) {
   return (
     <DropdownMenu.Item>
-      <Link href={rest.href}>
-        <a
-          className={classNames(
-            "block bg-tertiary hover:bg-secondary transition shadow-sm text-white",
-            "rounded-sm transition-all border-[1.5px] border-transparent",
-            "disabled:opacity-60 disabled:cursor-not-allowed outline-none",
-            "my-0.5 rounded-sm transition-colors w-full text-left p-[3px] px-3",
-            rest.className,
-          )}
-        >
-          {children}
-        </a>
+      <Link
+        href={rest.href}
+        className={classNames(
+          "block bg-tertiary hover:bg-secondary transition shadow-sm text-white",
+          "rounded-sm transition-all border-[1.5px] border-transparent",
+          "disabled:opacity-60 disabled:cursor-not-allowed outline-none",
+          "my-0.5 rounded-sm transition-colors w-full text-left p-[3px] px-3",
+          rest.className,
+        )}>
+
+        {children}
+
       </Link>
     </DropdownMenu.Item>
   );
