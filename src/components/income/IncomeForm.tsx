@@ -50,8 +50,6 @@ export function IncomeForm({ income, onSubmit }: Props) {
   async function handleSubmit(data: typeof defaultValues) {
     const date = new Date(data.date);
 
-    console.log({ data });
-
     const defaultMutationData = {
       amount: data.amount,
       month: getMonthFromIdx(date.getMonth()),

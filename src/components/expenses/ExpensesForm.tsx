@@ -84,8 +84,6 @@ export function ExpensesForm({ expense, onSubmit }: Props) {
       {({ register, errors, watch }) => {
         const isToggled = watch("processOverXDays").enabled;
 
-        console.log({ errors });
-
         return (
           <>
             <FormField errorMessage={errors.amount} label="Amount">
