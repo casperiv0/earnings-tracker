@@ -10,13 +10,23 @@ import {
   Tooltip,
   Legend,
   type ChartData,
+  Filler,
 } from "chart.js";
 import type { Expense } from "src/pages/expenses";
 import type { Income } from "src/pages/income";
 import { DEFINED_MONTHS } from "utils/constants";
 import { getMonths, getNettoPerMonth, getTotalPerMonth } from "utils/chart-utils";
 
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Filler,
+  Title,
+  Tooltip,
+  Legend,
+);
 
 interface Props {
   selectedYear: number | "all-time";
@@ -42,12 +52,6 @@ export default function Chart({ selectedYear, expenses, income }: Props) {
     labels: monthLabels,
     datasets: [
       {
-        label: "# Bruto",
-        data: getTotalPerMonth({ data: income, months: monthLabels, selectedYear }),
-        backgroundColor: "rgb(59 130 246)",
-        borderColor: "rgb(59 130 246)",
-      },
-      {
         label: "# Spendings",
         data: getTotalPerMonth({ data: expenses, months: monthLabels, selectedYear }),
         fill: true,
@@ -60,6 +64,13 @@ export default function Chart({ selectedYear, expenses, income }: Props) {
         fill: true,
         backgroundColor: "rgb(22 163 74)",
         borderColor: "rgb(22 163 74)",
+      },
+      {
+        label: "# Bruto",
+        data: getTotalPerMonth({ data: income, months: monthLabels, selectedYear }),
+        backgroundColor: "rgb(59 130 246)",
+        borderColor: "rgb(59 130 246)",
+        fill: true,
       },
     ],
   };
