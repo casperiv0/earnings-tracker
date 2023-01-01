@@ -22,7 +22,7 @@
     "@react-aria/label": "^3.4.3",
     "@tanstack/react-query": "^4.18.0",
     "@tanstack/react-table": "^8.7.0",
-    "@trpc/client": "^10.4.2",
+    "@trpc/client": "^10.7.0",
     "@trpc/next": "^10.4.2",
     "@trpc/react": "^10.0.0-proxy-beta.0",
     "@trpc/react-query": "^10.4.2",
