@@ -11,15 +11,28 @@ import { getTotalPerMonth, getMonths, getNettoPerMonth, sum } from "utils/chart-
 import { DEFINED_YEARS } from "utils/constants";
 
 const SORTED_YEARS = [...DEFINED_YEARS].sort((a, b) => b - a);
+const NUMBER_FORMATTER = new Intl.NumberFormat("be-NL", { compactDisplay: "short" });
+const PERCENTAGE_FORMATTER = new Intl.NumberFormat("be-NL", {
+  style: "percent",
+});
 
 export default function Index() {
   const [year, setYear] = React.useState<number | "all-time">(() => new Date().getFullYear());
 
   const dashboardQuery = trpc.dashboard.getDashboardData.useQuery(year);
-  const NUMBER_FORMATTER = new Intl.NumberFormat("be-NL", { compactDisplay: "short" });
 
   const income = dashboardQuery.data?.income ?? [];
   const expenses = dashboardQuery.data?.expenses ?? [];
+
+  const totalIncome = getTotal(income);
+  const totalExpenses = getTotal(expenses);
+  const expensesPercentage = PERCENTAGE_FORMATTER.format(totalExpenses / totalIncome);
+
+  const totalNetto = getTotalDifference(expenses, income, year);
+  const nettoPercentage = PERCENTAGE_FORMATTER.format(totalNetto / totalIncome);
+
+  const salaryIncome = getTotalSalaryThisYear(income, year);
+  const salaryPercentage = PERCENTAGE_FORMATTER.format(salaryIncome / totalIncome);
 
   return (
     <div className="m-8 mx-5 md:mx-10 h-full">
@@ -44,7 +57,8 @@ export default function Index() {
           <p>
             <span className="font-semibold">Total Netto:</span>{" "}
             <span className="font-mono">
-              &euro;{NUMBER_FORMATTER.format(getTotalDifference(expenses, income, year))}
+              &euro;{NUMBER_FORMATTER.format(getTotalDifference(expenses, income, year))} (
+              {nettoPercentage})
             </span>
           </p>
           <p>
@@ -54,12 +68,15 @@ export default function Index() {
           <p>
             <span className="font-semibold">Total Salary income:</span>{" "}
             <span className="font-mono">
-              &euro;{NUMBER_FORMATTER.format(getTotalSalaryThisYear(income, year))}
+              &euro;{NUMBER_FORMATTER.format(getTotalSalaryThisYear(income, year))} (
+              {salaryPercentage})
             </span>
           </p>
           <p>
             <span className="font-semibold">Total Expenses:</span>{" "}
-            <span className="font-mono">&euro;{NUMBER_FORMATTER.format(getTotal(expenses))}</span>
+            <span className="font-mono">
+              &euro;{NUMBER_FORMATTER.format(getTotal(expenses))} ({expensesPercentage})
+            </span>
           </p>
           <p>
             <span className="font-semibold">Average income per month:</span>{" "}
