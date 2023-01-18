@@ -16,7 +16,7 @@ interface Form<Values extends FieldValues> extends UseFormReturn<Values> {
   errors: FieldErrorsImpl<DeepRequired<Values>>;
 }
 
-interface Props<Values extends FieldValues> extends Omit<UseFormProps, "defaultValues"> {
+interface Props<Values extends FieldValues> extends Omit<UseFormProps<Values>, "defaultValues"> {
   children(form: Form<Values>): React.ReactNode;
   schema?: z.Schema<any, any>;
   defaultValues: DeepPartial<Values>;

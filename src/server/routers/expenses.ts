@@ -7,7 +7,7 @@ import { createPrismaWhereFromFilters, getOrderByFromInput } from "utils/utils";
 import { TABLE_FILTER } from "./income";
 import { getUserFromSession } from "utils/nextauth";
 import { isProcessedExpense } from "components/expenses/ExpensesForm";
-import { processOverXDaysHandler } from "utils/expenses/processOverXDaysHandler";
+import { processOverXDaysHandler } from "utils/expenses/process-over-x-days-handler";
 import { t } from "server/trpc";
 import { isAuth } from "utils/middlewares";
 

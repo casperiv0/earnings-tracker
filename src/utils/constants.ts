@@ -19,3 +19,10 @@ export const DEFINED_MONTHS: Month[] = [
   Month.November,
   Month.December,
 ];
+
+export const GRAPH_COLORS = {
+  INCOME: "rgb(59 130 246)",
+  EXPENSE: "rgb(185 28 28)",
+  NETTO: "rgb(22 163 74)",
+} as const;
+export type GRAPH_COLORS = typeof GRAPH_COLORS[keyof typeof GRAPH_COLORS];

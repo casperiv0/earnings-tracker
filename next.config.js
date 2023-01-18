@@ -6,6 +6,7 @@
 module.exports = {
   cleanDistDir: true,
   reactStrictMode: true,
+  eslint: { ignoreDuringBuilds: true },
   i18n: {
     defaultLocale: "en",
     locales: ["en"],

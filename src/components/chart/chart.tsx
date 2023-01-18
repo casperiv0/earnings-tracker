@@ -2,8 +2,8 @@ import * as React from "react";
 import { Line } from "react-chartjs-2";
 import {
   Chart as ChartJS,
-  CategoryScale,
   LinearScale,
+  CategoryScale,
   PointElement,
   LineElement,
   Title,
@@ -14,12 +14,14 @@ import {
 } from "chart.js";
 import type { Expense } from "src/pages/expenses";
 import type { Income } from "src/pages/income";
-import { DEFINED_MONTHS } from "utils/constants";
-import { getMonths, getNettoPerMonth, getTotalPerMonth } from "utils/chart-utils";
+import { DEFINED_MONTHS, GRAPH_COLORS } from "utils/constants";
+import { getMonths } from "utils/chart-utils";
+import { getTotalPerMonth } from "utils/calculations/get-total-per-month";
+import { getNettoPerMonth } from "utils/calculations/get-netto-per-month";
 
 ChartJS.register(
-  CategoryScale,
   LinearScale,
+  CategoryScale,
   PointElement,
   LineElement,
   Filler,
@@ -52,25 +54,25 @@ export default function Chart({ selectedYear, expenses, income }: Props) {
     labels: monthLabels,
     datasets: [
       {
-        label: "# Spendings",
+        label: "# Expenses",
         data: getTotalPerMonth({ data: expenses, months: monthLabels, selectedYear }),
         fill: true,
-        backgroundColor: "rgb(185 28 28)",
-        borderColor: "rgb(185 28 28)",
+        backgroundColor: GRAPH_COLORS.EXPENSE,
+        borderColor: GRAPH_COLORS.EXPENSE,
       },
       {
         label: "# Netto",
         data: getNettoPerMonth({ income, expenses, selectedYear, months: monthLabels }),
         fill: true,
-        backgroundColor: "rgb(22 163 74)",
-        borderColor: "rgb(22 163 74)",
+        backgroundColor: GRAPH_COLORS.NETTO,
+        borderColor: GRAPH_COLORS.NETTO,
       },
       {
-        label: "# Bruto",
+        label: "# Income",
         data: getTotalPerMonth({ data: income, months: monthLabels, selectedYear }),
-        backgroundColor: "rgb(59 130 246)",
-        borderColor: "rgb(59 130 246)",
         fill: true,
+        backgroundColor: GRAPH_COLORS.INCOME,
+        borderColor: GRAPH_COLORS.INCOME,
       },
     ],
   };
