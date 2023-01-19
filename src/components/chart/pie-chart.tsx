@@ -23,7 +23,7 @@ export default function PieChart({ selectedYear, expenses, income }: Props) {
     labels: ["Income", "Netto", "Expenses"],
     datasets: [
       {
-        label: "# Spendings",
+        label: "Amount",
         data: [totalIncome, totalNetto, totalExpenses],
 
         backgroundColor: [GRAPH_COLORS.INCOME, GRAPH_COLORS.NETTO, GRAPH_COLORS.EXPENSE],
