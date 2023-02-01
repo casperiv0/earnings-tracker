@@ -24,7 +24,7 @@
     "@tanstack/react-table": "^8.7.6",
     "@trpc/client": "^10.9.0",
     "@trpc/next": "^10.9.0",
-    "@trpc/react-query": "^10.9.0",
+    "@trpc/react-query": "^10.9.1",
     "@trpc/server": "^10.9.0",
     "accept-language-parser": "^1.5.0",
     "chart.js": "^4.2.0",
