@@ -14,8 +14,8 @@ import { isAuth } from "utils/middlewares";
 export const ADD_EXPENSE_INPUT = z.object({
   amount: z.number().min(1),
   year: z.number(),
-  description: z.string().nullable().optional(),
   month: z.nativeEnum(Month),
+  description: z.string().nullable().optional(),
   processOverXDays: z
     .object({ dailyAmount: z.number().min(1), enabled: z.boolean() })
     .optional()

@@ -8,6 +8,7 @@ const sidebarNavigation = [
   { name: "Dashboard", href: "/" },
   { name: "Expenses", href: "/expenses" },
   { name: "Income", href: "/income" },
+  { name: "Hours", href: "/hours" },
   { name: "Subscriptions", href: "/subscriptions" },
   { name: "Settings", href: "/settings" },
 ];

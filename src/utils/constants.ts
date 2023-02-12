@@ -3,7 +3,7 @@ import { Month } from "@prisma/client";
 export const MAX_ITEMS_PER_TABLE = 35;
 
 export const DEFINED_YEARS = [2018, 2019, 2020, 2021, 2022, 2023] as const;
-export type Year = typeof DEFINED_YEARS[number];
+export type Year = (typeof DEFINED_YEARS)[number];
 
 export const DEFINED_MONTHS: Month[] = [
   Month.January,
@@ -25,4 +25,4 @@ export const GRAPH_COLORS = {
   EXPENSE: "rgb(185 28 28)",
   NETTO: "rgb(22 163 74)",
 } as const;
-export type GRAPH_COLORS = typeof GRAPH_COLORS[keyof typeof GRAPH_COLORS];
+export type GRAPH_COLORS = (typeof GRAPH_COLORS)[keyof typeof GRAPH_COLORS];
