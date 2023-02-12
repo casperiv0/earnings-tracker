@@ -14,10 +14,7 @@ const schema = z.object({
   amount: z.number().min(1),
   date: z.date(),
   description: z.string().nullable().optional(),
-  processOverXDays: z
-    .object({ dailyAmount: z.number().min(2), enabled: z.boolean() })
-    .optional()
-    .nullable(),
+  tag: z.string(),
 });
 
 interface Props {
@@ -45,10 +42,12 @@ export function HoursForm({ hour, onSubmit }: Props) {
     amount: hour?.amount ?? 0,
     date: hour ? `${hour.date.year}-${getIdxFromMonth(hour.date.month)}-01` : "",
     description: hour?.description ?? "",
+    tag: hour?.tag ?? "",
   };
 
   async function handleSubmit(data: typeof defaultValues) {
     const date = new Date(data.date);
+    console.log({ data });
 
     if (hour) {
       await editHourMutation.mutateAsync({
@@ -58,6 +57,7 @@ export function HoursForm({ hour, onSubmit }: Props) {
         year: date.getFullYear(),
         day: date.getDay(),
         description: data.description,
+        tag: data.tag,
       });
 
       onSubmit?.();
@@ -68,6 +68,7 @@ export function HoursForm({ hour, onSubmit }: Props) {
         year: date.getFullYear(),
         day: date.getDay(),
         description: data.description,
+        tag: data.tag,
       });
 
       onSubmit?.();
@@ -84,6 +85,10 @@ export function HoursForm({ hour, onSubmit }: Props) {
 
           <FormField errorMessage={errors.date} label="Date">
             <Input type="date" {...register("date", { valueAsDate: true })} />
+          </FormField>
+
+          <FormField errorMessage={errors.tag} label="Tag">
+            <Input {...register("tag")} />
           </FormField>
 
           <FormField errorMessage={errors.description} label="Description">

@@ -15,6 +15,7 @@ export const ADD_HOUR_INPUT = z.object({
   month: z.nativeEnum(Month),
   day: z.number(),
   description: z.string().nullable().optional(),
+  tag: z.string(),
 });
 
 export const EDIT_HOUR_INPUT = ADD_HOUR_INPUT.extend({
@@ -68,6 +69,7 @@ export const hoursRouter = t.router({
           create: { month: input.month, year: input.year },
         },
         user: { connect: { id: userId } },
+        tag: input.tag,
       },
     });
     return createdHour;
@@ -89,6 +91,7 @@ export const hoursRouter = t.router({
         amount: input.amount,
         description: input.description,
         date: { update: { month: input.month, year: input.year } },
+        tag: input.tag,
       },
       include: { date: true },
     });

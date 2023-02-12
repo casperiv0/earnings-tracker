@@ -36,7 +36,7 @@ interface Props {
   income: Income[];
 }
 
-export default function Chart({ selectedYear, expenses, income }: Props) {
+export function Chart({ selectedYear, expenses, income }: Props) {
   const monthLabels = React.useMemo(() => {
     const date = new Date();
     const isCurrentYear = date.getFullYear() === selectedYear;

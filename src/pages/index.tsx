@@ -1,11 +1,12 @@
 import * as React from "react";
-import Chart from "components/chart/chart";
+import { Chart } from "components/chart/chart";
 import { trpc } from "utils/trpc";
 import { Dropdown } from "components/dropdown/Dropdown";
 import { Button } from "components/ui/Button";
 import { PageHeader } from "components/ui/PageHeader";
 import { DEFINED_YEARS } from "utils/constants";
-import PieChart from "components/chart/pie-chart";
+import { EarningsPieChart } from "components/chart/earnings-pie-chart";
+import { HoursPieChart } from "components/chart/hours-pie-chart";
 import { getTotal } from "utils/calculations/get-total";
 import { getTotalNetto } from "utils/calculations/get-total-netto";
 import { getTotalSalary } from "utils/calculations/get-salary-total";
@@ -22,9 +23,11 @@ export default function Index() {
 
   const income = dashboardQuery.data?.income ?? [];
   const expenses = dashboardQuery.data?.expenses ?? [];
+  const hours = dashboardQuery.data?.hours ?? [];
 
   const totalIncome = getTotal(income);
   const totalExpenses = getTotal(expenses);
+  const totalHours = getTotal(hours);
 
   const totalNetto = getTotalNetto({ expenses, income, selectedYear });
   const salaryIncome = getTotalSalary({ income, selectedYear });
@@ -51,26 +54,39 @@ export default function Index() {
       </PageHeader>
 
       <div className="flex flex-col gap-y-2">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
           <Card name="Total Income" amount={totalIncome} />
           <Card name="Total Netto" amount={totalNetto} />
-          <Card name="Total Salary Income" amount={salaryIncome} />
           <Card name="Total Expenses" amount={totalExpenses} />
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+          <Card name="Total Salary Income" amount={salaryIncome} />
+          <Card showCurrency={false} name="Total Hours" amount={totalHours} />
         </div>
 
         <Chart selectedYear={selectedYear} expenses={expenses} income={income} />
-        <PieChart selectedYear={selectedYear} expenses={expenses} income={income} />
+        <EarningsPieChart selectedYear={selectedYear} expenses={expenses} income={income} />
+        <HoursPieChart hours={hours} />
       </div>
     </div>
   );
 }
 
-function Card({ name, amount }: { name: string; amount: number }) {
+function Card({
+  name,
+  amount,
+  showCurrency = true,
+}: {
+  name: string;
+  amount: number;
+  showCurrency?: boolean;
+}) {
   return (
     <div className="bg-secondary p-5 rounded-sm shadow-md w-full flex flex-col">
       <h3 className="font-semibold uppercase text-sm mb-2 font-serif text-neutral-300">{name}</h3>
       <span className="font-mono text-2xl font-semibold">
-        &euro;{NUMBER_FORMATTER.format(amount)}
+        {showCurrency ? <>&euro;</> : null}
+        {NUMBER_FORMATTER.format(amount)}
       </span>
     </div>
   );

@@ -18,7 +18,7 @@ export const dashboardRouter = t.router({
       const year = input || new Date().getFullYear();
       const userId = getUserFromSession(ctx).dbUser.id;
 
-      const [expenses, income] = await Promise.all([
+      const [expenses, income, hours] = await Promise.all([
         prisma.expenses.findMany({
           where: { date: { year: typeof year === "number" ? year : undefined }, userId },
           orderBy: { createdAt: "asc" },
@@ -29,8 +29,13 @@ export const dashboardRouter = t.router({
           select: incomeSelect,
           orderBy: { createdAt: "asc" },
         }),
+        prisma.hours.findMany({
+          where: { date: { year: typeof year === "number" ? year : undefined }, userId },
+          include: { date: true },
+          orderBy: { createdAt: "asc" },
+        }),
       ]);
 
-      return { expenses, income };
+      return { expenses, income, hours };
     }),
 });

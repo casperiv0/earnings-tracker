@@ -87,6 +87,7 @@ model Hours {
   userId      String            @db.ObjectId
   date        EarningsEntryDate @relation(fields: [dateId], references: [id])
   dateId      String            @unique @db.ObjectId
+  tag         String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

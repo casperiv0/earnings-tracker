@@ -1,30 +1,30 @@
 import { Pie } from "react-chartjs-2";
 import { Chart as ChartJS, Title, Tooltip, Legend, type ChartData, ArcElement } from "chart.js";
-import type { Expense } from "src/pages/expenses";
-import type { Income } from "src/pages/income";
 import { GRAPH_COLORS } from "utils/constants";
-import { getTotal } from "utils/calculations/get-total";
-import { getTotalNetto } from "utils/calculations/get-total-netto";
+import type { Hour } from "src/pages/hours";
 
 ChartJS.register(Title, Tooltip, Legend, ArcElement);
 
 interface Props {
-  selectedYear: number | "all-time";
-  expenses: Expense[];
-  income: Income[];
+  hours: Hour[];
 }
 
-export default function PieChart({ selectedYear, expenses, income }: Props) {
-  const totalIncome = getTotal(income);
-  const totalExpenses = getTotal(expenses);
-  const totalNetto = getTotalNetto({ expenses, income, selectedYear });
+export function HoursPieChart({ hours }: Props) {
+  const tags = [...new Set(hours.map((hour) => hour.tag).filter(Boolean))];
+
+  const hoursData = tags.map((tag) => {
+    const filteredHours = hours.filter((hour) => hour.tag === tag);
+    const sum = filteredHours.reduce((acc, hour) => acc + hour.amount, 0);
+
+    return { sum, name: tag };
+  });
 
   const chartData: ChartData<"pie"> = {
-    labels: ["Income", "Netto", "Expenses"],
+    labels: [...hoursData.map((v) => v.name)],
     datasets: [
       {
-        label: "Amount",
-        data: [totalIncome, totalNetto, totalExpenses],
+        label: "Amount (Hours)",
+        data: [...hoursData.map((v) => v.sum)],
 
         backgroundColor: [GRAPH_COLORS.INCOME, GRAPH_COLORS.NETTO, GRAPH_COLORS.EXPENSE],
         borderColor: [GRAPH_COLORS.INCOME, GRAPH_COLORS.NETTO, GRAPH_COLORS.EXPENSE],
