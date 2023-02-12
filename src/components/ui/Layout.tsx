@@ -2,7 +2,6 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import * as React from "react";
 import { trpc } from "utils/trpc";
-// import { Loader } from "./Loader";
 import { Sidebar } from "../sidebar/Sidebar";
 import { Loader } from "./Loader";
 
