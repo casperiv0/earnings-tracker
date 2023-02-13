@@ -120,6 +120,7 @@ export default function HoursPage() {
                   </span>
                 ),
                 date: fullDate,
+                tag: hourLog.tag,
                 description: hourLog.description || "None",
                 actions: (
                   <Dropdown
@@ -143,6 +144,7 @@ export default function HoursPage() {
               { header: "Amount", accessorKey: "amount" },
               { header: "Date", accessorKey: "date" },
               { header: "Description", accessorKey: "description" },
+              { header: "Tag", accessorKey: "tag" },
               { header: "actions", accessorKey: "actions" },
             ]}
           />
