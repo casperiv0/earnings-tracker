@@ -25,6 +25,7 @@ export function PageHeader({ title, children, description }: Props) {
             <Dropdown.Link href="/">Dashboard</Dropdown.Link>
             <Dropdown.Link href="/expenses">Expenses</Dropdown.Link>
             <Dropdown.Link href="/income">Income</Dropdown.Link>
+            <Dropdown.Link href="/hours">Hours</Dropdown.Link>
             <Dropdown.Link href="/subscriptions">Subscriptions</Dropdown.Link>
             <Dropdown.Link href="/settings">Settings</Dropdown.Link>
           </Dropdown>
