@@ -66,7 +66,7 @@ export const hoursRouter = t.router({
         amount: input.amount,
         description: input.description,
         date: {
-          create: { month: input.month, year: input.year },
+          create: { month: input.month, year: input.year, day: input.day },
         },
         user: { connect: { id: userId } },
         tag: input.tag,
@@ -90,7 +90,7 @@ export const hoursRouter = t.router({
       data: {
         amount: input.amount,
         description: input.description,
-        date: { update: { month: input.month, year: input.year } },
+        date: { update: { month: input.month, year: input.year, day: input.day } },
         tag: input.tag,
       },
       include: { date: true },

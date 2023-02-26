@@ -40,14 +40,13 @@ export function HoursForm({ hour, onSubmit }: Props) {
 
   const defaultValues = {
     amount: hour?.amount ?? 0,
-    date: hour ? `${hour.date.year}-${getIdxFromMonth(hour.date.month)}-01` : "",
+    date: hour ? `${hour.date.year}-${getIdxFromMonth(hour.date.month)}-${hour.date.day}` : "",
     description: hour?.description ?? "",
     tag: hour?.tag ?? "",
   };
 
   async function handleSubmit(data: typeof defaultValues) {
     const date = new Date(data.date);
-    console.log({ data });
 
     if (hour) {
       await editHourMutation.mutateAsync({
@@ -55,7 +54,7 @@ export function HoursForm({ hour, onSubmit }: Props) {
         amount: data.amount,
         month: getMonthFromIdx(date.getMonth()),
         year: date.getFullYear(),
-        day: date.getDay(),
+        day: date.getDate(),
         description: data.description,
         tag: data.tag,
       });
@@ -66,7 +65,7 @@ export function HoursForm({ hour, onSubmit }: Props) {
         amount: data.amount,
         month: getMonthFromIdx(date.getMonth()),
         year: date.getFullYear(),
-        day: date.getDay(),
+        day: date.getDate(),
         description: data.description,
         tag: data.tag,
       });

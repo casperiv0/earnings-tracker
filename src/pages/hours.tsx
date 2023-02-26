@@ -14,7 +14,7 @@ import { PageHeader } from "components/ui/PageHeader";
 import { HoursForm } from "components/hours/HoursForm";
 
 export interface Hour extends Hours {
-  date: Pick<EarningsEntryDate, "month" | "year">;
+  date: Pick<EarningsEntryDate, "month" | "year" | "day">;
 }
 
 export default function HoursPage() {
@@ -27,7 +27,7 @@ export default function HoursPage() {
   const [isDeleteOpen, setDeleteOpen] = React.useState(false);
   const [tempHourLog, setTempHour] = React.useState<Hour | null>(null);
 
-  const NUMBER_FORMATTER = new Intl.NumberFormat("be-NL", { compactDisplay: "short" });
+  const NUMBER_FORMATTER = new Intl.NumberFormat("NL-be");
 
   const context = trpc.useContext();
 
@@ -114,10 +114,7 @@ export default function HoursPage() {
 
               return {
                 amount: (
-                  <span className="font-mono">
-                    &euro;
-                    {NUMBER_FORMATTER.format(hourLog.amount)}
-                  </span>
+                  <span className="font-mono">{NUMBER_FORMATTER.format(hourLog.amount)}</span>
                 ),
                 date: fullDate,
                 tag: hourLog.tag,

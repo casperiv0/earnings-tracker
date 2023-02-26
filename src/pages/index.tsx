@@ -12,7 +12,7 @@ import { getTotalNetto } from "utils/calculations/get-total-netto";
 import { getTotalSalary } from "utils/calculations/get-salary-total";
 
 const SORTED_YEARS = [...DEFINED_YEARS].sort((a, b) => b - a);
-const NUMBER_FORMATTER = new Intl.NumberFormat("be-NL", { compactDisplay: "short" });
+const NUMBER_FORMATTER = new Intl.NumberFormat("NL-be", { compactDisplay: "short" });
 
 export default function Index() {
   const [selectedYear, setSelectedYear] = React.useState<number | "all-time">(() =>

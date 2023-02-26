@@ -26,7 +26,7 @@ export default function IncomePage() {
   const [isDeleteOpen, setDeleteOpen] = React.useState(false);
   const [tempIncome, setTempIncome] = React.useState<Income | null>(null);
 
-  const NUMBER_FORMATTER = new Intl.NumberFormat("be-NL", { compactDisplay: "short" });
+  const NUMBER_FORMATTER = new Intl.NumberFormat("NL-be", { compactDisplay: "short" });
 
   const incomeQuery = trpc.income.getInfiniteScrollableIncome.useQuery(
     { page, sorting, filters },

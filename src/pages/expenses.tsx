@@ -37,7 +37,7 @@ export default function ExpensesPage() {
   const [isDeleteOpen, setDeleteOpen] = React.useState(false);
   const [tempExpense, setTempExpense] = React.useState<Expense | ProcessedExpense | null>(null);
 
-  const NUMBER_FORMATTER = new Intl.NumberFormat("be-NL", { compactDisplay: "short" });
+  const NUMBER_FORMATTER = new Intl.NumberFormat("NL-be", { compactDisplay: "short" });
 
   const context = trpc.useContext();
 
