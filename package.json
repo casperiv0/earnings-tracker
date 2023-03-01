@@ -35,7 +35,7 @@
     "react-bootstrap-icons": "^1.10.2",
     "react-chartjs-2": "^5.2.0",
     "react-dom": "^18.2.0",
-    "react-hook-form": "^7.43.2",
+    "react-hook-form": "^7.43.3",
     "superjson": "^1.12.2",
     "tailwind-merge": "^1.10.0",
     "vitest": "^0.29.1",
