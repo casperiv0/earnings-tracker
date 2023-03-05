@@ -32,6 +32,12 @@ export function HoursPieChart({ hours }: Props) {
     ],
   };
 
+  if (hours.length <= 0) {
+    return (
+      <div className="bg-secondary p-5 rounded-sm shadow-md h-[500px]">No data to display</div>
+    );
+  }
+
   return (
     <div className="h-[500px]">
       <Pie

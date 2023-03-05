@@ -1,10 +1,11 @@
 import type { IncomeType } from "@prisma/client";
 import type { Expense } from "src/pages/expenses";
+import type { Hour } from "src/pages/hours";
 import type { Income } from "src/pages/income";
 import { createKeyFunc } from "utils/chart-utils";
 
 export interface GetTotalForMonthOptions {
-  data: (Income | Expense)[];
+  data: (Income | Expense | Hour)[];
   months: string[];
   selectedYear: number | "all-time";
   type?: IncomeType;

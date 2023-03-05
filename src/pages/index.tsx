@@ -10,6 +10,7 @@ import { HoursPieChart } from "components/chart/hours-pie-chart";
 import { getTotal } from "utils/calculations/get-total";
 import { getTotalNetto } from "utils/calculations/get-total-netto";
 import { getTotalSalary } from "utils/calculations/get-salary-total";
+import { HoursChart } from "components/chart/hours-chart";
 
 const SORTED_YEARS = [...DEFINED_YEARS].sort((a, b) => b - a);
 const NUMBER_FORMATTER = new Intl.NumberFormat("NL-be", { compactDisplay: "short" });
@@ -65,8 +66,12 @@ export default function Index() {
         </div>
 
         <Chart selectedYear={selectedYear} expenses={expenses} income={income} />
-        <EarningsPieChart selectedYear={selectedYear} expenses={expenses} income={income} />
-        <HoursPieChart hours={hours} />
+        <HoursChart selectedYear={selectedYear} hours={hours} />
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+          <EarningsPieChart selectedYear={selectedYear} expenses={expenses} income={income} />
+          <HoursPieChart hours={hours} />
+        </div>
       </div>
     </div>
   );

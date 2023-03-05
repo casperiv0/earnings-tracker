@@ -1,8 +1,9 @@
 import type { Expense } from "src/pages/expenses";
+import type { Hour } from "src/pages/hours";
 import type { Income } from "src/pages/income";
 import type { GetTotalForMonthOptions } from "./calculations/get-total-per-month";
 
-export function createKeyFunc(selectedYear: number | "all-time", item: Income | Expense) {
+export function createKeyFunc(selectedYear: number | "all-time", item: Income | Expense | Hour) {
   if (selectedYear === "all-time") {
     return `${item.date.year}-${item.date.month}`;
   }

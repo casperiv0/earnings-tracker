@@ -38,6 +38,7 @@
     "react-hook-form": "^7.43.4",
     "superjson": "^1.12.2",
     "tailwind-merge": "^1.10.0",
+    "uniqolor": "^1.1.0",
     "vitest": "^0.29.2",
     "zod": "^3.21.0"
   },
