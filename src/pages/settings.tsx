@@ -98,7 +98,7 @@ export default function SettingsPage() {
         <Form defaultValues={configurationDefaultValues} onSubmit={handleConfigurationSubmit}>
           {({ register }) => (
             <>
-              <FormField label="Max Yearly Income">
+              <FormField label="Max Yearly Salary Income">
                 <Input
                   className="font-mono"
                   {...register("maxYearlyIncome", { valueAsNumber: true })}
