@@ -3,12 +3,14 @@ import { TRPCError } from "@trpc/server";
 import { t } from "server/trpc";
 import { prisma } from "utils/prisma";
 import { isAuth } from "utils/middlewares";
+import { z } from "zod";
 
 const defaultUserSelect = Prisma.validator<Prisma.UserSelect>()({
   id: true,
   email: true,
   imageUrl: true,
   name: true,
+  configuration: true,
 });
 
 export const userRouter = t.router({
@@ -31,4 +33,37 @@ export const userRouter = t.router({
 
     return { deleted: true };
   }),
+  updateUserConfiguration: isAuth
+    .input(
+      z.object({
+        maxYearlyIncome: z.number().nullable(),
+        maxYearlyHours: z.number().nullable(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      if (!ctx.session?.user?.email) {
+        throw new TRPCError({ code: "UNAUTHORIZED" });
+      }
+
+      const user = await prisma.user.update({
+        where: { email: ctx.session.user.email },
+        data: {
+          configuration: {
+            upsert: {
+              create: {
+                maxYearlyIncome: input.maxYearlyIncome,
+                maxYearlyHours: input.maxYearlyHours,
+              },
+              update: {
+                maxYearlyIncome: input.maxYearlyIncome,
+                maxYearlyHours: input.maxYearlyHours,
+              },
+            },
+          },
+        },
+        select: defaultUserSelect,
+      });
+
+      return { user };
+    }),
 });

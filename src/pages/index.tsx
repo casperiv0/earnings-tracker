@@ -20,6 +20,7 @@ export default function Index() {
     new Date().getFullYear(),
   );
 
+  const user = trpc.user.getSession.useQuery();
   const dashboardQuery = trpc.dashboard.getDashboardData.useQuery(selectedYear);
 
   const income = dashboardQuery.data?.income ?? [];
@@ -32,6 +33,7 @@ export default function Index() {
 
   const totalNetto = getTotalNetto({ expenses, income, selectedYear });
   const salaryIncome = getTotalSalary({ income, selectedYear });
+  const configuration = user.data?.user?.configuration;
 
   return (
     <div className="m-8 mx-5 md:mx-10 h-full">
@@ -61,8 +63,17 @@ export default function Index() {
           <Card name="Total Expenses" amount={totalExpenses} />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-          <Card name="Total Salary Income" amount={salaryIncome} />
-          <Card showCurrency={false} name="Total Hours" amount={totalHours} />
+          <Card
+            max={configuration?.maxYearlyIncome}
+            name="Total Salary Income"
+            amount={salaryIncome}
+          />
+          <Card
+            max={configuration?.maxYearlyHours}
+            showCurrency={false}
+            name="Total Hours"
+            amount={totalHours}
+          />
         </div>
 
         <Chart selectedYear={selectedYear} expenses={expenses} income={income} />
@@ -81,10 +92,12 @@ function Card({
   name,
   amount,
   showCurrency = true,
+  max,
 }: {
   name: string;
   amount: number;
   showCurrency?: boolean;
+  max?: number | null;
 }) {
   return (
     <div className="bg-secondary p-5 rounded-sm shadow-md w-full flex flex-col">
@@ -92,6 +105,7 @@ function Card({
       <span className="font-mono text-2xl font-semibold">
         {showCurrency ? <>&euro;</> : null}
         {NUMBER_FORMATTER.format(amount)}
+        {max ? <span className="inline-block text-sm ml-2">/ {max}</span> : null}
       </span>
     </div>
   );

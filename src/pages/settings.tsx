@@ -14,10 +14,19 @@ export default function SettingsPage() {
 
   const sessionQuery = trpc.user.getSession.useQuery();
   const deleteUserMutation = trpc.user.deleteUser.useMutation();
+  const updateUserConfigurationMutation = trpc.user.updateUserConfiguration.useMutation();
+
   const user = sessionQuery.data?.user;
 
   function handleLogout() {
     signOut({ callbackUrl: "/login" });
+  }
+
+  async function handleConfigurationSubmit(values: typeof configurationDefaultValues) {
+    await updateUserConfigurationMutation.mutateAsync({
+      maxYearlyIncome: values.maxYearlyIncome ? values.maxYearlyIncome : null,
+      maxYearlyHours: values.maxYearlyHours ? values.maxYearlyHours : null,
+    });
   }
 
   async function handleDeleteUser(e: React.FormEvent) {
@@ -30,6 +39,11 @@ export default function SettingsPage() {
   if (!user) {
     return null;
   }
+
+  const configurationDefaultValues = {
+    maxYearlyIncome: user.configuration?.maxYearlyIncome,
+    maxYearlyHours: user.configuration?.maxYearlyHours,
+  };
 
   const defaultValues = {
     email: user.email,
@@ -76,7 +90,35 @@ export default function SettingsPage() {
         </Form>
       </section>
 
-      <section className="mt-5" id="danger">
+      <section id="configuration" className="my-5">
+        <header className="mb-3">
+          <h2 className="font-serif text-2xl font-semibold">Configuration</h2>
+        </header>
+
+        <Form defaultValues={configurationDefaultValues} onSubmit={handleConfigurationSubmit}>
+          {({ register }) => (
+            <>
+              <FormField label="Max Yearly Income">
+                <Input
+                  className="font-mono"
+                  {...register("maxYearlyIncome", { valueAsNumber: true })}
+                />
+              </FormField>
+
+              <FormField label="Max Yearly Hours">
+                <Input
+                  className="font-mono"
+                  {...register("maxYearlyHours", { valueAsNumber: true })}
+                />
+              </FormField>
+
+              <Button type="submit">Save</Button>
+            </>
+          )}
+        </Form>
+      </section>
+
+      <section className="my-5" id="danger">
         <header className="mb-5">
           <h2 className="font-serif text-2xl font-semibold">Danger Zone</h2>
         </header>

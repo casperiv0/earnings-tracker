@@ -23,6 +23,16 @@ model User {
   updatedAt        DateTime           @updatedAt
   ProcessedExpense ProcessedExpense[]
   Hours            Hours[]
+  configuration    Configuration?     @relation(fields: [configurationId], references: [id])
+  configurationId  String?            @db.ObjectId
+}
+
+model Configuration {
+  id              String @id @default(auto()) @map("_id") @db.ObjectId
+  maxYearlyIncome Float?
+  maxYearlyHours  Float?
+
+  User User[]
 }
 
 model Subscription {
