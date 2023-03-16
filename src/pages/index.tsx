@@ -99,12 +99,18 @@ function Card({
   showCurrency?: boolean;
   max?: number | null;
 }) {
+  const percentage = max ? (amount / max) * 100 : 0;
+  const percentageColor =
+    percentage > 100 ? "text-red-500" : percentage > 80 ? "text-yellow-500" : "text-green-500";
+
   return (
     <div className="bg-secondary p-5 rounded-sm shadow-md w-full flex flex-col">
       <h3 className="font-semibold uppercase text-sm mb-2 font-serif text-neutral-300">{name}</h3>
       <span className="font-mono text-2xl font-semibold">
-        {showCurrency ? <>&euro;</> : null}
-        {NUMBER_FORMATTER.format(amount)}
+        <span className={percentage ? percentageColor : undefined}>
+          {showCurrency ? <>&euro;</> : null}
+          {NUMBER_FORMATTER.format(amount)}
+        </span>
         {max ? <span className="inline-block text-sm ml-2">/ {max}</span> : null}
       </span>
     </div>

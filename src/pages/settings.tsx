@@ -8,6 +8,7 @@ import { Modal } from "components/modal/Modal";
 import { signOut } from "next-auth/react";
 import Image from "next/image";
 import { PageHeader } from "components/ui/PageHeader";
+import { Loader } from "components/ui/Loader";
 
 export default function SettingsPage() {
   const [isOpen, setIsOpen] = React.useState(false);
@@ -112,7 +113,14 @@ export default function SettingsPage() {
                 />
               </FormField>
 
-              <Button type="submit">Save</Button>
+              <Button
+                className="flex items-center gap-2"
+                disabled={updateUserConfigurationMutation.isLoading}
+                type="submit"
+              >
+                {updateUserConfigurationMutation.isLoading ? <Loader size="sm" /> : null}
+                Save
+              </Button>
             </>
           )}
         </Form>
