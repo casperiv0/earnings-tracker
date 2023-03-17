@@ -1,10 +1,10 @@
 import { Button } from "components/ui/Button";
 import { signIn } from "next-auth/react";
-import { Github } from "react-bootstrap-icons";
+import { Github, Google } from "react-bootstrap-icons";
 
 export default function LoginPage() {
-  function handleLoginClick() {
-    signIn("github", { redirect: true, callbackUrl: "/" });
+  function handleLoginClick(type: "github" | "google") {
+    signIn(type, { redirect: true, callbackUrl: "/" });
   }
 
   return (
@@ -16,10 +16,15 @@ export default function LoginPage() {
         </p>
       </header>
 
-      <div className="mt-4">
-        <Button onClick={handleLoginClick} className="flex items-center gap-2">
+      <div className="mt-4 flex items-center gap-3">
+        <Button onClick={() => handleLoginClick("github")} className="flex items-center gap-2">
           <Github />
           Login via GitHub
+        </Button>
+
+        <Button onClick={() => handleLoginClick("google")} className="flex items-center gap-2">
+          <Google />
+          Login via Google
         </Button>
       </div>
     </div>
