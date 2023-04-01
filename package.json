@@ -39,7 +39,7 @@
     "superjson": "^1.12.2",
     "tailwind-merge": "^1.10.0",
     "uniqolor": "^1.1.0",
-    "vitest": "^0.29.7",
+    "vitest": "^0.29.8",
     "zod": "^3.21.4"
   },
   "devDependencies": {
