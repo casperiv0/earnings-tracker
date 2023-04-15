@@ -34,6 +34,10 @@ interface Props {
   hours: Hour[];
 }
 
+const randomColors = Array.from({ length: 10 }, () =>
+  random({ format: "rgb", differencePoint: 2 }),
+);
+
 export function HoursChart({ selectedYear, hours }: Props) {
   const monthLabels = React.useMemo(() => {
     const date = new Date();
@@ -48,31 +52,32 @@ export function HoursChart({ selectedYear, hours }: Props) {
     return DEFINED_MONTHS;
   }, [selectedYear, hours]);
 
-  const tags = [...new Set(hours.map((hour) => hour.tag).filter(Boolean))] as string[];
+  const datasets = React.useMemo(() => {
+    const tags = [...new Set(hours.map((hour) => hour.tag).filter(Boolean))] as string[];
+    return tags.map((data, idx) => {
+      const filteredHours = hours.filter((hour) => hour.tag === data);
+      const color = randomColors[idx] ?? random({ format: "rgb" });
 
-  const datasets = tags.map((data) => {
-    const filteredHours = hours.filter((hour) => hour.tag === data);
-    const color = random({ format: "rgb" });
+      const monthsData: { month: Month; amount: number }[] = [];
 
-    const monthsData: { month: Month; amount: number }[] = [];
+      for (const month of monthLabels) {
+        const filteredHoursByMonth = filteredHours.filter(
+          (hour) => createKeyFunc(selectedYear, hour) === month,
+        );
+        const amount = filteredHoursByMonth.reduce((acc, hour) => acc + hour.amount, 0);
 
-    for (const month of monthLabels) {
-      const filteredHoursByMonth = filteredHours.filter(
-        (hour) => createKeyFunc(selectedYear, hour) === month,
-      );
-      const amount = filteredHoursByMonth.reduce((acc, hour) => acc + hour.amount, 0);
+        monthsData.push({ month: month as Month, amount });
+      }
 
-      monthsData.push({ month: month as Month, amount });
-    }
-
-    return {
-      label: data,
-      data: monthsData.map((v) => v.amount),
-      fill: false,
-      backgroundColor: color.color,
-      borderColor: color.color,
-    };
-  });
+      return {
+        label: data,
+        data: monthsData.map((v) => v.amount),
+        fill: false,
+        backgroundColor: color.color,
+        borderColor: color.color,
+      };
+    });
+  }, [hours, monthLabels, selectedYear]);
 
   const chartData: ChartData<"bar"> = {
     labels: monthLabels,
