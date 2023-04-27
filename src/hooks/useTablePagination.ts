@@ -26,24 +26,24 @@ export function useTablePagination<T extends { maxPages: number }>(
   const isPreviousDisabled = options.query.isLoading || options.page <= 0;
 
   function onNextPage() {
+    window.scrollTo({ behavior: "smooth", top: 0 });
+
     options.setPage((prevPage) =>
       prevPage === options.query.data?.maxPages ? prevPage : prevPage + 1,
     );
   }
 
   function onPreviousPage() {
+    window.scrollTo({ behavior: "smooth", top: 0 });
+
     options.setPage((prevPage) => (prevPage <= 0 ? 0 : prevPage - 1));
   }
 
   function gotoPage(page: number) {
+    window.scrollTo({ behavior: "smooth", top: 0 });
+
     options.setPage(page);
   }
-
-  React.useEffect(() => {
-    if (!options.isLoading) {
-      window.scrollTo({ behavior: "smooth", top: 0 });
-    }
-  }, [options.isLoading, options.query.data]);
 
   return {
     isLoading: options.isLoading,

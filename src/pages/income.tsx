@@ -12,6 +12,8 @@ import { IncomeForm } from "components/income/IncomeForm";
 import { Loader } from "components/ui/Loader";
 import type { TableFilter } from "components/table/filters/TableFilters";
 import { PageHeader } from "components/ui/PageHeader";
+import { getTotal } from "utils/calculations/get-total";
+import { NUMBER_FORMATTER } from ".";
 
 export interface Income extends _Income {
   date: Pick<EarningsEntryDate, "month" | "year">;
@@ -25,8 +27,6 @@ export default function IncomePage() {
   const [isOpen, setIsOpen] = React.useState(false);
   const [isDeleteOpen, setDeleteOpen] = React.useState(false);
   const [tempIncome, setTempIncome] = React.useState<Income | null>(null);
-
-  const NUMBER_FORMATTER = new Intl.NumberFormat("NL-be", { compactDisplay: "short" });
 
   const incomeQuery = trpc.income.getInfiniteScrollableIncome.useQuery(
     { page, sorting, filters },
@@ -83,6 +83,8 @@ export default function IncomePage() {
     setIsOpen(true);
   }
 
+  const data = incomeQuery.data?.items ?? [];
+
   return (
     <div className="m-8 mx-5 md:mx-10 h-full">
       <PageHeader title="Income" description="A list of all income from any year starting in 2018.">
@@ -96,6 +98,23 @@ export default function IncomePage() {
           <p className="text-neutral-300">There is no income yet.</p>
         ) : (
           <Table
+            footer={
+              <>
+                <span className="text-base font-semibold text-neutral-300">Total:</span>
+                <span className="text-lg font-normal text-neutral-100 font-mono">
+                  &euro;
+                  {NUMBER_FORMATTER.format(getTotal({ data }))}
+                </span>
+
+                <span className="text-base font-semibold text-neutral-300 ml-10">
+                  Total Salary:
+                </span>
+                <span className="text-lg font-normal text-neutral-100 font-mono">
+                  &euro;
+                  {NUMBER_FORMATTER.format(getTotal({ data, type: IncomeType.Salary }))}
+                </span>
+              </>
+            }
             options={{
               sorting,
               setSorting,
@@ -104,7 +123,7 @@ export default function IncomePage() {
             }}
             query={incomeQuery}
             pagination={pagination}
-            data={(incomeQuery.data?.items ?? []).map((income) => ({
+            data={data.map((income) => ({
               type: income.type,
               amount: (
                 <span className="font-mono">&euro;{NUMBER_FORMATTER.format(income.amount)}</span>

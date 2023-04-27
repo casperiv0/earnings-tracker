@@ -18,6 +18,8 @@ import { Loader } from "components/ui/Loader";
 import type { TableFilter } from "components/table/filters/TableFilters";
 import { PageHeader } from "components/ui/PageHeader";
 import { classNames } from "utils/classNames";
+import { NUMBER_FORMATTER } from ".";
+import { getTotal } from "utils/calculations/get-total";
 
 export interface Expense extends Expenses {
   date: Pick<EarningsEntryDate, "month" | "year">;
@@ -36,8 +38,6 @@ export default function ExpensesPage() {
   const [isOpen, setIsOpen] = React.useState(false);
   const [isDeleteOpen, setDeleteOpen] = React.useState(false);
   const [tempExpense, setTempExpense] = React.useState<Expense | ProcessedExpense | null>(null);
-
-  const NUMBER_FORMATTER = new Intl.NumberFormat("NL-be", { compactDisplay: "short" });
 
   const context = trpc.useContext();
 
@@ -94,6 +94,8 @@ export default function ExpensesPage() {
     setIsOpen(true);
   }
 
+  const data = expensesQuery.data?.items ?? [];
+
   return (
     <div className="m-8 mx-5 md:mx-10 h-full">
       <PageHeader
@@ -106,10 +108,19 @@ export default function ExpensesPage() {
       <div className="mt-5">
         {expensesQuery.isLoading ? (
           <Loader fixed />
-        ) : (expensesQuery.data?.items.length ?? 0) <= 0 && filters.length <= 0 ? (
+        ) : data.length <= 0 && filters.length <= 0 ? (
           <p className="text-neutral-300">There are no expenses yet.</p>
         ) : (
           <Table
+            footer={
+              <>
+                <span className="text-base font-semibold text-neutral-300">Total:</span>
+                <span className="text-lg font-normal text-neutral-100 font-mono">
+                  &euro;
+                  {NUMBER_FORMATTER.format(getTotal({ data }))}
+                </span>
+              </>
+            }
             options={{ sorting, setSorting, filters, setFilters, expanded, setExpanded }}
             pagination={pagination}
             query={expensesQuery}
@@ -120,7 +131,7 @@ export default function ExpensesPage() {
               { name: "year", filterType: "number" },
               { name: "description", filterType: "string" },
             ]}
-            data={(expensesQuery.data?.items ?? []).map((expense, idx) => ({
+            data={data.map((expense, idx) => ({
               subRows: isProcessedExpense(expense)
                 ? expense.expenses.map((expense) => ({
                     amount: (

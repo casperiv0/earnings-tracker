@@ -15,8 +15,8 @@ interface Props {
 }
 
 export function EarningsPieChart({ selectedYear, expenses, income }: Props) {
-  const totalIncome = getTotal(income);
-  const totalExpenses = getTotal(expenses);
+  const totalIncome = getTotal({ data: income });
+  const totalExpenses = getTotal({ data: expenses });
   const totalNetto = getTotalNetto({ expenses, income, selectedYear });
 
   const chartData: ChartData<"pie"> = {

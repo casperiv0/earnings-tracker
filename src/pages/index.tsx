@@ -13,7 +13,7 @@ import { getTotalSalary } from "utils/calculations/get-salary-total";
 import { HoursChart } from "components/chart/hours-chart";
 
 const SORTED_YEARS = [...DEFINED_YEARS].sort((a, b) => b - a);
-const NUMBER_FORMATTER = new Intl.NumberFormat("NL-be", { compactDisplay: "short" });
+export const NUMBER_FORMATTER = new Intl.NumberFormat("NL-be", { compactDisplay: "short" });
 
 export default function Index() {
   const [selectedYear, setSelectedYear] = React.useState<number | "all-time">(() =>
@@ -27,9 +27,9 @@ export default function Index() {
   const expenses = dashboardQuery.data?.expenses ?? [];
   const hours = dashboardQuery.data?.hours ?? [];
 
-  const totalIncome = getTotal(income);
-  const totalExpenses = getTotal(expenses);
-  const totalHours = getTotal(hours);
+  const totalIncome = getTotal({ data: income });
+  const totalExpenses = getTotal({ data: expenses });
+  const totalHours = getTotal({ data: hours });
 
   const totalNetto = getTotalNetto({ expenses, income, selectedYear });
   const salaryIncome = getTotalSalary({ income, selectedYear });

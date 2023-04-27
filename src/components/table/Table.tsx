@@ -31,6 +31,7 @@ interface Props<TData extends RowData> {
   query?: UseQueryResult;
   filterTypes?: TableFilter[];
   pagination?: TablePaginationOptions;
+  footer?: React.ReactNode;
   options?: {
     sorting?: SortingState;
     setSorting?: OnChangeFn<SortingState>;
@@ -50,6 +51,7 @@ export function Table<TData extends RowData>({
   filterTypes,
   query,
   options = {},
+  footer,
 }: Props<TData>) {
   const tableColumns = React.useMemo(() => {
     let cols = columns;
@@ -115,6 +117,16 @@ export function Table<TData extends RowData>({
                 <TableRow key={row.id} row={row} idx={idx} />
               ))}
             </tbody>
+
+            {footer ? (
+              <tfoot>
+                <tr>
+                  <td className="m-0 text-left p-3 px-3" colSpan={tableColumns.length}>
+                    <div className="flex gap-2 items-center">{footer}</div>
+                  </td>
+                </tr>
+              </tfoot>
+            ) : null}
           </table>
 
           {pagination ? <TablePagination pagination={pagination} /> : null}
