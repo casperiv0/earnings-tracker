@@ -10,7 +10,7 @@
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,md,css,json}\" --ignore-path .gitignore",
     "prettier:check": "prettier --check \"**/*.{js,jsx,ts,tsx,md,css,json}\" --ignore-path .gitignore",
     "lint": "eslint . --ext .ts,.js,.tsx,.jsx,",
-    "test-tsc": "tsc --noEmit",
+    "typecheck": "tsc --noEmit",
     "test": "vitest",
     "coverage": "vitest watch --coverage"
   },
