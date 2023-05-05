@@ -12,6 +12,7 @@ import { Loader } from "components/ui/Loader";
 import type { TableFilter } from "components/table/filters/TableFilters";
 import { PageHeader } from "components/ui/PageHeader";
 import { HoursForm } from "components/hours/HoursForm";
+import { getTotal } from "utils/calculations/get-total";
 
 export interface Hour extends Hours {
   date: Pick<EarningsEntryDate, "month" | "year" | "day">;
@@ -84,6 +85,8 @@ export default function HoursPage() {
     setIsOpen(true);
   }
 
+  const data = hoursQuery.data?.items ?? [];
+
   return (
     <div className="m-8 mx-5 md:mx-10 h-full">
       <PageHeader title="Hour logs" description="View and manage hour logs.">
@@ -93,7 +96,7 @@ export default function HoursPage() {
       <div className="mt-5">
         {hoursQuery.isLoading ? (
           <Loader fixed />
-        ) : (hoursQuery.data?.items.length ?? 0) <= 0 && filters.length <= 0 ? (
+        ) : data.length <= 0 && filters.length <= 0 ? (
           <p className="text-neutral-300">There are no hours yet.</p>
         ) : (
           <Table
@@ -107,7 +110,22 @@ export default function HoursPage() {
               { name: "year", filterType: "number" },
               { name: "description", filterType: "string" },
             ]}
-            data={(hoursQuery.data?.items ?? []).map((hourLog) => {
+            footer={
+              <>
+                <span className="text-base font-semibold text-neutral-300">Total:</span>
+                <span className="text-lg font-normal text-neutral-100 font-mono">
+                  {NUMBER_FORMATTER.format(getTotal({ data }))}
+                </span>
+
+                <span className="text-base font-semibold text-neutral-300 ml-10">
+                  Total Salary:
+                </span>
+                <span className="text-lg font-normal text-neutral-100 font-mono">
+                  {NUMBER_FORMATTER.format(getTotal({ data }))}
+                </span>
+              </>
+            }
+            data={data.map((hourLog) => {
               const fullDate = `${hourLog.date.day ?? "1"} ${hourLog.date.month} ${
                 hourLog.date.year
               }`;
