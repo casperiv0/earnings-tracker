@@ -109,6 +109,7 @@ export default function HoursPage() {
               { name: "month", filterType: "enum", options: Object.values(Month) },
               { name: "year", filterType: "number" },
               { name: "description", filterType: "string" },
+              { name: "tag", filterType: "string" },
             ]}
             footer={
               <>
