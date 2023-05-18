@@ -40,7 +40,9 @@ export function HoursForm({ hour, onSubmit }: Props) {
 
   const defaultValues = {
     amount: hour?.amount ?? 0,
-    date: hour ? `${hour.date.year}-${getIdxFromMonth(hour.date.month)}-${hour.date.day}` : "",
+    date: hour
+      ? `${hour.date.year}-${getIdxFromMonth(hour.date.month)}-${prependZero(hour.date.day ?? 1)}`
+      : "",
     description: hour?.description ?? "",
     tag: hour?.tag ?? "",
   };
@@ -121,9 +123,13 @@ function getIdxFromMonth(month: Month) {
   const monthsArr = Object.values(Month);
   const idx = monthsArr.indexOf(month) + 1;
 
-  if (idx < 10) {
-    return `0${idx}`;
+  return prependZero(idx);
+}
+
+function prependZero(num: number) {
+  if (num < 10) {
+    return `0${num}`;
   }
 
-  return idx.toString();
+  return num.toString();
 }
