@@ -1,6 +1,6 @@
 import { sum } from "utils/chart-utils";
-import type { Expense, ProcessedExpense } from "src/pages/expenses";
-import type { Income } from "src/pages/income";
+import type { Expense, ProcessedExpense } from "src/_pages/expenses";
+import type { Income } from "src/_pages/income";
 import type { Hours, IncomeType } from "@prisma/client";
 import { isProcessedExpense } from "components/expenses/ExpensesForm";
 

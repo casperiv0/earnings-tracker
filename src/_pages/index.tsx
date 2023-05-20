@@ -13,7 +13,6 @@ import { getTotalSalary } from "utils/calculations/get-salary-total";
 import { HoursChart } from "components/chart/hours-chart";
 
 const SORTED_YEARS = [...DEFINED_YEARS].sort((a, b) => b - a);
-export const NUMBER_FORMATTER = new Intl.NumberFormat("NL-be", { compactDisplay: "short" });
 
 export default function Index() {
   const [selectedYear, setSelectedYear] = React.useState<number | "all-time">(() =>

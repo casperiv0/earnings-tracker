@@ -2,7 +2,11 @@
   "compilerOptions": {
     "target": "ESNext",
     "module": "ESNext",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
@@ -14,15 +18,29 @@
     "jsx": "preserve",
     "baseUrl": ".",
     "paths": {
-      "lib/*": ["./src/lib/*"],
-      "styles/*": ["./src/styles/*"],
-      "components/*": ["./src/components/*"],
-      "types/*": ["./src/types/*"],
-      "server/*": ["./src/server/*"],
-      "utils/*": ["./src/utils/*"]
+      "~/*": [
+        "./src/*"
+      ],
+      "lib/*": [
+        "./src/lib/*"
+      ],
+      "styles/*": [
+        "./src/styles/*"
+      ],
+      "components/*": [
+        "./src/components/*"
+      ],
+      "types/*": [
+        "./src/types/*"
+      ],
+      "server/*": [
+        "./src/server/*"
+      ],
+      "utils/*": [
+        "./src/utils/*"
+      ]
     },
     "incremental": true,
-
     "strict": true /* Enable all strict type-checking options. */,
     "noImplicitAny": true /* Raise error on expressions and declarations with an implied 'any' type. */,
     "strictNullChecks": true /* Enable strict null checks. */,
@@ -33,15 +51,28 @@
     "alwaysStrict": true /* Parse in strict mode and emit "use strict" for each source file. */,
     "verbatimModuleSyntax": false,
     "pretty": true,
-
     /* Additional Checks */
     "noUnusedLocals": true /* Report errors on unused locals. */,
     "noUnusedParameters": true /* Report errors on unused parameters. */,
     "noImplicitReturns": true /* Report error when not all code paths in function return a value. */,
     "noFallthroughCasesInSwitch": true /* Report errors for fallthrough cases in switch statement. */,
     "noUncheckedIndexedAccess": true /* Include 'undefined' in index signature results */,
-    "allowUnreachableCode": false
+    "allowUnreachableCode": false,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ]
   },
-  "include": ["next-env.d.ts", "next.config.js", "**/*.ts", "**/*.tsx", "**/*.config.js"],
-  "exclude": ["node_modules"]
+  "include": [
+    "next-env.d.ts",
+    "next.config.js",
+    "**/*.ts",
+    "**/*.tsx",
+    "**/*.config.js",
+    ".next/types/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }

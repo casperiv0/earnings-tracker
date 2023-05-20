@@ -1,8 +1,13 @@
+"use client";
+
+// todo: list-item are only client component
+
+import * as React from "react";
 import Link from "next/link";
-import { trpc } from "utils/trpc";
-import { useRouter } from "next/router";
+import { usePathname } from "next/navigation";
 import { UserArea } from "./UserArea";
 import { classNames } from "../../utils/classNames";
+import { clientApi } from "~/utils/trpc/client";
 
 const sidebarNavigation = [
   { name: "Dashboard", href: "/" },
@@ -14,9 +19,9 @@ const sidebarNavigation = [
 ];
 
 export function Sidebar() {
-  const sessionQuery = trpc.user.getSession.useQuery();
-  const user = sessionQuery.data?.user;
-  const router = useRouter();
+  const sessionQuery = React.use(clientApi.user.getSession.query());
+  const user = sessionQuery.user;
+  const pathname = usePathname();
 
   if (!user) {
     return null;
@@ -33,7 +38,7 @@ export function Sidebar() {
 
         <ul className="mt-5">
           {sidebarNavigation.map((item) => {
-            const isCurrent = item.href === router.pathname;
+            const isCurrent = item.href === pathname;
 
             return (
               <li key={item.name}>

@@ -1,6 +1,6 @@
-import type { Expense } from "src/pages/expenses";
-import type { Hour } from "src/pages/hours";
-import type { Income } from "src/pages/income";
+import type { Expense } from "src/_pages/expenses";
+import type { Hour } from "src/_pages/hours";
+import type { Income } from "src/_pages/income";
 import type { GetTotalForMonthOptions } from "./calculations/get-total-per-month";
 
 export function createKeyFunc(selectedYear: number | "all-time", item: Income | Expense | Hour) {
@@ -20,3 +20,5 @@ export function getMonths(options: Pick<GetTotalForMonthOptions, "data" | "selec
 export function sum(...num: number[]) {
   return num.reduce((ac, cv) => ac + cv, 0);
 }
+
+export const NUMBER_FORMATTER = new Intl.NumberFormat("NL-be", { compactDisplay: "short" });

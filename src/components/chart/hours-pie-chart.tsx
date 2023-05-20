@@ -1,7 +1,7 @@
 import { Pie } from "react-chartjs-2";
 import { Chart as ChartJS, Title, Tooltip, Legend, type ChartData, ArcElement } from "chart.js";
 import { GRAPH_COLORS } from "utils/constants";
-import type { Hour } from "src/pages/hours";
+import type { Hour } from "src/_pages/hours";
 
 ChartJS.register(Title, Tooltip, Legend, ArcElement);
 

@@ -12,8 +12,8 @@ import {
   type ChartData,
   Filler,
 } from "chart.js";
-import type { Expense } from "src/pages/expenses";
-import type { Income } from "src/pages/income";
+import type { Expense } from "src/_pages/expenses";
+import type { Income } from "src/_pages/income";
 import { DEFINED_MONTHS, GRAPH_COLORS } from "utils/constants";
 import { getMonths } from "utils/chart-utils";
 import { getTotalPerMonth } from "utils/calculations/get-total-per-month";

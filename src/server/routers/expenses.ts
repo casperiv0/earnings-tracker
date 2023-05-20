@@ -1,13 +1,10 @@
 import { Month } from "@prisma/client";
 import { z } from "zod";
 import { prisma } from "utils/prisma";
-import { TRPCError } from "@trpc/server";
 import { MAX_ITEMS_PER_TABLE } from "utils/constants";
 import { createPrismaWhereFromFilters, getOrderByFromInput } from "utils/utils";
 import { TABLE_FILTER } from "./income";
 import { getUserFromSession } from "utils/nextauth";
-import { isProcessedExpense } from "components/expenses/ExpensesForm";
-import { processOverXDaysHandler } from "utils/expenses/process-over-x-days-handler";
 import { t } from "server/trpc";
 import { isAuth } from "utils/middlewares";
 
@@ -72,87 +69,5 @@ export const expensesRouter = t.router({
       const items = [...processedExpenses, ...expenses];
 
       return { maxPages: Math.floor(totalCount / MAX_ITEMS_PER_TABLE), items };
-    }),
-  addExpense: isAuth.input(ADD_EXPENSE_INPUT).mutation(async ({ ctx, input }) => {
-    const userId = getUserFromSession(ctx).dbUser.id;
-
-    if (input.processOverXDays?.enabled) {
-      return processOverXDaysHandler({ input, userId });
-    }
-
-    const createdExpense = await prisma.expenses.create({
-      data: {
-        amount: input.amount,
-        description: input.description,
-        date: {
-          create: { month: input.month, year: input.year },
-        },
-        user: { connect: { id: userId } },
-      },
-    });
-    return createdExpense;
-  }),
-  editExpense: isAuth.input(EDIT_EXPENSE_INPUT).mutation(async ({ ctx, input }) => {
-    const userId = getUserFromSession(ctx).dbUser.id;
-
-    const expense =
-      (await prisma.expenses.findFirst({
-        where: { userId, id: input.id },
-      })) ||
-      (await prisma.processedExpense.findFirst({
-        where: { userId, id: input.id },
-      }));
-
-    if (!expense) {
-      throw new TRPCError({ code: "NOT_FOUND" });
-    }
-
-    if (isProcessedExpense(expense)) {
-      await prisma.processedExpense.delete({
-        where: { id: expense.id },
-      });
-
-      return processOverXDaysHandler({ input, userId });
-    }
-
-    const updatedExpense = await prisma.expenses.update({
-      where: { id: input.id },
-      data: {
-        amount: input.amount,
-        description: input.description,
-        date: { update: { month: input.month, year: input.year } },
-      },
-      include: { date: true },
-    });
-    return updatedExpense;
-  }),
-  deleteExpense: isAuth
-    .input(
-      z.object({
-        id: z.string(),
-      }),
-    )
-    .mutation(async ({ ctx, input }) => {
-      const userId = getUserFromSession(ctx).dbUser.id;
-
-      const expense =
-        (await prisma.expenses.findFirst({
-          where: { userId, id: input.id },
-        })) ||
-        (await prisma.processedExpense.findFirst({
-          where: { userId, id: input.id },
-        }));
-
-      if (!expense) {
-        throw new TRPCError({ code: "NOT_FOUND" });
-      }
-
-      if (isProcessedExpense(expense)) {
-        await prisma.processedExpense.delete({
-          where: { id: expense.id },
-        });
-      } else {
-        await prisma.expenses.delete({ where: { id: input.id } });
-      }
     }),
 });

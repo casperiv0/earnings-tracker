@@ -1,7 +1,7 @@
 import { IncomeType } from "@prisma/client";
 import { getMonths, sum } from "utils/chart-utils";
 import { getTotalPerMonth } from "./get-total-per-month";
-import type { Income } from "src/pages/income";
+import type { Income } from "src/_pages/income";
 
 export interface GetTotalSalaryOptions {
   income: Income[];

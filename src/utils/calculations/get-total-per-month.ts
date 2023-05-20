@@ -1,7 +1,7 @@
 import type { IncomeType } from "@prisma/client";
-import type { Expense } from "src/pages/expenses";
-import type { Hour } from "src/pages/hours";
-import type { Income } from "src/pages/income";
+import type { Expense } from "src/_pages/expenses";
+import type { Hour } from "src/_pages/hours";
+import type { Income } from "src/_pages/income";
 import { createKeyFunc } from "utils/chart-utils";
 
 export interface GetTotalForMonthOptions {

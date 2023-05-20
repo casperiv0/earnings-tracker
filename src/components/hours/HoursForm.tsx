@@ -8,7 +8,7 @@ import { Modal } from "components/modal/Modal";
 import { trpc } from "utils/trpc";
 import z from "zod";
 import { Loader } from "components/ui/Loader";
-import type { Hour } from "src/pages/hours";
+import type { Hour } from "src/_pages/hours";
 
 const schema = z.object({
   amount: z.number().min(1),

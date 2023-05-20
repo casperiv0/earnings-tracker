@@ -1,3 +1,5 @@
+"use client";
+
 import { Month } from "@prisma/client";
 import { Button } from "components/ui/Button";
 import { Form } from "components/form/Form";
@@ -5,11 +7,12 @@ import { FormField } from "components/form/FormField";
 import { Input } from "components/form/Input";
 import { Textarea } from "components/form/Textarea";
 import { Modal } from "components/modal/Modal";
-import type { Expense, ProcessedExpense } from "src/pages/expenses";
-import { trpc } from "utils/trpc";
+import type { Expense, ProcessedExpense } from "src/_pages/expenses";
 import z from "zod";
 import { Loader } from "components/ui/Loader";
 import { Toggle } from "components/form/Toggle";
+import { useAction } from "~/utils/trpc/client";
+import { addExpenseAction, editExpenseAction } from "~/server/actions/expenses";
 
 const schema = z.object({
   amount: z.number().min(1),
@@ -27,20 +30,10 @@ interface Props {
 }
 
 export function ExpensesForm({ expense, onSubmit }: Props) {
-  const context = trpc.useContext();
-  const addExpenseMutation = trpc.expenses.addExpense.useMutation({
-    onSuccess: () => {
-      context.expenses.getInfinitelyScrollableExpenses.invalidate();
-    },
-  });
+  const addExpense = useAction(addExpenseAction);
+  const editExpense = useAction(editExpenseAction);
 
-  const editExpense = trpc.expenses.editExpense.useMutation({
-    onSuccess: () => {
-      context.expenses.getInfinitelyScrollableExpenses.invalidate();
-    },
-  });
-
-  const isLoading = addExpenseMutation.isLoading || editExpense.isLoading;
+  const isLoading = addExpense.status === "loading" || editExpense.status === "loading";
   const isProcessed = isProcessedExpense(expense);
 
   const defaultValues = {
@@ -67,7 +60,8 @@ export function ExpensesForm({ expense, onSubmit }: Props) {
 
       onSubmit?.();
     } else {
-      await addExpenseMutation.mutateAsync({
+      // todo: onSuccess
+      await addExpense.mutateAsync({
         amount: data.amount,
         month: getMonthFromIdx(date.getMonth()),
         year: date.getFullYear(),

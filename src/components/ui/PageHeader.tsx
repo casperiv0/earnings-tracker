@@ -1,3 +1,5 @@
+"use client";
+
 import { Dropdown } from "components/dropdown/Dropdown";
 import { List } from "react-bootstrap-icons";
 import { Button } from "./Button";

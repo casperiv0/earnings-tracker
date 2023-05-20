@@ -7,7 +7,7 @@ import { Select } from "components/form/Select";
 import { Textarea } from "components/form/Textarea";
 import { Loader } from "components/ui/Loader";
 import { Modal } from "components/modal/Modal";
-import type { Income } from "src/pages/income";
+import type { Income } from "src/_pages/income";
 import { trpc } from "utils/trpc";
 import z from "zod";
 

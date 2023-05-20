@@ -1,17 +1,11 @@
 import type { User } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
-import type { GetServerSidePropsContext, NextApiRequest, NextApiResponse } from "next";
 import { Session, getServerSession as _getServerSession } from "next-auth";
 import type { Context } from "server/context";
-import { authOptions } from "../pages/api/auth/[...nextauth]";
+import { authOptions } from "~/app/api/auth/[...nextauth]/options";
 
-interface Options {
-  req: GetServerSidePropsContext["req"] | NextApiRequest;
-  res: GetServerSidePropsContext["res"] | NextApiResponse;
-}
-
-export async function getServerSession({ req, res }: Options) {
-  return _getServerSession(req, res, authOptions);
+export async function getServerSession() {
+  return _getServerSession(authOptions);
 }
 
 export function getUserFromSession(ctx: Context): {

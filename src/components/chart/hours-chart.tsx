@@ -14,7 +14,7 @@ import {
 } from "chart.js";
 import { DEFINED_MONTHS } from "utils/constants";
 import { createKeyFunc, getMonths } from "utils/chart-utils";
-import type { Hour } from "src/pages/hours";
+import type { Hour } from "src/_pages/hours";
 import { random } from "uniqolor";
 import type { Month } from "@prisma/client";
 

@@ -1,5 +1,5 @@
 import Head from "next/head";
-import { useRouter } from "next/router";
+import { useRouter, usePathname } from "next/navigation";
 import * as React from "react";
 import { trpc } from "utils/trpc";
 import { Sidebar } from "../sidebar/Sidebar";
@@ -12,14 +12,15 @@ interface LayoutProps {
 export function Layout({ children }: LayoutProps) {
   const sessionQuery = trpc.user.getSession.useQuery();
   const router = useRouter();
+  const pathname = usePathname();
 
   React.useEffect(() => {
-    if (!sessionQuery.data && !sessionQuery.isLoading && router.pathname !== "/login") {
+    if (!sessionQuery.data && !sessionQuery.isLoading && pathname !== "/login") {
       router.push("/login");
     }
-  }, [sessionQuery, router]);
+  }, [sessionQuery, pathname, router]);
 
-  if ((sessionQuery.isLoading || !sessionQuery.data) && router.pathname !== "/login") {
+  if ((sessionQuery.isLoading || !sessionQuery.data) && pathname !== "/login") {
     return <Loader fixed />;
   }
 
@@ -40,12 +41,13 @@ export function Layout({ children }: LayoutProps) {
       </Head>
 
       <div className="md:flex">
-        {router.pathname === "/login" ? null : (
+        {pathname === "/login" ? null : (
           <>
             <Sidebar />
             <div className="w-0 md:w-72 flex-shrink-0" />
           </>
         )}
+
         <main className="layout-main">{children}</main>
       </div>
     </>

@@ -1,7 +1,7 @@
 import { Pie } from "react-chartjs-2";
 import { Chart as ChartJS, Title, Tooltip, Legend, type ChartData, ArcElement } from "chart.js";
-import type { Expense } from "src/pages/expenses";
-import type { Income } from "src/pages/income";
+import type { Expense } from "src/_pages/expenses";
+import type { Income } from "src/_pages/income";
 import { GRAPH_COLORS } from "utils/constants";
 import { getTotal } from "utils/calculations/get-total";
 import { getTotalNetto } from "utils/calculations/get-total-netto";
