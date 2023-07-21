@@ -1,7 +1,7 @@
 import * as React from "react";
 import {
-  DeepPartial,
   DeepRequired,
+  DefaultValues,
   FieldErrorsImpl,
   FieldValues,
   SubmitHandler,
@@ -19,7 +19,7 @@ interface Form<Values extends FieldValues> extends UseFormReturn<Values> {
 interface Props<Values extends FieldValues> extends Omit<UseFormProps<Values>, "defaultValues"> {
   children(form: Form<Values>): React.ReactNode;
   schema?: z.Schema<any, any>;
-  defaultValues: DeepPartial<Values>;
+  defaultValues: DefaultValues<Values>;
   onSubmit: SubmitHandler<Values>;
 }
 
