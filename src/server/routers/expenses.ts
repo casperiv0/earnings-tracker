@@ -1,4 +1,4 @@
-import { Month } from "@prisma/client";
+import { ExpenseTag, Month } from "@prisma/client";
 import { z } from "zod";
 import { prisma } from "utils/prisma";
 import { TRPCError } from "@trpc/server";
@@ -15,7 +15,8 @@ export const ADD_EXPENSE_INPUT = z.object({
   amount: z.number().min(1),
   year: z.number(),
   month: z.nativeEnum(Month),
-  description: z.string().nullable().optional(),
+  description: z.string().nullish(),
+  tag: z.nativeEnum(ExpenseTag).nullish(),
   processOverXDays: z
     .object({ dailyAmount: z.number().min(1), enabled: z.boolean() })
     .optional()
@@ -24,6 +25,11 @@ export const ADD_EXPENSE_INPUT = z.object({
 
 export const EDIT_EXPENSE_INPUT = ADD_EXPENSE_INPUT.extend({
   id: z.string().min(2),
+});
+
+export const SET_EXPENSES_TAG_INPUT = z.object({
+  ids: z.array(z.string()),
+  tag: z.nativeEnum(ExpenseTag),
 });
 
 export const expensesRouter = t.router({
@@ -84,6 +90,7 @@ export const expensesRouter = t.router({
       data: {
         amount: input.amount,
         description: input.description,
+        tag: input.tag,
         date: {
           create: { month: input.month, year: input.year },
         },
@@ -118,6 +125,7 @@ export const expensesRouter = t.router({
     const updatedExpense = await prisma.expenses.update({
       where: { id: input.id },
       data: {
+        tag: input.tag,
         amount: input.amount,
         description: input.description,
         date: { update: { month: input.month, year: input.year } },
@@ -125,6 +133,20 @@ export const expensesRouter = t.router({
       include: { date: true },
     });
     return updatedExpense;
+  }),
+  setExpensesTag: isAuth.input(SET_EXPENSES_TAG_INPUT).mutation(async ({ ctx, input }) => {
+    const userId = getUserFromSession(ctx).dbUser.id;
+
+    await prisma.$transaction(
+      input.ids.map((id) =>
+        prisma.expenses.update({
+          where: { id, userId },
+          data: { tag: input.tag },
+        }),
+      ),
+    );
+
+    return true;
   }),
   deleteExpense: isAuth
     .input(

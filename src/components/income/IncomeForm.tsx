@@ -15,7 +15,7 @@ const schema = z.object({
   type: z.nativeEnum(IncomeType),
   amount: z.number().min(1),
   date: z.date(),
-  description: z.string().nullable().optional(),
+  description: z.string().nullish(),
 });
 
 interface Props {

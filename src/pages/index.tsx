@@ -11,6 +11,7 @@ import { getTotal } from "utils/calculations/get-total";
 import { getTotalNetto } from "utils/calculations/get-total-netto";
 import { getTotalSalary } from "utils/calculations/get-salary-total";
 import { HoursChart } from "components/chart/hours-chart";
+import { TagsCharts } from "components/chart/tags-charts";
 
 const SORTED_YEARS = [...DEFINED_YEARS].sort((a, b) => b - a);
 export const NUMBER_FORMATTER = new Intl.NumberFormat("NL-be", { compactDisplay: "short" });
@@ -82,6 +83,10 @@ export default function Index() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
           <EarningsPieChart selectedYear={selectedYear} expenses={expenses} income={income} />
           <HoursPieChart hours={hours} />
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+          <TagsCharts expenses={expenses} />
         </div>
       </div>
     </div>

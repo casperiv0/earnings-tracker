@@ -14,7 +14,7 @@ const schema = z.object({
   type: z.nativeEnum(SubscriptionType),
   price: z.number().min(1),
   name: z.string().min(1),
-  description: z.string().nullable().optional(),
+  description: z.string().nullish(),
 });
 
 interface Props {

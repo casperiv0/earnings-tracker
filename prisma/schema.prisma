@@ -76,6 +76,7 @@ model Expenses {
   dateId      String            @unique @db.ObjectId
   createdAt   DateTime          @default(now())
   updatedAt   DateTime          @updatedAt
+  tag         ExpenseTag?
 
   processedExpense   ProcessedExpense? @relation(fields: [processedExpenseId], references: [id], onDelete: Cascade)
   processedExpenseId String?           @db.ObjectId
@@ -131,6 +132,21 @@ model EarningsEntryDate {
   Income           Income[]
   ProcessedExpense ProcessedExpense?
   Hours            Hours?
+}
+
+enum ExpenseTag {
+  Food
+  Rent
+  Transportation
+  TransportMaintenance
+  Entertainment
+  Insurance
+  Health
+  Utilities
+  Savings
+  Clothing
+  Activities
+  Other
 }
 
 enum Month {

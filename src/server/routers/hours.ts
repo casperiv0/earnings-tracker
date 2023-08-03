@@ -14,7 +14,7 @@ export const ADD_HOUR_INPUT = z.object({
   year: z.number(),
   month: z.nativeEnum(Month),
   day: z.number(),
-  description: z.string().nullable().optional(),
+  description: z.string().nullish(),
   tag: z.string(),
 });
 

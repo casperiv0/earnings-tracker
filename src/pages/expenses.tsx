@@ -5,12 +5,13 @@ import { useTablePagination } from "src/hooks/useTablePagination";
 import { ArrowsExpand, ThreeDotsVertical } from "react-bootstrap-icons";
 import {
   EarningsEntryDate,
+  ExpenseTag,
   Expenses,
   Month,
   ProcessedExpense as _ProcessedExpense,
 } from "@prisma/client";
 import { Button } from "components/ui/Button";
-import type { ExpandedState, SortingState } from "@tanstack/react-table";
+import type { ExpandedState, RowSelectionState, SortingState } from "@tanstack/react-table";
 import { Dropdown } from "components/dropdown/Dropdown";
 import { Modal } from "components/modal/Modal";
 import { ExpensesForm, isProcessedExpense } from "components/expenses/ExpensesForm";
@@ -20,6 +21,8 @@ import { PageHeader } from "components/ui/PageHeader";
 import { classNames } from "utils/classNames";
 import { NUMBER_FORMATTER } from ".";
 import { getTotal } from "utils/calculations/get-total";
+
+import { SetExpensesTagForm } from "components/expenses/SetTagForm";
 
 export interface Expense extends Expenses {
   date: Pick<EarningsEntryDate, "month" | "year">;
@@ -34,9 +37,11 @@ export default function ExpensesPage() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [filters, setFilters] = React.useState<TableFilter[]>([]);
   const [expanded, setExpanded] = React.useState<ExpandedState>({});
+  const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({});
 
   const [isOpen, setIsOpen] = React.useState(false);
   const [isDeleteOpen, setDeleteOpen] = React.useState(false);
+  const [isEditTagOpen, setIsEditTagOpen] = React.useState(false);
   const [tempExpense, setTempExpense] = React.useState<Expense | ProcessedExpense | null>(null);
 
   const context = trpc.useContext();
@@ -121,7 +126,23 @@ export default function ExpensesPage() {
                 </span>
               </>
             }
-            options={{ sorting, setSorting, filters, setFilters, expanded, setExpanded }}
+            tableActions={
+              <>
+                {Object.keys(rowSelection).length > 0 ? (
+                  <Button onClick={() => setIsEditTagOpen(true)}>Edit Tag</Button>
+                ) : null}
+              </>
+            }
+            options={{
+              rowSelection,
+              setRowSelection: setRowSelection,
+              sorting,
+              setSorting,
+              filters,
+              setFilters,
+              expanded,
+              setExpanded,
+            }}
             pagination={pagination}
             query={expensesQuery}
             filterTypes={[
@@ -129,6 +150,7 @@ export default function ExpensesPage() {
               { name: "amount", filterType: "number" },
               { name: "month", filterType: "enum", options: Object.values(Month) },
               { name: "year", filterType: "number" },
+              { name: "tag", filterType: "enum", options: Object.values(ExpenseTag) },
               { name: "description", filterType: "string" },
             ]}
             data={data.map((expense, idx) => ({
@@ -176,6 +198,7 @@ export default function ExpensesPage() {
               ),
               month: expense.date.month,
               year: expense.date.year,
+              tag: isProcessedExpense(expense) ? "None" : expense.tag,
               description: expense.description || "None",
               actions: (
                 <Dropdown
@@ -198,6 +221,7 @@ export default function ExpensesPage() {
               { header: "Amount", accessorKey: "amount" },
               { header: "Month", accessorKey: "month" },
               { header: "Year", accessorKey: "year" },
+              { header: "Tag", accessorKey: "tag" },
               { header: "Description", accessorKey: "description" },
               { header: "actions", accessorKey: "actions" },
             ]}
@@ -242,6 +266,17 @@ export default function ExpensesPage() {
             </Button>
           </footer>
         </form>
+      </Modal>
+
+      <Modal isOpen={isEditTagOpen} onOpenChange={() => setIsEditTagOpen(false)}>
+        <SetExpensesTagForm
+          onSubmit={() => {
+            setRowSelection({});
+            setIsEditTagOpen(false);
+          }}
+          data={expensesQuery.data?.items ?? []}
+          selectedRows={rowSelection}
+        />
       </Modal>
     </div>
   );

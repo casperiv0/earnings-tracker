@@ -58,7 +58,7 @@ export const subscriptionsRouter = t.router({
         price: z.number().min(1),
         name: z.string(),
         type: z.nativeEnum(SubscriptionType),
-        description: z.string().nullable().optional(),
+        description: z.string().nullish(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -84,7 +84,7 @@ export const subscriptionsRouter = t.router({
         price: z.number().min(1),
         name: z.string(),
         type: z.nativeEnum(SubscriptionType),
-        description: z.string().nullable().optional(),
+        description: z.string().nullish(),
       }),
     )
     .mutation(async ({ ctx, input }) => {

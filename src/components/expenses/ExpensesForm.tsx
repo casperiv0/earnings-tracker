@@ -1,4 +1,4 @@
-import { Month } from "@prisma/client";
+import { ExpenseTag, Month } from "@prisma/client";
 import { Button } from "components/ui/Button";
 import { Form } from "components/form/Form";
 import { FormField } from "components/form/FormField";
@@ -10,15 +10,14 @@ import { trpc } from "utils/trpc";
 import z from "zod";
 import { Loader } from "components/ui/Loader";
 import { Toggle } from "components/form/Toggle";
+import { Select } from "components/form/Select";
 
 const schema = z.object({
   amount: z.number().min(1),
   date: z.date(),
-  description: z.string().nullable().optional(),
-  processOverXDays: z
-    .object({ dailyAmount: z.number().min(2), enabled: z.boolean() })
-    .optional()
-    .nullable(),
+  description: z.string().nullish(),
+  tag: z.nativeEnum(ExpenseTag).nullish(),
+  processOverXDays: z.object({ dailyAmount: z.number().min(2), enabled: z.boolean() }).nullish(),
 });
 
 interface Props {
@@ -44,15 +43,17 @@ export function ExpensesForm({ expense, onSubmit }: Props) {
   const isProcessed = isProcessedExpense(expense);
 
   const defaultValues = {
-    amount: isProcessedExpense(expense) ? expense.totalAmount : expense?.amount ?? 0,
+    amount: isProcessed ? expense.totalAmount : expense?.amount ?? 0,
     date: expense ? `${expense.date.year}-${getIdxFromMonth(expense.date.month)}-01` : "",
     description: expense?.description ?? "",
+    tag: isProcessed ? null : expense?.tag ?? null,
     processOverXDays: isProcessed
       ? { enabled: true, dailyAmount: expense.amountPerDay }
       : { enabled: false, dailyAmount: 2 },
   };
 
   async function handleSubmit(data: typeof defaultValues) {
+
     const date = new Date(data.date);
 
     if (expense) {
@@ -63,6 +64,7 @@ export function ExpensesForm({ expense, onSubmit }: Props) {
         year: date.getFullYear(),
         description: data.description,
         processOverXDays: data.processOverXDays,
+        tag: data.tag,
       });
 
       onSubmit?.();
@@ -73,6 +75,7 @@ export function ExpensesForm({ expense, onSubmit }: Props) {
         year: date.getFullYear(),
         description: data.description,
         processOverXDays: data.processOverXDays,
+        tag: data.tag,
       });
 
       onSubmit?.();
@@ -96,6 +99,16 @@ export function ExpensesForm({ expense, onSubmit }: Props) {
 
             <FormField errorMessage={errors.description} label="Description">
               <Textarea {...register("description")} />
+            </FormField>
+
+            <FormField optional errorMessage={errors.tag} label="Tag">
+              <Select {...register("tag", { required: true })}>
+                {Object.values(ExpenseTag).map((tag) => (
+                  <option key={tag} value={tag}>
+                    {tag}
+                  </option>
+                ))}
+              </Select>
             </FormField>
 
             <FormField
