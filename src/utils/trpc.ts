@@ -34,7 +34,7 @@ export const trpc = createTRPCNext<AppRouter>({
 
 function getBaseUrl() {
   if (process.env.NODE_ENV === "production") {
-    return "https://earnings.caspertheghost.me";
+    return "https://earnings.casperiv.dev";
   }
 
   if (typeof window !== "undefined") {
