@@ -53,7 +53,6 @@ export function ExpensesForm({ expense, onSubmit }: Props) {
   };
 
   async function handleSubmit(data: typeof defaultValues) {
-
     const date = new Date(data.date);
 
     if (expense) {

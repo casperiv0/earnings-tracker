@@ -127,15 +127,13 @@ export default function ExpensesPage() {
               </>
             }
             tableActions={
-              <>
-                {Object.keys(rowSelection).length > 0 ? (
-                  <Button onClick={() => setIsEditTagOpen(true)}>Edit Tag</Button>
-                ) : null}
-              </>
+              Object.keys(rowSelection).length > 0 ? (
+                <Button onClick={() => setIsEditTagOpen(true)}>Edit Tag</Button>
+              ) : null
             }
             options={{
               rowSelection,
-              setRowSelection: setRowSelection,
+              setRowSelection,
               sorting,
               setSorting,
               filters,
