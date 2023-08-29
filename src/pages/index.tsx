@@ -12,14 +12,18 @@ import { getTotalNetto } from "utils/calculations/get-total-netto";
 import { getTotalSalary } from "utils/calculations/get-salary-total";
 import { HoursChart } from "components/chart/hours-chart";
 import { TagsCharts } from "components/chart/tags-charts";
+import { getMonthlyPercentage } from "utils/calculations/get-monthly-percentage";
 
 const SORTED_YEARS = [...DEFINED_YEARS].sort((a, b) => b - a);
 export const NUMBER_FORMATTER = new Intl.NumberFormat("NL-be", { compactDisplay: "short" });
+const PERCENTAGE_FORMATTER = new Intl.NumberFormat("NL-be", { style: "percent" });
 
 export default function Index() {
   const [selectedYear, setSelectedYear] = React.useState<number | "all-time">(() =>
     new Date().getFullYear(),
   );
+
+  const isCurrentYearSelected = selectedYear === new Date().getFullYear();
 
   const user = trpc.user.getSession.useQuery();
   const dashboardQuery = trpc.dashboard.getDashboardData.useQuery(selectedYear);
@@ -35,6 +39,11 @@ export default function Index() {
   const totalNetto = getTotalNetto({ expenses, income, selectedYear });
   const salaryIncome = getTotalSalary({ income, selectedYear });
   const configuration = user.data?.user?.configuration;
+
+  const monthlyPercentage = getMonthlyPercentage({
+    expenses,
+    income,
+  });
 
   return (
     <div className="m-8 mx-5 md:mx-10 h-full">
@@ -68,14 +77,34 @@ export default function Index() {
             max={configuration?.maxYearlyIncome}
             name="Total Salary Income"
             amount={salaryIncome}
+            isAllTime={selectedYear === "all-time"}
           />
           <Card
             max={configuration?.maxYearlyHours}
             showCurrency={false}
             name="Total Hours"
             amount={totalHours}
+            isAllTime={selectedYear === "all-time"}
           />
         </div>
+
+        {isCurrentYearSelected ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+            <Card
+              showCurrency={false}
+              name="This Month Incoming"
+              amount={monthlyPercentage.incomingPercentage}
+              formatter="percentage"
+            />
+            <Card
+              showCurrency={false}
+              name="This Month Outgoing"
+              amount={monthlyPercentage.outgoingPercentage}
+              formatter="percentage"
+              color={monthlyPercentage.isOutgoingHigherThanIncoming ? "red" : "green"}
+            />
+          </div>
+        ) : null}
 
         <Chart selectedYear={selectedYear} expenses={expenses} income={income} />
         <HoursChart selectedYear={selectedYear} hours={hours} />
@@ -93,30 +122,46 @@ export default function Index() {
   );
 }
 
+const colors = {
+  red: "text-red-500",
+  yellow: "text-yellow-500",
+  green: "text-green-500",
+};
+
 function Card({
   name,
   amount,
   showCurrency = true,
   max,
+  formatter = "number",
+  color,
+  isAllTime,
 }: {
   name: string;
   amount: number;
   showCurrency?: boolean;
   max?: number | null;
+  formatter?: "number" | "percentage";
+  color?: keyof typeof colors;
+  isAllTime?: boolean;
 }) {
   const percentage = max ? (amount / max) * 100 : 0;
   const percentageColor =
-    percentage > 100 ? "text-red-500" : percentage > 80 ? "text-yellow-500" : "text-green-500";
+    percentage > 100 ? colors.red : percentage > 80 ? colors.yellow : colors.green;
+
+  const _formatter = formatter === "number" ? NUMBER_FORMATTER : PERCENTAGE_FORMATTER;
 
   return (
     <div className="bg-secondary p-5 rounded-sm shadow-md w-full flex flex-col">
       <h3 className="font-semibold uppercase text-sm mb-2 font-serif text-neutral-300">{name}</h3>
       <span className="font-mono text-2xl font-semibold">
-        <span className={percentage ? percentageColor : undefined}>
+        <span
+          className={color ? colors[color] : percentage && !isAllTime ? percentageColor : undefined}
+        >
           {showCurrency ? <>&euro;</> : null}
-          {NUMBER_FORMATTER.format(amount)}
+          {_formatter.format(amount)}
         </span>
-        {max ? <span className="inline-block text-sm ml-2">/ {max}</span> : null}
+        {max && !isAllTime ? <span className="inline-block text-sm ml-2">/ {max}</span> : null}
       </span>
     </div>
   );
