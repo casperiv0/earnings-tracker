@@ -5,7 +5,7 @@ import { useTablePagination } from "src/hooks/useTablePagination";
 import { ThreeDotsVertical } from "react-bootstrap-icons";
 import { EarningsEntryDate, Hours, Month } from "@prisma/client";
 import { Button } from "components/ui/Button";
-import type { ExpandedState, SortingState } from "@tanstack/react-table";
+import type { ExpandedState, RowSelectionState, SortingState } from "@tanstack/react-table";
 import { Dropdown } from "components/dropdown/Dropdown";
 import { Modal } from "components/modal/Modal";
 import { Loader } from "components/ui/Loader";
@@ -23,8 +23,10 @@ export default function HoursPage() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [filters, setFilters] = React.useState<TableFilter[]>([]);
   const [expanded, setExpanded] = React.useState<ExpandedState>({});
+  const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({});
 
   const [isOpen, setIsOpen] = React.useState(false);
+  const [isDeleteSelectedOpen, setIsDeleteSelectedOpen] = React.useState(false);
   const [isDeleteOpen, setDeleteOpen] = React.useState(false);
   const [tempHourLog, setTempHour] = React.useState<Hour | null>(null);
 
@@ -40,6 +42,13 @@ export default function HoursPage() {
   const deleteHour = trpc.hours.deleteHour.useMutation({
     onSuccess: () => {
       context.hours.getInfinitelyScrollableHours.invalidate();
+    },
+  });
+
+  const deleteSelectedHours = trpc.hours.deletedSelectedHours.useMutation({
+    onSuccess: () => {
+      context.hours.getInfinitelyScrollableHours.invalidate();
+      handleCloseDeleteSelected();
     },
   });
 
@@ -81,8 +90,25 @@ export default function HoursPage() {
     setDeleteOpen(false);
     setTempHour(null);
   }
-  async function addNewHour() {
+  function addNewHour() {
     setIsOpen(true);
+  }
+
+  function handleCloseDeleteSelected() {
+    setIsDeleteSelectedOpen(false);
+    setRowSelection({});
+  }
+
+  async function handleDeleteSelectedHours(event: React.FormEvent) {
+    event.preventDefault();
+
+    const ids = (Object.keys(rowSelection) as string[])
+      .map((indx) => data[Number(indx)]?.id)
+      .filter(Boolean) as string[];
+
+    if (ids.length <= 0) return;
+
+    deleteSelectedHours.mutateAsync(ids);
   }
 
   const data = hoursQuery.data?.items ?? [];
@@ -100,7 +126,23 @@ export default function HoursPage() {
           <p className="text-neutral-300">There are no hours yet.</p>
         ) : (
           <Table
-            options={{ sorting, setSorting, filters, setFilters, expanded, setExpanded }}
+            tableActions={
+              Object.keys(rowSelection).length > 0 ? (
+                <Button variant="danger" onClick={() => setIsDeleteSelectedOpen(true)}>
+                  Delete Selected
+                </Button>
+              ) : null
+            }
+            options={{
+              rowSelection,
+              setRowSelection,
+              sorting,
+              setSorting,
+              filters,
+              setFilters,
+              expanded,
+              setExpanded,
+            }}
             pagination={pagination}
             query={hoursQuery}
             filterTypes={[
@@ -199,6 +241,33 @@ export default function HoursPage() {
             >
               {deleteHour.isLoading ? <Loader size="sm" /> : null}
               Yes, delete hour
+            </Button>
+          </footer>
+        </form>
+      </Modal>
+
+      <Modal isOpen={isDeleteSelectedOpen} onOpenChange={handleCloseDeleteSelected}>
+        <form onSubmit={handleDeleteSelectedHours}>
+          <Modal.Title>Delete Selected Hours</Modal.Title>
+          <Modal.Description>
+            Are you sure you want to delete {Object.keys(rowSelection).length} hours? This action
+            cannot be undone.
+          </Modal.Description>
+
+          <footer className="mt-5 flex justify-end gap-3">
+            <Modal.Close>
+              <Button disabled={deleteSelectedHours.isLoading} type="reset">
+                Nope, Cancel
+              </Button>
+            </Modal.Close>
+            <Button
+              className="flex items-center gap-2"
+              disabled={deleteSelectedHours.isLoading}
+              variant="danger"
+              type="submit"
+            >
+              {deleteSelectedHours.isLoading ? <Loader size="sm" /> : null}
+              Yes, delete selected
             </Button>
           </footer>
         </form>

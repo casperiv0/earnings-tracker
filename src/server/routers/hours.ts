@@ -116,4 +116,15 @@ export const hoursRouter = t.router({
 
       await prisma.hours.delete({ where: { id: input.id } });
     }),
+  deletedSelectedHours: isAuth.input(z.array(z.string())).mutation(async ({ ctx, input }) => {
+    const userId = getUserFromSession(ctx).dbUser.id;
+
+    await prisma.$transaction(
+      input.map((id) =>
+        prisma.hours.delete({
+          where: { id, userId },
+        }),
+      ),
+    );
+  }),
 });
