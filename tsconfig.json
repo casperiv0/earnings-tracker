@@ -42,6 +42,6 @@
     "noUncheckedIndexedAccess": true /* Include 'undefined' in index signature results */,
     "allowUnreachableCode": false
   },
-  "include": ["next-env.d.ts", "next.config.js", "**/*.ts", "**/*.tsx", "**/*.config.js"],
+  "include": ["next-env.d.ts", "next.config.mts", "**/*.ts", "**/*.tsx", "**/*.config.js"],
   "exclude": ["node_modules"]
 }
