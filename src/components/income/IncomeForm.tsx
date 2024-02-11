@@ -13,7 +13,7 @@ import z from "zod";
 
 const schema = z.object({
   type: z.nativeEnum(IncomeType),
-  amount: z.number().min(1),
+  amount: z.number().min(0.01),
   date: z.date(),
   description: z.string().nullish(),
 });
@@ -38,7 +38,7 @@ export function IncomeForm({ income, onSubmit }: Props) {
     },
   });
 
-  const isLoading = editIncome.isLoading || addIncome.isLoading;
+  const isLoading = editIncome.isPending || addIncome.isPending;
 
   const defaultValues = {
     type: income?.type ?? IncomeType.Other,

@@ -13,6 +13,7 @@ import type { TableFilter } from "components/table/filters/TableFilters";
 import { PageHeader } from "components/ui/PageHeader";
 import { HoursForm } from "components/hours/HoursForm";
 import { getTotal } from "utils/calculations/get-total";
+import { keepPreviousData } from "@tanstack/react-query";
 
 export interface Hour extends Hours {
   date: Pick<EarningsEntryDate, "month" | "year" | "day">;
@@ -31,23 +32,22 @@ export default function HoursPage() {
   const [tempHourLog, setTempHour] = React.useState<Hour | null>(null);
 
   const NUMBER_FORMATTER = new Intl.NumberFormat("NL-be");
-
-  const context = trpc.useContext();
+  const utils = trpc.useUtils();
 
   const hoursQuery = trpc.hours.getInfinitelyScrollableHours.useQuery(
     { page, sorting, filters },
-    { keepPreviousData: true },
+    { placeholderData: keepPreviousData },
   );
 
   const deleteHour = trpc.hours.deleteHour.useMutation({
     onSuccess: () => {
-      context.hours.getInfinitelyScrollableHours.invalidate();
+      utils.hours.getInfinitelyScrollableHours.invalidate();
     },
   });
 
   const deleteSelectedHours = trpc.hours.deletedSelectedHours.useMutation({
     onSuccess: () => {
-      context.hours.getInfinitelyScrollableHours.invalidate();
+      utils.hours.getInfinitelyScrollableHours.invalidate();
       handleCloseDeleteSelected();
     },
   });
@@ -229,17 +229,17 @@ export default function HoursPage() {
 
           <footer className="mt-5 flex justify-end gap-3">
             <Modal.Close>
-              <Button disabled={deleteHour.isLoading} type="reset">
+              <Button disabled={deleteHour.isPending} type="reset">
                 Nope, Cancel
               </Button>
             </Modal.Close>
             <Button
               className="flex items-center gap-2"
-              disabled={deleteHour.isLoading}
+              disabled={deleteHour.isPending}
               variant="danger"
               type="submit"
             >
-              {deleteHour.isLoading ? <Loader size="sm" /> : null}
+              {deleteHour.isPending ? <Loader size="sm" /> : null}
               Yes, delete hour
             </Button>
           </footer>
@@ -256,17 +256,17 @@ export default function HoursPage() {
 
           <footer className="mt-5 flex justify-end gap-3">
             <Modal.Close>
-              <Button disabled={deleteSelectedHours.isLoading} type="reset">
+              <Button disabled={deleteSelectedHours.isPending} type="reset">
                 Nope, Cancel
               </Button>
             </Modal.Close>
             <Button
               className="flex items-center gap-2"
-              disabled={deleteSelectedHours.isLoading}
+              disabled={deleteSelectedHours.isPending}
               variant="danger"
               type="submit"
             >
-              {deleteSelectedHours.isLoading ? <Loader size="sm" /> : null}
+              {deleteSelectedHours.isPending ? <Loader size="sm" /> : null}
               Yes, delete selected
             </Button>
           </footer>

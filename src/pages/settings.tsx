@@ -115,10 +115,10 @@ export default function SettingsPage() {
 
               <Button
                 className="flex items-center gap-2"
-                disabled={updateUserConfigurationMutation.isLoading}
+                disabled={updateUserConfigurationMutation.isPending}
                 type="submit"
               >
-                {updateUserConfigurationMutation.isLoading ? <Loader size="sm" /> : null}
+                {updateUserConfigurationMutation.isPending ? <Loader size="sm" /> : null}
                 Save
               </Button>
             </>

@@ -14,6 +14,7 @@ import type { TableFilter } from "components/table/filters/TableFilters";
 import { PageHeader } from "components/ui/PageHeader";
 import { getTotal } from "utils/calculations/get-total";
 import { NUMBER_FORMATTER } from ".";
+import { keepPreviousData } from "@tanstack/react-query";
 
 export interface Income extends _Income {
   date: Pick<EarningsEntryDate, "month" | "year">;
@@ -30,7 +31,7 @@ export default function IncomePage() {
 
   const incomeQuery = trpc.income.getInfiniteScrollableIncome.useQuery(
     { page, sorting, filters },
-    { keepPreviousData: true },
+    { placeholderData: keepPreviousData },
   );
 
   const pagination = useTablePagination({
@@ -189,17 +190,17 @@ export default function IncomePage() {
 
           <footer className="mt-5 flex justify-end gap-3">
             <Modal.Close>
-              <Button disabled={deleteIncome.isLoading} type="reset">
+              <Button disabled={deleteIncome.isPending} type="reset">
                 Nope, Cancel
               </Button>
             </Modal.Close>
             <Button
               className="flex items-center gap-2"
-              disabled={deleteIncome.isLoading}
+              disabled={deleteIncome.isPending}
               variant="danger"
               type="submit"
             >
-              {deleteIncome.isLoading ? <Loader size="sm" /> : null}
+              {deleteIncome.isPending ? <Loader size="sm" /> : null}
               Yes, delete income
             </Button>
           </footer>

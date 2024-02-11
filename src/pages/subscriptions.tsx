@@ -12,6 +12,7 @@ import { Loader } from "components/ui/Loader";
 import type { TableFilter } from "components/table/filters/TableFilters";
 import { SubscriptionForm } from "components/subscriptions/SubscriptionForm";
 import { PageHeader } from "components/ui/PageHeader";
+import { keepPreviousData } from "@tanstack/react-query";
 
 export default function SubscriptionsPage() {
   const [page, setPage] = React.useState<number>(0);
@@ -24,7 +25,7 @@ export default function SubscriptionsPage() {
 
   const subscriptionsQuery = trpc.subscriptions.getInfiniteScrollableSubscriptions.useQuery(
     { page, sorting, filters },
-    { keepPreviousData: true },
+    { placeholderData: keepPreviousData },
   );
 
   const pagination = useTablePagination({
@@ -84,7 +85,7 @@ export default function SubscriptionsPage() {
       </PageHeader>
 
       <div className="mt-5">
-        {subscriptionsQuery.isLoading ? (
+        {subscriptionsQuery.isPending ? (
           <Loader fixed />
         ) : (subscriptionsQuery.data?.items.length ?? 0) <= 0 && filters.length <= 0 ? (
           <p className="text-neutral-300">There are no Subscriptions yet.</p>
@@ -161,17 +162,17 @@ export default function SubscriptionsPage() {
 
           <footer className="mt-5 flex justify-end gap-3">
             <Modal.Close>
-              <Button disabled={deleteSubscription.isLoading} type="reset">
+              <Button disabled={deleteSubscription.isPending} type="reset">
                 Nope, Cancel
               </Button>
             </Modal.Close>
             <Button
               className="flex items-center gap-2"
-              disabled={deleteSubscription.isLoading}
+              disabled={deleteSubscription.isPending}
               variant="danger"
               type="submit"
             >
-              {deleteSubscription.isLoading ? <Loader size="sm" /> : null}
+              {deleteSubscription.isPending ? <Loader size="sm" /> : null}
               Yes, delete subscription
             </Button>
           </footer>

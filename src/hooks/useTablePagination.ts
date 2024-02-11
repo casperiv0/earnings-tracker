@@ -1,9 +1,9 @@
 import * as React from "react";
-import type { UseQueryResult } from "@tanstack/react-query";
+import { UseTRPCQueryResult } from "@trpc/react-query/shared";
 
 interface Options<T extends { maxPages: number }> {
   isLoading: boolean;
-  query: UseQueryResult<T>;
+  query: UseTRPCQueryResult<T, any>;
   page: number;
   setPage: React.Dispatch<React.SetStateAction<number>>;
 }

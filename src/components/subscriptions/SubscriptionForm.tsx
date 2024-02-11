@@ -12,7 +12,7 @@ import { Loader } from "components/ui/Loader";
 
 const schema = z.object({
   type: z.nativeEnum(SubscriptionType),
-  price: z.number().min(1),
+  price: z.number().min(0.01),
   name: z.string().min(1),
   description: z.string().nullish(),
 });
@@ -37,7 +37,7 @@ export function SubscriptionForm({ subscription, onSubmit }: Props) {
     },
   });
 
-  const isLoading = addSubscription.isLoading || editSubscription.isLoading;
+  const isLoading = addSubscription.isPending || editSubscription.isPending;
 
   const defaultValues = {
     type: subscription?.type ?? "Monthly",

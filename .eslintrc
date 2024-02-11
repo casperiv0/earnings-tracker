@@ -20,6 +20,7 @@
   },
   "rules": {
     "@typescript-eslint/no-redundant-type-constituents": "off",
-    "@next/next/no-server-import-in-page": "off"
+    "@next/next/no-server-import-in-page": "off",
+    "capitalized-comments": "off"
   }
 }

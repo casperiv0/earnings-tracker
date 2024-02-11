@@ -64,7 +64,7 @@ export const incomeRouter = t.router({
     .input(
       z.object({
         type: z.nativeEnum(IncomeType),
-        amount: z.number().min(1),
+        amount: z.number().min(0.01),
         year: z.number(),
         description: z.string().nullish(),
         month: z.nativeEnum(Month),
@@ -93,7 +93,7 @@ export const incomeRouter = t.router({
       z.object({
         id: z.string(),
         type: z.nativeEnum(IncomeType),
-        amount: z.number().min(1),
+        amount: z.number().min(0.01),
         year: z.number(),
         description: z.string().nullish(),
         month: z.nativeEnum(Month),

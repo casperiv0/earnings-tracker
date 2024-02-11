@@ -13,7 +13,7 @@ import { Toggle } from "components/form/Toggle";
 import { Select } from "components/form/Select";
 
 const schema = z.object({
-  amount: z.number().min(1),
+  amount: z.number().min(0.01),
   date: z.date(),
   description: z.string().nullish(),
   tag: z.nativeEnum(ExpenseTag).nullish(),
@@ -39,7 +39,7 @@ export function ExpensesForm({ expense, onSubmit }: Props) {
     },
   });
 
-  const isLoading = addExpenseMutation.isLoading || editExpense.isLoading;
+  const isLoading = addExpenseMutation.isPending || editExpense.isPending;
   const isProcessed = isProcessedExpense(expense);
 
   const defaultValues = {

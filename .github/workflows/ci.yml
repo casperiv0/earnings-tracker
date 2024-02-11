@@ -28,7 +28,7 @@ jobs:
         run: pnpm run prettier:check
 
       - name: Typecheck app
-        run: pnpm run typecheck
+        run: pnpm prisma generate && pnpm run typecheck
 
       - name: Tests
         run: pnpm run test

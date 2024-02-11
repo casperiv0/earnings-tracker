@@ -12,13 +12,13 @@ import { t } from "server/trpc";
 import { isAuth } from "utils/middlewares";
 
 export const ADD_EXPENSE_INPUT = z.object({
-  amount: z.number().min(1),
+  amount: z.number().min(0.01),
   year: z.number(),
   month: z.nativeEnum(Month),
   description: z.string().nullish(),
   tag: z.nativeEnum(ExpenseTag).nullish(),
   processOverXDays: z
-    .object({ dailyAmount: z.number().min(1), enabled: z.boolean() })
+    .object({ dailyAmount: z.number().min(0.01), enabled: z.boolean() })
     .optional()
     .nullable(),
 });

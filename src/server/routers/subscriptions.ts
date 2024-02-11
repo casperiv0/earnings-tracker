@@ -55,7 +55,7 @@ export const subscriptionsRouter = t.router({
   addSubscription: isAuth
     .input(
       z.object({
-        price: z.number().min(1),
+        price: z.number().min(0.01),
         name: z.string(),
         type: z.nativeEnum(SubscriptionType),
         description: z.string().nullish(),
@@ -81,7 +81,7 @@ export const subscriptionsRouter = t.router({
     .input(
       z.object({
         id: z.string(),
-        price: z.number().min(1),
+        price: z.number().min(0.01),
         name: z.string(),
         type: z.nativeEnum(SubscriptionType),
         description: z.string().nullish(),

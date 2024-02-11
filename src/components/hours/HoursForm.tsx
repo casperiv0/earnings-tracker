@@ -36,7 +36,7 @@ export function HoursForm({ hour, onSubmit }: Props) {
     },
   });
 
-  const isLoading = addHourMutation.isLoading || editHourMutation.isLoading;
+  const isLoading = addHourMutation.isPending || editHourMutation.isPending;
 
   const defaultValues = {
     amount: hour?.amount ?? 0,

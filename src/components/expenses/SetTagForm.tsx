@@ -66,16 +66,16 @@ export function SetExpensesTagForm(props: Props) {
 
           <footer className="mt-5 flex justify-end gap-3">
             <Modal.Close>
-              <Button variant="dropdown" disabled={setExpensesTagMutation.isLoading} type="reset">
+              <Button variant="dropdown" disabled={setExpensesTagMutation.isPending} type="reset">
                 Cancel
               </Button>
             </Modal.Close>
             <Button
               className="flex items-center gap-2"
-              disabled={setExpensesTagMutation.isLoading}
+              disabled={setExpensesTagMutation.isPending}
               type="submit"
             >
-              {setExpensesTagMutation.isLoading ? <Loader size="sm" /> : null}
+              {setExpensesTagMutation.isPending ? <Loader size="sm" /> : null}
               Update selected rows
             </Button>
           </footer>

@@ -23,6 +23,7 @@ import { NUMBER_FORMATTER } from ".";
 import { getTotal } from "utils/calculations/get-total";
 
 import { SetExpensesTagForm } from "components/expenses/SetTagForm";
+import { keepPreviousData } from "@tanstack/react-query";
 
 export interface Expense extends Expenses {
   date: Pick<EarningsEntryDate, "month" | "year">;
@@ -44,16 +45,16 @@ export default function ExpensesPage() {
   const [isEditTagOpen, setIsEditTagOpen] = React.useState(false);
   const [tempExpense, setTempExpense] = React.useState<Expense | ProcessedExpense | null>(null);
 
-  const context = trpc.useContext();
+  const utils = trpc.useUtils();
 
   const expensesQuery = trpc.expenses.getInfinitelyScrollableExpenses.useQuery(
     { page, sorting, filters },
-    { keepPreviousData: true },
+    { placeholderData: keepPreviousData },
   );
 
   const deleteExpense = trpc.expenses.deleteExpense.useMutation({
     onSuccess: () => {
-      context.expenses.getInfinitelyScrollableExpenses.invalidate();
+      utils.expenses.getInfinitelyScrollableExpenses.invalidate();
     },
   });
 
@@ -249,17 +250,17 @@ export default function ExpensesPage() {
 
           <footer className="mt-5 flex justify-end gap-3">
             <Modal.Close>
-              <Button disabled={deleteExpense.isLoading} type="reset">
+              <Button disabled={deleteExpense.isPending} type="reset">
                 Nope, Cancel
               </Button>
             </Modal.Close>
             <Button
               className="flex items-center gap-2"
-              disabled={deleteExpense.isLoading}
+              disabled={deleteExpense.isPending}
               variant="danger"
               type="submit"
             >
-              {deleteExpense.isLoading ? <Loader size="sm" /> : null}
+              {deleteExpense.isPending ? <Loader size="sm" /> : null}
               Yes, delete expense
             </Button>
           </footer>

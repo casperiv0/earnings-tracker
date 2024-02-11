@@ -17,18 +17,18 @@ import { TablePagination } from "./TablePagination";
 import type { TablePaginationOptions } from "src/hooks/useTablePagination";
 import { makeCheckboxHeader } from "./IndeterminateCheckbox";
 import { TableFilter, TableFilters } from "./filters/TableFilters";
-import type { UseQueryResult } from "@tanstack/react-query";
+import { UseTRPCQueryResult } from "@trpc/react-query/shared";
 
 export interface TableFiltersStateProps {
   filters: TableFilter[];
   setFilters: React.Dispatch<React.SetStateAction<TableFilter[]>>;
 }
 
-interface Props<TData extends RowData> {
-  data: TData[];
-  columns: ColumnDef<TData>[];
+interface Props<TRowData extends RowData, TData> {
+  data: TRowData[];
+  columns: ColumnDef<TRowData>[];
 
-  query?: UseQueryResult;
+  query?: UseTRPCQueryResult<TData, any>;
   filterTypes?: TableFilter[];
   pagination?: TablePaginationOptions;
   footer?: React.ReactNode;
@@ -45,7 +45,7 @@ interface Props<TData extends RowData> {
   };
 }
 
-export function Table<TData extends RowData>({
+export function Table<TRowData extends RowData, TData>({
   data,
   columns,
   pagination,
@@ -54,7 +54,7 @@ export function Table<TData extends RowData>({
   options = {},
   footer,
   tableActions,
-}: Props<TData>) {
+}: Props<TRowData, TData>) {
   const tableColumns = React.useMemo(() => {
     let cols = columns;
 
