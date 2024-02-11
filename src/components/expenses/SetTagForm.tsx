@@ -22,10 +22,10 @@ const SET_EXPENSES_TAG_INPUT = z.object({
 });
 
 export function SetExpensesTagForm(props: Props) {
-  const context = trpc.useContext();
+  const utils = trpc.useUtils();
   const setExpensesTagMutation = trpc.expenses.setExpensesTag.useMutation({
     onSuccess: () => {
-      context.expenses.getInfinitelyScrollableExpenses.invalidate();
+      utils.expenses.getInfinitelyScrollableExpenses.invalidate();
     },
   });
 

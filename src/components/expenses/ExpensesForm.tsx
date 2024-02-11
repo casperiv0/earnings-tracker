@@ -26,16 +26,16 @@ interface Props {
 }
 
 export function ExpensesForm({ expense, onSubmit }: Props) {
-  const context = trpc.useContext();
+  const utils = trpc.useUtils();
   const addExpenseMutation = trpc.expenses.addExpense.useMutation({
     onSuccess: () => {
-      context.expenses.getInfinitelyScrollableExpenses.invalidate();
+      utils.expenses.getInfinitelyScrollableExpenses.invalidate();
     },
   });
 
   const editExpense = trpc.expenses.editExpense.useMutation({
     onSuccess: () => {
-      context.expenses.getInfinitelyScrollableExpenses.invalidate();
+      utils.expenses.getInfinitelyScrollableExpenses.invalidate();
     },
   });
 
@@ -61,6 +61,7 @@ export function ExpensesForm({ expense, onSubmit }: Props) {
         amount: data.amount,
         month: getMonthFromIdx(date.getMonth()),
         year: date.getFullYear(),
+        day: date.getDate(),
         description: data.description,
         processOverXDays: data.processOverXDays,
         tag: data.tag,
@@ -72,6 +73,7 @@ export function ExpensesForm({ expense, onSubmit }: Props) {
         amount: data.amount,
         month: getMonthFromIdx(date.getMonth()),
         year: date.getFullYear(),
+        day: date.getDate(),
         description: data.description,
         processOverXDays: data.processOverXDays,
         tag: data.tag,

@@ -66,6 +66,7 @@ export const incomeRouter = t.router({
         type: z.nativeEnum(IncomeType),
         amount: z.number().min(0.01),
         year: z.number(),
+        day: z.number(),
         description: z.string().nullish(),
         month: z.nativeEnum(Month),
       }),
@@ -79,7 +80,7 @@ export const incomeRouter = t.router({
           amount: input.amount,
           description: input.description,
           date: {
-            create: { month: input.month, year: input.year },
+            create: { month: input.month, year: input.year, day: input.day },
           },
           user: { connect: { id: userId } },
         },
@@ -97,6 +98,7 @@ export const incomeRouter = t.router({
         year: z.number(),
         description: z.string().nullish(),
         month: z.nativeEnum(Month),
+        day: z.number(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -112,7 +114,7 @@ export const incomeRouter = t.router({
           type: input.type,
           amount: input.amount,
           description: input.description,
-          date: { update: { month: input.month, year: input.year } },
+          date: { update: { month: input.month, year: input.year, day: input.day } },
         },
         select: incomeSelect,
       });

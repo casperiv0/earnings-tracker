@@ -15,6 +15,7 @@ export const ADD_EXPENSE_INPUT = z.object({
   amount: z.number().min(0.01),
   year: z.number(),
   month: z.nativeEnum(Month),
+  day: z.number(),
   description: z.string().nullish(),
   tag: z.nativeEnum(ExpenseTag).nullish(),
   processOverXDays: z

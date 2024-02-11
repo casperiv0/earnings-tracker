@@ -23,16 +23,16 @@ interface Props {
 }
 
 export function HoursForm({ hour, onSubmit }: Props) {
-  const context = trpc.useContext();
+  const utils = trpc.useUtils();
   const addHourMutation = trpc.hours.addHour.useMutation({
     onSuccess: () => {
-      context.hours.getInfinitelyScrollableHours.invalidate();
+      utils.hours.getInfinitelyScrollableHours.invalidate();
     },
   });
 
   const editHourMutation = trpc.hours.editHour.useMutation({
     onSuccess: () => {
-      context.hours.getInfinitelyScrollableHours.invalidate();
+      utils.hours.getInfinitelyScrollableHours.invalidate();
     },
   });
 

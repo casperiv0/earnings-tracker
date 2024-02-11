@@ -34,11 +34,11 @@ export default function SubscriptionsPage() {
     page,
     setPage,
   });
-  const context = trpc.useContext();
+  const utils = trpc.useUtils();
 
   const deleteSubscription = trpc.subscriptions.deleteSubscription.useMutation({
     onSuccess: () => {
-      context.subscriptions.getInfiniteScrollableSubscriptions.invalidate();
+      utils.subscriptions.getInfiniteScrollableSubscriptions.invalidate();
     },
   });
 

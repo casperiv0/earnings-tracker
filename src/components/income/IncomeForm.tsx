@@ -24,17 +24,17 @@ interface Props {
 }
 
 export function IncomeForm({ income, onSubmit }: Props) {
-  const context = trpc.useContext();
+  const utils = trpc.useUtils();
 
   const addIncome = trpc.income.addIncome.useMutation({
     onSuccess: () => {
-      context.income.getInfiniteScrollableIncome.invalidate();
+      utils.income.getInfiniteScrollableIncome.invalidate();
     },
   });
 
   const editIncome = trpc.income.editIncome.useMutation({
     onSuccess: () => {
-      context.income.getInfiniteScrollableIncome.invalidate();
+      utils.income.getInfiniteScrollableIncome.invalidate();
     },
   });
 
@@ -54,6 +54,7 @@ export function IncomeForm({ income, onSubmit }: Props) {
       amount: data.amount,
       month: getMonthFromIdx(date.getMonth()),
       year: date.getFullYear(),
+      day: date.getDate(),
       description: data.description,
       type: data.type,
     };

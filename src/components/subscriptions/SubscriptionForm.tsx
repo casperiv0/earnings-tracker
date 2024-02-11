@@ -23,17 +23,17 @@ interface Props {
 }
 
 export function SubscriptionForm({ subscription, onSubmit }: Props) {
-  const context = trpc.useContext();
+  const utils = trpc.useUtils();
 
   const addSubscription = trpc.subscriptions.addSubscription.useMutation({
     onSuccess: () => {
-      context.subscriptions.getInfiniteScrollableSubscriptions.invalidate();
+      utils.subscriptions.getInfiniteScrollableSubscriptions.invalidate();
     },
   });
 
   const editSubscription = trpc.subscriptions.editSubscription.useMutation({
     onSuccess: () => {
-      context.subscriptions.getInfiniteScrollableSubscriptions.invalidate();
+      utils.subscriptions.getInfiniteScrollableSubscriptions.invalidate();
     },
   });
 

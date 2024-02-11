@@ -40,11 +40,11 @@ export default function IncomePage() {
     page,
     setPage,
   });
-  const context = trpc.useContext();
+  const utils = trpc.useUtils();
 
   const deleteIncome = trpc.income.deleteIncome.useMutation({
     onSuccess: () => {
-      context.income.getInfiniteScrollableIncome.invalidate();
+      utils.income.getInfiniteScrollableIncome.invalidate();
     },
   });
 
